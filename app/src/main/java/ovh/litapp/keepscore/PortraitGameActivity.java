@@ -1,16 +1,10 @@
 package ovh.litapp.keepscore;
 
-
+/**
+ * A game played in portrait: the scoreboard stacks one player per row.
+ *
+ * The manifest locks this activity to portrait and picks the column layout from the configuration's
+ * orientation, so the class itself has nothing left to do.
+ */
 public class PortraitGameActivity extends GameActivity {
-
-    @Override
-    public void hideAbsentPlayers() {
-        // no need to do anything; viewstub takes care of not inflating anything that doesn't
-        // need to be inflated
-    }
-    
-    @Override
-    public boolean getShouldShowOnscreenDeltaButtons() {
-        return false; // don't show on portrait; it looks weird and I'm too lazy to fix it.
-    }
 }

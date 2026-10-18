@@ -1,64 +1,49 @@
 package ovh.litapp.keepscore;
 
 import ovh.litapp.keepscore.android.EdgeToEdge;
+import ovh.litapp.keepscore.ui.scoring.ScoringPreferences;
+import ovh.litapp.keepscore.ui.scoring.ScoringScreenHostKt;
+import ovh.litapp.keepscore.ui.scoring.ScoringScreenState;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import android.app.Activity;
-import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.text.TextUtils;
-import android.util.TypedValue;
-import android.view.View;
-import android.view.ViewGroup.LayoutParams;
-import android.view.ViewStub;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.widget.Toast;
-
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
-import ovh.litapp.keepscore.data.RecordedChange;
 import ovh.litapp.keepscore.db.Delta;
 import ovh.litapp.keepscore.db.Game;
 import ovh.litapp.keepscore.db.GameDBHelper;
 import ovh.litapp.keepscore.db.PlayerScore;
-import ovh.litapp.keepscore.game.GameScoringModel;
-import ovh.litapp.keepscore.game.RoundTotal;
-import ovh.litapp.keepscore.helper.ColorScheme;
 import ovh.litapp.keepscore.helper.GameActivityHelper;
 import ovh.litapp.keepscore.helper.PlayerColor;
-import ovh.litapp.keepscore.helper.PlayerTextFormat;
 import ovh.litapp.keepscore.helper.PreferenceHelper;
-import ovh.litapp.keepscore.helper.VersionHelper;
-import ovh.litapp.keepscore.util.Callback;
 import ovh.litapp.keepscore.util.StopWatch;
 import ovh.litapp.keepscore.util.UtilLogger;
-import ovh.litapp.keepscore.widget.PlayerView;
 
 /**
  * Main activity when the user is playing a game.
- * 
+ *
+ * The scoreboard itself is the Compose screen in {@code ui/scoring}, which owns every score
+ * mutation, the undo/redo stack and the round totals; this activity owns the game object, the
+ * autosave and the action bar menu, and hides the action bar while a game is on screen.
+ *
  * @author nolan
  * 
  */
@@ -73,21 +58,15 @@ public abstract class GameActivity extends AppCompatActivity {
 
     private static final UtilLogger log = new UtilLogger(GameActivity.class);
 
-    private LinearLayout rootLayout;
-    private View rootPadding1, rootPadding2;
-    private ViewStub roundTotalViewStub;
-    private TextView roundTotalTextView;
-
     private Game game;
     protected List<PlayerScore> playerScores;
 
-    protected List<PlayerView> playerViews;
+    private ScoringScreenState scoringScreenState;
+
     private Handler handler = new Handler(Looper.getMainLooper());
     private boolean paused = true;
     private GameDBHelper dbHelper;
     private boolean savedGameBeforeExit;
-
-    private GameScoringModel scoringModel;
 
     private final ActivityResultLauncher<Intent> settingsActivityLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -113,18 +92,14 @@ public abstract class GameActivity extends AppCompatActivity {
                 }
             });
 
-    protected abstract void hideAbsentPlayers();
-    protected abstract boolean getShouldShowOnscreenDeltaButtons();
-    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         createGame();
 
-        setContentView(R.layout.game);
+        setUpScoringScreen();
         EdgeToEdge.apply(this);
-        setUpWidgets();
 
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
 
@@ -191,13 +166,9 @@ public abstract class GameActivity extends AppCompatActivity {
 
         startPeriodicSave();
 
-        updateRoundTotalViewText();
-
-        setOrUpdateColorScheme();
-        
-        updateHighlightedPlayer();
-
-        setPlayerViewTextSizes();
+        // the scoreboard draws itself from the preferences, so re-read them here: the user may
+        // have changed the colour scheme, the button values or the update delay in the settings
+        scoringScreenState.refreshPreferences();
 
         paused = false;
         savedGameBeforeExit = false;
@@ -252,8 +223,8 @@ public abstract class GameActivity extends AppCompatActivity {
         MenuItem undoMenuItem = menu.findItem(R.id.menu_undo);
         MenuItem redoMenuItem = menu.findItem(R.id.menu_redo);
 
-        boolean showUndo = scoringModel.canUndo();
-        boolean showRedo = scoringModel.canRedo();
+        boolean showUndo = scoringScreenState.canUndo();
+        boolean showRedo = scoringScreenState.canRedo();
 
         undoMenuItem.setEnabled(showUndo);
         redoMenuItem.setEnabled(showRedo);
@@ -277,33 +248,11 @@ public abstract class GameActivity extends AppCompatActivity {
         } else if (itemId == R.id.menu_rematch) {
             showRematchDialogue();
         } else if (itemId == R.id.menu_undo) {
-            undoOrRedo(true);
+            scoringScreenState.undoOrRedo(true);
         } else if (itemId == R.id.menu_redo) {
-            undoOrRedo(false);
+            scoringScreenState.undoOrRedo(false);
         }
         return false;
-    }
-
-    private void undoOrRedo(boolean undo) {
-
-        List<RecordedChange> recordedChanges = undo ? scoringModel.undoBatch() : scoringModel.redoBatch();
-
-        int lastPlayerNumber = -1;
-        for (RecordedChange recordedChange : recordedChanges) {
-            PlayerView playerView = playerViews.get(recordedChange.getPlayerNumber());
-            if (undo) {
-                playerView.revertChange(recordedChange);
-            } else {
-                playerView.reexecuteChange(recordedChange);
-            }
-            lastPlayerNumber = recordedChange.getPlayerNumber();
-        }
-
-        if (lastPlayerNumber != -1) {
-            PlayerView playerView = playerViews.get(lastPlayerNumber);
-            playerView.resetLastIncremented(); // keeps the badge from showing
-            playerView.updateViews();
-        }
     }
 
     private void startOrganizePlayersActivity() {
@@ -326,68 +275,21 @@ public abstract class GameActivity extends AppCompatActivity {
 
     }
 
-    private void setOrUpdateColorScheme() {
-
-        ColorScheme colorScheme = PreferenceHelper.getColorScheme(this);
-
-        int foregroundColor = getResources().getColor(colorScheme.getForegroundColorResId());
-        int backgroundColor = getResources().getColor(colorScheme.getBackgroundColorResId());
-        int dividerColor = getResources().getColor(colorScheme.getDividerColorResId());
-        
-        rootLayout.setBackgroundColor(backgroundColor);
-        for (PlayerView playerView : playerViews) {
-            playerView.getNameTextView().setTextColor(foregroundColor);
-            playerView.getNameTextView().setTypeface(colorScheme.getPlayerNameTypeface());
-            playerView.getScoreTextView().setTextColor(foregroundColor);
-
-            playerView.setNewColorScheme(colorScheme);
-
-            playerView.getDivider1().setBackgroundColor(dividerColor);
-            if (playerView.getDivider2() != null) {
-                playerView.getDivider2().setBackgroundColor(dividerColor);
-            }
-            
-            for (Button button : new Button[] { playerView.getPlusButton(), playerView.getMinusButton(),
-                    playerView.getDeltaButton1(), playerView.getDeltaButton2(), playerView.getDeltaButton3(),
-                    playerView.getDeltaButton4(), }) {
-                if (button != null) {
-                    button.setBackgroundDrawable(getResources().getDrawable(
-                            colorScheme.getButtonBackgroundDrawableResId()));
-                    button.setTextColor(getResources().getColor(colorScheme.getForegroundColorResId()));
-                }
-            }
-
-            playerView.updateViews();
-        }
-        if (roundTotalTextView != null) {
-            roundTotalTextView.setTextColor(getResources().getColor(colorScheme.getForegroundColorResId()));
-        }
-    }
-
     private void createRematchGame() {
 
         saveGame(game, true, null); // save the original game
 
-        for (PlayerView playerView : playerViews) {
-            playerView.cancelPendingUpdates();
-        }
-
         game = game.makeCleanCopy();
         playerScores = game.getPlayerScores();
 
-        setUpWidgets();
-
-        for (PlayerView playerView : playerViews) {
-            playerView.reset(GameActivity.this);
-        }
+        // a rematch is a new game: give it a scoreboard of its own, with an empty undo stack
+        setUpScoringScreen();
+        scoringScreenState.resetForRematch();
         saveGame(game, true, null); // save the new game
-
-        updateRoundTotalViewText();
-        scoringModel.clearUndoRedo();
 
         Toast.makeText(this, R.string.toast_rematch_created, Toast.LENGTH_SHORT).show();
     }
-    
+
     private boolean gameWasSaved() {
         return game != null && game.getId() != -1;
     }
@@ -395,14 +297,7 @@ public abstract class GameActivity extends AppCompatActivity {
     private boolean shouldAutosave() {
         // only autosave if the user has changed SOMETHING, i.e. the scores
         // aren't all just zero
-
-        for (PlayerView playerView : playerViews) {
-            if (playerView.getShouldAutosave().get()) {
-                return true;
-            }
-        }
-
-        return false;
+        return scoringScreenState.shouldAutosave();
     }
 
     private void createGame() {
@@ -461,11 +356,26 @@ public abstract class GameActivity extends AppCompatActivity {
         log.d("created new playerScores: %s", playerScores);
     }
 
+    /**
+     * Puts the scoreboard of the current {@link #playerScores} on screen, replacing the one of the
+     * previous game if there was one.
+     */
+    private void setUpScoringScreen() {
+        scoringScreenState = new ScoringScreenState(playerScores, ScoringPreferences.from(this));
+
+        // set to autosave if the player names are filled in. This feels
+        // intuitive to me. There's no point
+        // in saving an empty game, but if the player names are included,
+        // the game feels non-empty and therefore
+        // worth saving. This only applies for newly created games.
+        scoringScreenState.markDirtyForUnsavedNewGame(game.getId());
+
+        ScoringScreenHostKt.setScoringScreenContent(this, scoringScreenState);
+    }
+
     private synchronized void saveGame(final Game gameToSave, boolean inBackground, final Runnable onFinished) {
 
-        for (PlayerView playerView : playerViews) {
-            playerView.getShouldAutosave().set(false);
-        }
+        scoringScreenState.markSaved();
 
         if (inBackground) {
             // do in the background to avoid jankiness
@@ -506,266 +416,6 @@ public abstract class GameActivity extends AppCompatActivity {
         savedGameBeforeExit = true;
 
         stopWatch.log(log);
-    }
-
-    private void setUpWidgets() {
-
-        rootLayout = (LinearLayout) findViewById(R.id.game_root_layout);
-
-        // add top and bottom spacing on the two-player game. it looks nicer
-        rootPadding1 = findViewById(R.id.game_root_padding_1);
-        rootPadding2 = findViewById(R.id.game_root_padding_2);
-        rootPadding1.setVisibility(playerScores.size() <= 2 ? View.VISIBLE : View.GONE);
-        rootPadding2.setVisibility(playerScores.size() <= 2 ? View.VISIBLE : View.GONE);
-
-        // inflate the round total view stub if we're in Eclair (due to an
-        // Eclair bug), or
-        // if the round totals are enabled
-        try {
-            roundTotalViewStub = (ViewStub) findViewById(R.id.round_totals);
-            int versionInt = VersionHelper.getVersionSdkIntCompat();
-            if (versionInt > VersionHelper.VERSION_DONUT && versionInt < VersionHelper.VERSION_FROYO) {
-                roundTotalTextView = (TextView) roundTotalViewStub.inflate();
-            }
-        } catch (ClassCastException ignore) {
-            // view stub already inflated
-        }
-
-        playerViews = new ArrayList<PlayerView>();
-
-        scoringModel = new GameScoringModel(playerScores);
-
-        boolean showOnscreenDeltaButtons = getShouldShowOnscreenDeltaButtons();
-
-        for (int i = 0; i < playerScores.size(); i++) {
-
-            PlayerScore playerScore = playerScores.get(i);
-            int resId = getPlayerViewResId(i);
-            View view = getPlayerScoreView(resId);
-            if (view == null) {
-                log.e("Null pointer exception; view for player %s is null", i);
-            }
-            PlayerView playerView = new PlayerView(this, view, playerScore, handler, showOnscreenDeltaButtons);
-
-            playerView.setChangeRecorder(new Callback<RecordedChange>() {
-
-                @Override
-                public void onCallback(RecordedChange recordedChange) {
-                    scoringModel.recordChange(recordedChange);
-                }
-            });
-            playerView.setOnChangeListener(new Runnable() {
-
-                @Override
-                public void run() {
-                    updateRoundTotalViewText();
-                    updateHighlightedPlayer();
-                }
-            });
-
-            // set to autosave if the player names are filled in. This feels
-            // intuitive to me. There's no point
-            // in saving an empty game, but if the player names are included,
-            // the game feels non-empty and therefore
-            // worth saving. This only applies for newly created games.
-            if (game.getId() == -1 && !TextUtils.isEmpty(playerScore.getName())) {
-                playerView.getShouldAutosave().set(true);
-            }
-
-            playerViews.add(playerView);
-        }
-        
-        hideAbsentPlayers();
-    }
-
-    private void updateHighlightedPlayer() {
-        // highlight the most recently changed player.  This helps with round-based games
-        // (where it's important to know that each player's round has been tallied)
-        // or games where the scoring has to happen in a particular order (e.g. Cribbage)
-
-        // if none of the player scores are above 0, then this is a game from an older version
-        // of KeepScore where we didn't track the lastUpdate, so we don't highlight anything
-        int maxLastUpdateIdx = scoringModel.getHighlightedPlayerIndex();
-
-        boolean disableTagIcon = PreferenceHelper.getBooleanPreference(
-                R.string.CONSTANT_pref_disable_highlight_tag, 
-                R.string.CONSTANT_pref_disable_highlight_tag_default, this);
-        
-        for (int i = 0; i < playerViews.size(); i++) {
-            PlayerView playerView = playerViews.get(i);
-            boolean highlighted = (!disableTagIcon && (i == maxLastUpdateIdx));
-            
-            // highlight or un-highlight by showing or hiding the bullet
-            ImageView tagImageView = playerView.getTagImageView();
-            tagImageView.setVisibility(highlighted ? View.VISIBLE : View.INVISIBLE);
-        }
-    }
-    
-    private void updateRoundTotalViewText() {
-
-        boolean showRoundTotal = PreferenceHelper.getShowRoundTotals(this);
-
-        if (!showRoundTotal) {
-            if (roundTotalTextView != null) {
-                roundTotalTextView.setVisibility(View.GONE);
-            }
-            return;
-        }
-
-        RoundTotal roundTotal = scoringModel.computeRoundTotal();
-
-        String text = String.format(getString(R.string.text_round_total), Math.max(roundTotal.getRound(), 1),
-                roundTotal.getTotal());
-
-        if (roundTotalTextView == null) {
-            roundTotalTextView = (TextView) roundTotalViewStub.inflate();
-        }
-        roundTotalTextView.setVisibility(View.VISIBLE);
-        roundTotalTextView.setText(text);
-    }
-
-    /**
-     * sometimes the text gets cut off in the 6 or 8 player view, so make the
-     * text smaller
-     */
-    private void setPlayerViewTextSizes() {
-
-        PlayerTextFormat textFormat = PlayerTextFormat.forNumPlayers(playerScores.size());
-
-        for (PlayerView playerView : playerViews) {
-            setPlayerViewTextSizes(playerView, textFormat);
-        }
-    }
-
-    private void setPlayerViewTextSizes(PlayerView playerView, PlayerTextFormat textFormat) {
-        playerView.getBadgeTextView().setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                getResources().getDimensionPixelSize(textFormat.getBadgeTextSize()));
-        playerView.getScoreTextView().setMaxTextSize(
-                getResources().getDimensionPixelSize(textFormat.getPlayerScoreTextSize()));
-        playerView.getNameTextView().setMaxTextSize(
-                getResources().getDimensionPixelSize(textFormat.getPlayerNameTextSize()));   
-        playerView.getScoreTextView().resizeText();
-        playerView.getNameTextView().resizeText();
-
-        Button plusButton = playerView.getPlusButton();
-        Button minusButton = playerView.getMinusButton();
-
-        // if the round totals are showing, we have a little less space to work
-        // with
-        int plusMinusButtonHeight = PreferenceHelper.getShowRoundTotals(this) ? textFormat
-                .getPlusMinusButtonHeightWithRoundTotals() : textFormat.getPlusMinusButtonHeight();
-
-        // in some cases I manually define it to just be 'fill parent'
-        if (plusMinusButtonHeight != LinearLayout.LayoutParams.MATCH_PARENT) {
-            plusMinusButtonHeight = getResources().getDimensionPixelSize(plusMinusButtonHeight);
-        }
-
-        for (Button button : new Button[] { plusButton, minusButton }) {
-            button.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                    getResources().getDimensionPixelSize(textFormat.getPlusMinusTextSize()));
-            button.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, plusMinusButtonHeight));
-        }
-
-        for (Button button : new Button[] { playerView.getDeltaButton1(), playerView.getDeltaButton2(),
-                playerView.getDeltaButton3(), playerView.getDeltaButton4() }) {
-            if (button != null) {
-                button.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                        getResources().getDimensionPixelSize(textFormat.getOnscreenDeltaButtonTextSize()));
-            }
-        }
-        if (playerView.getOnscreenDeltaButtonsLayout() != null) {
-            playerView.getOnscreenDeltaButtonsLayout().setLayoutParams(
-                    new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, getResources().getDimensionPixelSize(
-                            textFormat.getOnscreenDeltaButtonHeight())));
-        }
-
-        playerView.getBadgeTextView().setPadding(
-                getResources().getDimensionPixelSize(textFormat.getBadgePaddingLeftRight()), // left
-                getResources().getDimensionPixelSize(textFormat.getBadgePaddingTopBottom()), // top
-                getResources().getDimensionPixelSize(textFormat.getBadgePaddingLeftRight()), // right
-                getResources().getDimensionPixelSize(textFormat.getBadgePaddingTopBottom()) // bottom
-                );
-
-        // the offset is from the top right corner only
-        playerView.getBadgeLinearLayout().setPadding(0,
-                getResources().getDimensionPixelSize(textFormat.getBadgeOffset()),
-                getResources().getDimensionPixelSize(textFormat.getBadgeOffset()), 0);
-
-    }
-
-    protected View getPlayerScoreView(int resId) {
-        // either get the view, or inflate from the ViewStub
-        View view = findViewById(resId);
-        if (view instanceof ViewStub) {
-            return ((ViewStub) view).inflate();
-        }
-        return view;
-    }
-
-    private int getPlayerViewResId(int playerNumber) {
-        switch (playerNumber) {
-        case 0:
-            return R.id.player_1;
-        case 1:
-            return R.id.player_2;
-        case 2:
-            return R.id.player_3;
-        case 3:
-            return R.id.player_4;
-        case 4:
-            return R.id.player_5;
-        case 5:
-            return R.id.player_6;
-        case 6:
-            return R.id.player_7;
-        case 7:
-            return R.id.player_8;
-        case 8:
-            return R.id.player_9;
-        case 9:
-            return R.id.player_10;
-        case 10:
-            return R.id.player_11;
-        case 11:
-            return R.id.player_12;
-        case 12:
-            return R.id.player_13;
-        case 13:
-            return R.id.player_14;
-        case 14:
-            return R.id.player_15;
-        case 15:
-            return R.id.player_16;
-        case 16:
-            return R.id.player_17;
-        case 17:
-            return R.id.player_18;
-        case 18:
-            return R.id.player_19;
-        case 19:
-            return R.id.player_20;
-        case 20:
-            return R.id.player_21;
-        case 21:
-            return R.id.player_22;
-        case 22:
-            return R.id.player_23;
-        case 23:
-            return R.id.player_24;
-        case 24:
-            return R.id.player_25;
-        case 25:
-            return R.id.player_26;
-        case 26:
-            return R.id.player_27;
-        case 27:
-            return R.id.player_28;
-        case 28:
-            return R.id.player_29;
-        case 29:
-        default:
-            return R.id.player_30;
-        }
     }
 
     private void saveWithNewPlayerScores(final List<PlayerScore> newPlayerScores) {

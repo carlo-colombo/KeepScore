@@ -54,6 +54,56 @@ public class DialogHelper {
 
     }
 
+    /** What the user picked in the history dialog. */
+    public enum HistoryAction {
+        /** Accept the history entry that is still being batched into. */
+        CONFIRM,
+        /** Drop the last history entry. */
+        DELETE_LAST,
+        /** Add a history entry of zero. */
+        ADD_ZERO,
+    }
+
+    /**
+     * The dialog behind a long-press on a player's history (or on their score): accept the entry
+     * that is still open, delete the last entry, or add a zero entry.
+     *
+     * @param showConfirm whether the last entry can still be accepted, i.e. whether it is still
+     *            being batched into
+     * @param hasHistory whether there is a last entry to delete
+     */
+    public static void showHistoryContextDialog(final Context context, boolean showConfirm, boolean hasHistory,
+            final ResultListener<HistoryAction> resultListener) {
+
+        final List<CharSequence> items = new ArrayList<CharSequence>();
+
+        if (showConfirm) {
+            items.add(context.getString(R.string.text_confirm));
+        }
+        if (hasHistory) {
+            // can't undo last if there's no history
+            items.add(context.getString(R.string.text_undo_last));
+        }
+        items.add(context.getString(R.string.text_add_zero));
+
+        new AlertDialog.Builder(context).setCancelable(true)
+                .setItems(items.toArray(new CharSequence[items.size()]), new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        CharSequence item = items.get(which);
+                        if (item.equals(context.getString(R.string.text_confirm))) {
+                            resultListener.onResult(HistoryAction.CONFIRM);
+                        } else if (item.equals(context.getString(R.string.text_undo_last))) {
+                            resultListener.onResult(HistoryAction.DELETE_LAST);
+                        } else {
+                            resultListener.onResult(HistoryAction.ADD_ZERO);
+                        }
+                        dialog.dismiss();
+                    }
+                }).show();
+    }
+
     public static void showAdditionalDeltasDialog(boolean positive, final ResultListener<Integer> resultListener,
             final Context context) {
 
