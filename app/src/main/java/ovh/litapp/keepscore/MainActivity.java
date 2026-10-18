@@ -103,6 +103,8 @@ public class MainActivity extends AppCompatListActivity implements OnClickListen
 
     // identifies the most recent games load, so that a stale background load cannot overwrite it
     private int gamesLoadId;
+    private boolean gamesLoaded;
+    private boolean restoreCheckPending;
     
     private Handler handler = new Handler(Looper.getMainLooper());
 
@@ -178,6 +180,12 @@ public class MainActivity extends AppCompatListActivity implements OnClickListen
                     return;
                 }
                 showGames(games);
+                gamesLoaded = true;
+                // the welcome dialog may have been dismissed before the first load finished
+                if (restoreCheckPending) {
+                    restoreCheckPending = false;
+                    showLoadBackupDialogIfEmpty();
+                }
             }
 
         }.execute((Void) null);
@@ -346,8 +354,14 @@ public class MainActivity extends AppCompatListActivity implements OnClickListen
                 public void onClick(DialogInterface dialog, int which) {
                     PreferenceHelper.setBooleanPreference(
                             R.string.CONSTANT_pref_initial_message, false, MainActivity.this);
-                    
-                    showLoadBackupDialogIfEmpty();
+
+                    // Only offer to restore when the games have actually loaded; otherwise the
+                    // empty adapter during the async load would look like "no games".
+                    if (gamesLoaded) {
+                        showLoadBackupDialogIfEmpty();
+                    } else {
+                        restoreCheckPending = true;
+                    }
                 }
             })
             .show();

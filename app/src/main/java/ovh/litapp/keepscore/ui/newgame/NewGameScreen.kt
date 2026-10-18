@@ -71,6 +71,7 @@ fun NewGameScreen(
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 50.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
     ) {
         Spacer(modifier = Modifier.height(15.dp))
         Text(

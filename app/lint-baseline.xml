@@ -24,105 +24,6 @@
     </issue>
 
     <issue
-        id="ScrollViewSize"
-        message="This LinearLayout should use `android:layout_height=&quot;wrap_content&quot;`"
-        errorLine1="   android:layout_width=&quot;fill_parent&quot; android:layout_height=&quot;fill_parent&quot;"
-        errorLine2="                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout-land/new_game.xml"
-            line="22"
-            column="39"/>
-    </issue>
-
-    <issue
-        id="ApplySharedPref"
-        message="Consider using `apply()` instead; `commit` writes its data to persistent storage immediately, whereas `apply` will handle it in the background"
-        errorLine1="        editor.commit();"
-        errorLine2="               ~~~~~~~~">
-        <location
-            file="src/main/java/ovh/litapp/keepscore/helper/PreferenceHelper.java"
-            line="143"
-            column="16"/>
-    </issue>
-
-    <issue
-        id="ApplySharedPref"
-        message="Consider using `apply()` instead; `commit` writes its data to persistent storage immediately, whereas `apply` will handle it in the background"
-        errorLine1="        editor.commit();"
-        errorLine2="               ~~~~~~~~">
-        <location
-            file="src/main/java/ovh/litapp/keepscore/helper/PreferenceHelper.java"
-            line="151"
-            column="16"/>
-    </issue>
-
-    <issue
-        id="ApplySharedPref"
-        message="Consider using `apply()` instead; `commit` writes its data to persistent storage immediately, whereas `apply` will handle it in the background"
-        errorLine1="        editor.commit();"
-        errorLine2="               ~~~~~~~~">
-        <location
-            file="src/main/java/ovh/litapp/keepscore/helper/PreferenceHelper.java"
-            line="159"
-            column="16"/>
-    </issue>
-
-    <issue
-        id="ApplySharedPref"
-        message="Consider using `apply()` instead; `commit` writes its data to persistent storage immediately, whereas `apply` will handle it in the background"
-        errorLine1="        editor.commit();"
-        errorLine2="               ~~~~~~~~">
-        <location
-            file="src/main/java/ovh/litapp/keepscore/helper/PreferenceHelper.java"
-            line="166"
-            column="16"/>
-    </issue>
-
-    <issue
-        id="ApplySharedPref"
-        message="Consider using `apply()` instead; `commit` writes its data to persistent storage immediately, whereas `apply` will handle it in the background"
-        errorLine1="  metaEditor.commit();"
-        errorLine2="             ~~~~~~~~">
-        <location
-            file="src/main/java/ovh/litapp/keepscore/helper/SettingSetHelper.java"
-            line="49"
-            column="14"/>
-    </issue>
-
-    <issue
-        id="ApplySharedPref"
-        message="Consider using `apply()` instead; `commit` writes its data to persistent storage immediately, whereas `apply` will handle it in the background"
-        errorLine1="  editor.commit();"
-        errorLine2="         ~~~~~~~~">
-        <location
-            file="src/main/java/ovh/litapp/keepscore/helper/SettingSetHelper.java"
-            line="77"
-            column="10"/>
-    </issue>
-
-    <issue
-        id="ApplySharedPref"
-        message="Consider using `apply()` instead; `commit` writes its data to persistent storage immediately, whereas `apply` will handle it in the background"
-        errorLine1="  editor.commit();"
-        errorLine2="         ~~~~~~~~">
-        <location
-            file="src/main/java/ovh/litapp/keepscore/helper/SettingSetHelper.java"
-            line="99"
-            column="10"/>
-    </issue>
-
-    <issue
-        id="ApplySharedPref"
-        message="Consider using `apply()` instead; `commit` writes its data to persistent storage immediately, whereas `apply` will handle it in the background"
-        errorLine1="        editor.commit();"
-        errorLine2="               ~~~~~~~~">
-        <location
-            file="src/main/java/ovh/litapp/keepscore/SettingsActivity.java"
-            line="203"
-            column="16"/>
-    </issue>
-
-    <issue
         id="CustomViewStyleable"
         message="By convention, the custom view (`LineChartView`) and the declare-styleable (`LineChart`) should have the same name (various editor features rely on this convention)"
         errorLine1="                    R.styleable.LineChart);"
@@ -140,7 +41,7 @@
         errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/java/ovh/litapp/keepscore/helper/SdcardHelper.java"
-            line="215"
+            line="238"
             column="29"/>
     </issue>
 
@@ -499,7 +400,7 @@
         errorLine2="        ~~~~~~~~~~~~">
         <location
             file="build.gradle"
-            line="12"
+            line="13"
             column="9"/>
     </issue>
 
@@ -960,18 +861,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/AndroidManifest.xml"
-            line="26"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="RedundantLabel"
-        message="Redundant label can be removed"
-        errorLine1="            android:label=&quot;@string/CONSTANT_app_name&quot; />"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/AndroidManifest.xml"
-            line="45"
+            line="30"
             column="13"/>
     </issue>
 
@@ -983,6 +873,17 @@
         <location
             file="src/main/AndroidManifest.xml"
             line="49"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="RedundantLabel"
+        message="Redundant label can be removed"
+        errorLine1="            android:label=&quot;@string/CONSTANT_app_name&quot; />"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/AndroidManifest.xml"
+            line="53"
             column="13"/>
     </issue>
 
@@ -1026,8 +927,41 @@
         errorLine2="    ~~~~~~~~~~~~~">
         <location
             file="build.gradle"
-            line="7"
+            line="8"
             column="5"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.compose:compose-bom than 2026.06.01 is available: 2026.09.00"
+        errorLine1="composeBom = &quot;2026.06.01&quot;"
+        errorLine2="             ~~~~~~~~~~~~">
+        <location
+            file="$HOME/projects/keepscore/gradle/libs.versions.toml"
+            line="4"
+            column="14"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.activity:activity than 1.9.3 is available: 1.13.0"
+        errorLine1="activity = &quot;1.9.3&quot;"
+        errorLine2="           ~~~~~~~">
+        <location
+            file="$HOME/projects/keepscore/gradle/libs.versions.toml"
+            line="5"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.activity:activity-compose than 1.9.3 is available: 1.13.0"
+        errorLine1="activity = &quot;1.9.3&quot;"
+        errorLine2="           ~~~~~~~">
+        <location
+            file="$HOME/projects/keepscore/gradle/libs.versions.toml"
+            line="5"
+            column="12"/>
     </issue>
 
     <issue
@@ -1037,7 +971,7 @@
         errorLine2="            ~~~~~~~">
         <location
             file="$HOME/projects/keepscore/gradle/libs.versions.toml"
-            line="3"
+            line="6"
             column="13"/>
     </issue>
 
@@ -1048,7 +982,7 @@
         errorLine2="           ~~~~~~~~">
         <location
             file="$HOME/projects/keepscore/gradle/libs.versions.toml"
-            line="4"
+            line="7"
             column="12"/>
     </issue>
 
@@ -1059,7 +993,7 @@
         errorLine2="           ~~~~~~~">
         <location
             file="$HOME/projects/keepscore/gradle/libs.versions.toml"
-            line="8"
+            line="11"
             column="12"/>
     </issue>
 
@@ -1070,7 +1004,18 @@
         errorLine2="       ~~~~~~~~">
         <location
             file="$HOME/projects/keepscore/gradle/libs.versions.toml"
-            line="9"
+            line="12"
+            column="8"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.work:work-runtime than 2.10.1 is available: 2.12.0"
+        errorLine1="work = &quot;2.10.1&quot;"
+        errorLine2="       ~~~~~~~~">
+        <location
+            file="$HOME/projects/keepscore/gradle/libs.versions.toml"
+            line="19"
             column="8"/>
     </issue>
 
@@ -1081,7 +1026,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/AndroidManifest.xml"
-            line="54"
+            line="58"
             column="13"/>
     </issue>
 
@@ -1103,7 +1048,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/AndroidManifest.xml"
-            line="54"
+            line="58"
             column="13"/>
     </issue>
 
@@ -1114,7 +1059,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/AndroidManifest.xml"
-            line="59"
+            line="63"
             column="13"/>
     </issue>
 
@@ -1125,7 +1070,7 @@
         errorLine2="                                                ~~~~~~~~~~~~~">
         <location
             file="src/main/java/ovh/litapp/keepscore/HistoryActivity.java"
-            line="216"
+            line="219"
             column="49"/>
     </issue>
 
@@ -1202,7 +1147,7 @@
         errorLine2="                                                 ^">
         <location
             file="src/main/java/ovh/litapp/keepscore/GameActivity.java"
-            line="385"
+            line="404"
             column="50"/>
     </issue>
 
@@ -4256,7 +4201,7 @@
         errorLine2="            ^">
         <location
             file="src/main/java/ovh/litapp/keepscore/GameActivity.java"
-            line="504"
+            line="523"
             column="13"/>
     </issue>
 
@@ -4267,7 +4212,18 @@
         errorLine2="        ^">
         <location
             file="src/main/java/ovh/litapp/keepscore/GameActivity.java"
-            line="867"
+            line="847"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="StaticFieldLeak"
+        message="This `AsyncTask` class should be static or leaks might occur (anonymous android.os.AsyncTask)"
+        errorLine1="        new AsyncTask&lt;Void, Void, List&lt;GameSummary>>() {"
+        errorLine2="        ^">
+        <location
+            file="src/main/java/ovh/litapp/keepscore/MainActivity.java"
+            line="168"
             column="9"/>
     </issue>
 
@@ -4278,7 +4234,7 @@
         errorLine2="        ^">
         <location
             file="src/main/java/ovh/litapp/keepscore/MainActivity.java"
-            line="422"
+            line="471"
             column="9"/>
     </issue>
 
@@ -4289,7 +4245,7 @@
         errorLine2="        ^">
         <location
             file="src/main/java/ovh/litapp/keepscore/MainActivity.java"
-            line="600"
+            line="649"
             column="9"/>
     </issue>
 
@@ -4300,7 +4256,7 @@
         errorLine2="        ^">
         <location
             file="src/main/java/ovh/litapp/keepscore/MainActivity.java"
-            line="684"
+            line="733"
             column="9"/>
     </issue>
 
@@ -4311,7 +4267,7 @@
         errorLine2="        ^">
         <location
             file="src/main/java/ovh/litapp/keepscore/MainActivity.java"
-            line="761"
+            line="810"
             column="9"/>
     </issue>
 
@@ -4322,7 +4278,7 @@
         errorLine2="        ^">
         <location
             file="src/main/java/ovh/litapp/keepscore/MainActivity.java"
-            line="969"
+            line="1021"
             column="9"/>
     </issue>
 
@@ -4333,7 +4289,7 @@
         errorLine2="        ^">
         <location
             file="src/main/java/ovh/litapp/keepscore/MainActivity.java"
-            line="1045"
+            line="1097"
             column="9"/>
     </issue>
 
@@ -4344,7 +4300,7 @@
         errorLine2="        ^">
         <location
             file="src/main/java/ovh/litapp/keepscore/MainActivity.java"
-            line="1094"
+            line="1146"
             column="9"/>
     </issue>
 
@@ -4355,7 +4311,7 @@
         errorLine2="                        ^">
         <location
             file="src/main/java/ovh/litapp/keepscore/MainActivity.java"
-            line="1295"
+            line="1347"
             column="25"/>
     </issue>
 
@@ -4366,7 +4322,7 @@
         errorLine2="        ^">
         <location
             file="src/main/java/ovh/litapp/keepscore/NamePlayersActivity.java"
-            line="153"
+            line="156"
             column="9"/>
     </issue>
 
@@ -5275,94 +5231,6 @@
             file="src/main/res/layout/load_game.xml"
             line="72"
             column="14"/>
-    </issue>
-
-    <issue
-        id="ButtonStyle"
-        message="Buttons in button bars should be borderless; use `style=&quot;?android:attr/buttonBarButtonStyle&quot;` (and `?android:attr/buttonBarStyle` on the parent)"
-        errorLine1="     &lt;Button android:id=&quot;@+id/button_2_players&quot; android:text=&quot;@string/CONSTANT_button_2_players&quot;"
-        errorLine2="      ~~~~~~">
-        <location
-            file="src/main/res/layout-land/new_game.xml"
-            line="33"
-            column="7"/>
-    </issue>
-
-    <issue
-        id="ButtonStyle"
-        message="Buttons in button bars should be borderless; use `style=&quot;?android:attr/buttonBarButtonStyle&quot;` (and `?android:attr/buttonBarStyle` on the parent)"
-        errorLine1="     &lt;Button android:id=&quot;@+id/button_3_players&quot; android:text=&quot;@string/CONSTANT_button_3_players&quot;"
-        errorLine2="      ~~~~~~">
-        <location
-            file="src/main/res/layout-land/new_game.xml"
-            line="36"
-            column="7"/>
-    </issue>
-
-    <issue
-        id="ButtonStyle"
-        message="Buttons in button bars should be borderless; use `style=&quot;?android:attr/buttonBarButtonStyle&quot;` (and `?android:attr/buttonBarStyle` on the parent)"
-        errorLine1="     &lt;Button android:id=&quot;@+id/button_4_players&quot; android:text=&quot;@string/CONSTANT_button_4_players&quot;"
-        errorLine2="      ~~~~~~">
-        <location
-            file="src/main/res/layout-land/new_game.xml"
-            line="42"
-            column="7"/>
-    </issue>
-
-    <issue
-        id="ButtonStyle"
-        message="Buttons in button bars should be borderless; use `style=&quot;?android:attr/buttonBarButtonStyle&quot;` (and `?android:attr/buttonBarStyle` on the parent)"
-        errorLine1="     &lt;Button android:id=&quot;@+id/button_5_players&quot; android:text=&quot;@string/CONSTANT_button_5_players&quot;"
-        errorLine2="      ~~~~~~">
-        <location
-            file="src/main/res/layout-land/new_game.xml"
-            line="45"
-            column="7"/>
-    </issue>
-
-    <issue
-        id="ButtonStyle"
-        message="Buttons in button bars should be borderless; use `style=&quot;?android:attr/buttonBarButtonStyle&quot;` (and `?android:attr/buttonBarStyle` on the parent)"
-        errorLine1="     &lt;Button android:id=&quot;@+id/button_6_players&quot; android:text=&quot;@string/CONSTANT_button_6_players&quot;"
-        errorLine2="      ~~~~~~">
-        <location
-            file="src/main/res/layout-land/new_game.xml"
-            line="52"
-            column="7"/>
-    </issue>
-
-    <issue
-        id="ButtonStyle"
-        message="Buttons in button bars should be borderless; use `style=&quot;?android:attr/buttonBarButtonStyle&quot;` (and `?android:attr/buttonBarStyle` on the parent)"
-        errorLine1="     &lt;Button android:id=&quot;@+id/button_7_players&quot; android:text=&quot;@string/CONSTANT_button_7_players&quot;"
-        errorLine2="      ~~~~~~">
-        <location
-            file="src/main/res/layout-land/new_game.xml"
-            line="55"
-            column="7"/>
-    </issue>
-
-    <issue
-        id="ButtonStyle"
-        message="Buttons in button bars should be borderless; use `style=&quot;?android:attr/buttonBarButtonStyle&quot;` (and `?android:attr/buttonBarStyle` on the parent)"
-        errorLine1="     &lt;Button android:id=&quot;@+id/button_8_players&quot; android:text=&quot;@string/CONSTANT_button_8_players&quot;"
-        errorLine2="      ~~~~~~">
-        <location
-            file="src/main/res/layout-land/new_game.xml"
-            line="62"
-            column="7"/>
-    </issue>
-
-    <issue
-        id="ButtonStyle"
-        message="Buttons in button bars should be borderless; use `style=&quot;?android:attr/buttonBarButtonStyle&quot;` (and `?android:attr/buttonBarStyle` on the parent)"
-        errorLine1="     &lt;Button android:id=&quot;@+id/button_more_players&quot; android:text=&quot;@string/button_more&quot;"
-        errorLine2="      ~~~~~~">
-        <location
-            file="src/main/res/layout-land/new_game.xml"
-            line="65"
-            column="7"/>
     </issue>
 
     <issue
