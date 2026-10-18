@@ -256,6 +256,9 @@ jobs:
         uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3
         with:
           tag_name: ${{ steps.bump_and_tag.outputs.new_tag }}
+          # CI builds are prereleases so they never displace a manually-promoted
+          # "Latest" release.
+          prerelease: true
           body: |
             KeepScore is free software, licensed under the WTFPL v2.
             Copyright (C) Nolan Lawson and contributors.
