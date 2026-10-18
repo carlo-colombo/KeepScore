@@ -15,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import ovh.litapp.keepscore.R;
 import ovh.litapp.keepscore.db.Game;
@@ -79,8 +80,8 @@ public abstract class AbstractHistoryChartFragment extends Fragment {
         // http://stackoverflow.com/questions/9642990/is-it-possible-to-grey-out-not-just-disable-a-menuitem-in-android
         // for details.
         //
-        Drawable zoomInIcon = getResources().getDrawable(R.drawable.action_zoom_in);
-        Drawable zoomOutIcon = getResources().getDrawable(R.drawable.action_zoom_out);
+        Drawable zoomInIcon = ContextCompat.getDrawable(getContext(), R.drawable.action_zoom_in);
+        Drawable zoomOutIcon = ContextCompat.getDrawable(getContext(), R.drawable.action_zoom_out);
         
         if (atMin) {
             zoomOutIcon.mutate().setColorFilter(Color.GRAY, PorterDuff.Mode.SRC_IN);

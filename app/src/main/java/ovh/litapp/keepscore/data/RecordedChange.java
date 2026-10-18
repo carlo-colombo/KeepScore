@@ -14,7 +14,7 @@ public class RecordedChange {
 	private int playerNumber;
 	
 	public RecordedChange(int playerNumber, Type type, Delta delta) {
-	    this.playerNumber = playerNumber;
+		this.playerNumber = playerNumber;
 		this.type = type;
 		this.delta = delta;
 	}

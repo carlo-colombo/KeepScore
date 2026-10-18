@@ -53,7 +53,7 @@ public class SimpleTwoLineAdapter extends ArrayAdapter<Entry<?, ?>> {
 	@Override
 	public View getView(int position, View view, ViewGroup parent) {
 		if (view == null) {
-			view = LayoutInflater.from(getContext()).inflate(R.layout.spinner_dropdown_two_lines, null, false);
+			view = LayoutInflater.from(getContext()).inflate(R.layout.spinner_dropdown_two_lines, parent, false);
 		}
 		
 		TextView text1 = (TextView) view.findViewById(android.R.id.text1);

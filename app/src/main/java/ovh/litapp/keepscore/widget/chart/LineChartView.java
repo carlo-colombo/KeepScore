@@ -171,10 +171,10 @@ public class LineChartView extends View {
 		mainPaint.setColor(getColor(R.color.chart_main));
 		mainPaint.setTextSize(fontSize);
 		mainPaint.setTypeface(Typeface.MONOSPACE);
-        xAxisLabelPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        xAxisLabelPaint.setColor(getColor(R.color.chart_main));
-        xAxisLabelPaint.setTextSize(xAxisLabelFontSize);
-        xAxisLabelPaint.setTypeface(Typeface.MONOSPACE);
+		xAxisLabelPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+		xAxisLabelPaint.setColor(getColor(R.color.chart_main));
+		xAxisLabelPaint.setTextSize(xAxisLabelFontSize);
+		xAxisLabelPaint.setTypeface(Typeface.MONOSPACE);
         
 		secondaryPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		secondaryPaint.setColor(getColor(R.color.chart_secondary));

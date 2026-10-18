@@ -235,7 +235,7 @@ public class SdcardHelper {
                 entries.add(CSV_DATE_FORMAT.format(new Date(game.getDateSaved())));
                 // play time, using duration format HH:MM:SS
                 long duration = (game.getDateSaved() - game.getDateStarted()) / 1000;
-                entries.add(String.format("%02d:%02d:%02d", duration / 3600, (duration % 3600) / 60, duration % 60));
+                entries.add(String.format(Locale.US, "%02d:%02d:%02d", duration / 3600, (duration % 3600) / 60, duration % 60));
                 // num players
                 entries.add(Integer.toString(game.getPlayerScores().size()));
                 // num rounds

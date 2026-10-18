@@ -56,7 +56,6 @@
     <string name="CONSTANT_pref_orientation_default">@string/CONSTANT_pref_orientation_choice_landscape</string>
     <string name="CONSTANT_pref_orientation_choice_landscape">landscape</string>
     <string name="CONSTANT_pref_orientation_choice_portrait">portrait</string>
-    <string name="CONSTANT_pref_player_names">PlayerNames</string>
     <string name="CONSTANT_pref_reset">reset</string>
     <string name="CONSTANT_pref_save_settings">save_settings</string>
     <string name="CONSTANT_pref_show_colors">show_colors</string>
@@ -74,7 +73,6 @@
     
     <!-- translateable strings-->
     
-    <string name="button_actions">Actions&#8230;</string>
     <string name="button_history_time_chart">Timeline</string>
     <string name="button_history_round_chart">Round by round</string>
     <string name="button_history_round_table">Round breakdown</string>
@@ -98,12 +96,10 @@
     <string name="menu_add_player">Add Player</string>
     <string name="menu_export_to_spreadsheet">Export Spreadsheet</string>
     <string name="menu_history">History</string>
-    <string name="menu_home">Home</string>
     <string name="menu_load_backup">Restore</string>
     <string name="menu_randomize">Shuffle</string>
     <string name="menu_redo">Redo</string>
     <string name="menu_rematch">Rematch</string>
-    <string name="menu_reset_scores">Reset</string>
     <string name="menu_save_backup">Backup</string>
     <string name="menu_share">Share</string>
     <string name="menu_settings">Settings</string>
@@ -171,10 +167,6 @@
     <string name="text_enter_saved_settings_name">Enter name, e.g. \'cribbage\'</string>
     <string name="text_format_rounds">%d Rounds</string>
     <string name="text_format_rounds_singular">%d Round</string>
-    <plurals name="text_game_count">
-        <item quantity="one">%d game</item>
-        <item quantity="other">%d games</item>
-    </plurals>
     <string name="text_game_name_separator">-</string>
     <string name="text_game_will_be_deleted">The game will be deleted.</string>
     <string name="text_games_will_be_deleted">%d games will be deleted.</string>
@@ -188,7 +180,6 @@ Duplicates: %4$d</string>
     <string name="text_num_players">Number of players</string>
     <string name="text_player">Player</string>
     <string name="text_player_names">Player names (optional)</string>
-    <string name="text_players">%s players</string>
     <string name="text_reset_confirm">All settings will be reset.</string>
     <string name="text_restore_initial">You seem to have existing KeepScore games. Restore from a backup?</string>
     <string name="text_round_total">Round #%1$d Total: %2$d</string>
@@ -252,7 +243,6 @@ LibreOffice, or Google Docs.</string>
     <string name="title_choose_color">Choose a Colour</string>
     <string name="title_confirm">Confirm</string>
     <string name="title_confirm_delete">Confirm Delete</string>
-    <string name="title_confirm_reset">Confirm Reset</string>
     <string name="title_edit_game_name">Edit Game Name</string>
     <string name="title_last_month">The Past Month</string>
     <string name="title_last_week">The Past Week</string>

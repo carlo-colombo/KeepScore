@@ -6,6 +6,8 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.StateListDrawable;
 
+import androidx.core.content.ContextCompat;
+
 import ovh.litapp.keepscore.R;
 
 /**
@@ -44,7 +46,7 @@ public abstract class PlayerColor {
         }
 
         public Drawable toBackgroundDrawable(Context context) {
-            return context.getResources().getDrawable(backgroundResId);
+            return ContextCompat.getDrawable(context, backgroundResId);
         }
         
         public int toColor(Context context) {
@@ -121,9 +123,9 @@ public abstract class PlayerColor {
             // build up a nice dynamic state list drawable with rounded corners
             // as an aside, the selected state is not necessary, because it's never shown in the 4x4 grid
             
-            GradientDrawable normal = (GradientDrawable)context.getResources().getDrawable(
+            GradientDrawable normal = (GradientDrawable) ContextCompat.getDrawable(context,
                     R.drawable.player_color_template).mutate();
-            GradientDrawable pressed = (GradientDrawable)context.getResources().getDrawable(
+            GradientDrawable pressed = (GradientDrawable) ContextCompat.getDrawable(context,
                     R.drawable.player_color_template_pressed).mutate();
             
             normal.setColor(color);

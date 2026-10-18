@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="button_actions">Actions&#8230;</string>
     <string name="button_customize">Personnaliser&#8230;</string>
     <string name="button_deselect_all">Tout désélectionner</string>
     <string name="button_new_game">Nouvelle partie</string>
@@ -18,12 +17,10 @@
     <string name="menu_add_player">Ajouter un joueur</string>
     <string name="menu_export_to_spreadsheet">Exporter comme tableau</string>
     <string name="menu_history">Historique</string>
-    <string name="menu_home">Accueil</string>
     <string name="menu_load_backup">Importer</string>
     <string name="menu_randomize">Mélanger</string>
     <string name="menu_redo">Refaire</string>
     <string name="menu_rematch">Nouvelle partie</string>
-    <string name="menu_reset_scores">Réinitialiser</string>
     <string name="menu_save_backup">Exporter</string>
     <string name="menu_share">Partager</string>
     <string name="menu_settings">Paramètres</string>
@@ -84,10 +81,6 @@
     <string name="text_enter_saved_settings_name">Entrer un nom, e.g. \'carcassonne\'</string>
     <string name="text_format_rounds">%d manches</string>
     <string name="text_format_rounds_singular">%d manche</string>
-    <plurals name="text_game_count">
-        <item quantity="one">%d jeu</item>
-        <item quantity="other">%d jeux</item>
-    </plurals>
     <string name="text_game_name_separator">-</string>
     <string name="text_game_will_be_deleted">La partie va être supprimée.</string>
     <string name="text_games_will_be_deleted">%d parties enregistrées vont être supprimées.</string>
@@ -101,7 +94,6 @@ Doublets: %4$d</string>
     <string name="text_num_players">Nombre de joueurs</string>
     <string name="text_player">Joueur</string>
     <string name="text_player_names">Noms des joueurs (optionnel)</string>
-    <string name="text_players">%s joueurs</string>
     <string name="text_reset_confirm">Tous les paramètres seront réinitialisés.</string>
     <string name="text_restore_initial">Il semble que vous avez déjà des parties KeepScore. Voulez-vous importer depuis un backup? </string>
     <string  name="text_round_total">Manche #%1$d (%2$d points marqués)</string>
@@ -163,7 +155,6 @@ https://play.google.com/store/apps/details?id=ovh.litapp.keepscore .</string>
     <string name="title_choose_backup">Importer depuis un fichier</string>
     <string name="title_confirm">Confirmer</string>
     <string name="title_confirm_delete">Confirmer la suppression</string>
-    <string name="title_confirm_reset">Confirmer la réinitialisation</string>
     <string name="title_edit_game_name">Editer le libellé du jeu</string>
     <string name="title_last_month">Le mois passé</string>
     <string name="title_last_week">La semaine passée</string>

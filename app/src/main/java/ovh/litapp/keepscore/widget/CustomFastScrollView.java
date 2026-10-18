@@ -1,7 +1,6 @@
 package ovh.litapp.keepscore.widget;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -22,6 +21,8 @@ import android.widget.FrameLayout;
 import android.widget.HeaderViewListAdapter;
 import android.widget.ListView;
 import android.widget.SectionIndexer;
+
+import androidx.core.content.ContextCompat;
 
 import ovh.litapp.keepscore.R;
 
@@ -122,20 +123,20 @@ public class CustomFastScrollView extends FrameLayout
                     R.styleable.CustomFastScrollView_overlayTextSize, 0);
             mOverlayTextColor = typedArray.getColor(R.styleable.CustomFastScrollView_overlayTextColor, 0);
 
+            typedArray.recycle();
         }
 
         // Get both the scrollbar states drawables
-        final Resources res = context.getResources();
         StateListDrawable thumbDrawable = new StateListDrawable();
         //This for pressed true 
         thumbDrawable.addState(STATE_PRESSED,
-                res.getDrawable(THUMB_DRAWABLE_PRESSED));
+                ContextCompat.getDrawable(context, THUMB_DRAWABLE_PRESSED));
         //This for pressed false
         thumbDrawable.addState(STATE_UNPRESSED,
-                res.getDrawable(THUMB_DRAWABLE));
+                ContextCompat.getDrawable(context, THUMB_DRAWABLE));
         useThumbDrawable(thumbDrawable);
 
-        mOverlayDrawable = res.getDrawable(OVERLAY_DRAWABLE);
+        mOverlayDrawable = ContextCompat.getDrawable(context, OVERLAY_DRAWABLE);
 
         mScrollCompleted = true;
         setWillNotDraw(false);

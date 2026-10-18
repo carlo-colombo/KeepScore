@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>  
-    <string name="button_actions">Azioni&#8230;</string>
     <string name="button_customize">Personalizza&#8230;</string>
     <string name="button_deselect_all">Deseleziona tutto</string>
     <string name="button_new_game">Nuova partita</string>
@@ -18,12 +17,10 @@
     <string name="menu_add_player">Aggiungi giocatore</string>
     <string name="menu_export_to_spreadsheet">Esporta foglio di calcolo</string>
     <string name="menu_history">Cronologia</string>
-    <string name="menu_home">Home</string>
     <string name="menu_load_backup">Ripristina</string>
     <string name="menu_randomize">Casuale</string>
     <string name="menu_redo">Ripeti</string>
     <string name="menu_rematch">Rigioca</string>
-    <string name="menu_reset_scores">Reset</string>
     <string name="menu_save_backup">Backup</string>
     <string name="menu_share">Condividi</string>
     <string name="menu_settings">Impostazioni</string>
@@ -83,10 +80,6 @@
     <string name="text_enter_saved_settings_name">Inserisci nome, p. es. \'burraco\'.</string>
     <string name="text_format_rounds">%d manche</string>
     <string name="text_format_rounds_singular">%d manche</string>
-    <plurals name="text_game_count">
-        <item quantity="one">%d partita</item>
-        <item quantity="other">%d partite</item>
-    </plurals>
     <string name="text_game_name_separator">-</string>
     <string name="text_game_will_be_deleted">La partita sarà eliminata.</string>
     <string name="text_games_will_be_deleted">Saranno eliminate %d partite.</string>
@@ -100,7 +93,6 @@ Duplicate: %4$d</string>
     <string name="text_num_players">Numero giocatori</string>
     <string name="text_player">Giocatore</string>
     <string name="text_player_names">Nomi giocatori (facoltativo)</string>
-    <string name="text_players">%s giocatori</string>
     <string name="text_reset_confirm">Saranno ripristinate le impostazioni iniziali.</string>
     <string name="text_restore_initial">Sembra che tu abbia delle partite di KeepScore salvate. Vuoi ripristinarle da un backup?</string>
     <string  name="text_round_total">Manche #%1$d. Totale: %2$d</string>
@@ -163,7 +155,6 @@ LibreOffice, o Google Docs.</string>
     <string name="title_choose_backup">Ripristina partite da file</string>
     <string name="title_confirm">Conferma</string>
     <string name="title_confirm_delete">Conferma eliminazione</string>
-    <string name="title_confirm_reset">Conferma ripristino</string>
     <string name="title_edit_game_name">Modifica nome partita</string>
     <string name="title_last_month">Ultimo mese</string>
     <string name="title_last_week">Ultima settimana</string>

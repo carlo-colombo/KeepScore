@@ -51,8 +51,10 @@ public class TextWithDeleteAdapter extends ArrayAdapter<String> {
 	@Override
 	public View getView(final int position, View view, ViewGroup parent) {
 		
-		LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		view = inflater.inflate(R.layout.text_with_delete, parent, false);
+		if (view == null) {
+			LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			view = inflater.inflate(R.layout.text_with_delete, parent, false);
+		}
 		
 		final String textItem = getItem(position);
 		TextView textView = (TextView) view.findViewById(android.R.id.text1);

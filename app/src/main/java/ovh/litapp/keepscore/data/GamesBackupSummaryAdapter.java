@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import android.content.Context;
 import android.util.DisplayMetrics;
@@ -39,7 +40,7 @@ public class GamesBackupSummaryAdapter extends ArrayAdapter<GamesBackupSummary> 
     public GamesBackupSummaryAdapter(Context context, DisplayMetrics displayMetrics, List<GamesBackupSummary> objects) {
         super(context, LAYOUT_RES_ID, new ArrayList<GamesBackupSummary>(objects));
 
-        dateFormat = new SimpleDateFormat(context.getString(R.string.text_backup_date_format));
+        dateFormat = new SimpleDateFormat(context.getString(R.string.text_backup_date_format), Locale.getDefault());
         gameCountMinWidth = calculateGameCountMinWidth(context, displayMetrics, objects);
     }
 

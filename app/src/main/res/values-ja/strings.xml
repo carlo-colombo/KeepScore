@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="button_actions">行動&#8230;</string>
     <string name="button_customize">カスタマイズ&#8230;</string>
     <string name="button_deselect_all">全て解除</string>
     <string name="button_new_game">新しいゲーム</string>
@@ -18,12 +17,10 @@
     <string name="menu_add_player">新しい選手</string>
     <string name="menu_export_to_spreadsheet">表計算エクスポート</string>
     <string name="menu_history">歴史</string>
-    <string name="menu_home">ホーム</string>
     <string name="menu_load_backup">インポート</string>
     <string name="menu_randomize">シャッフル</string>
     <string name="menu_redo">やり直す</string>
     <string name="menu_rematch">再戦</string>
-    <string name="menu_reset_scores">リセット</string>
     <string name="menu_save_backup">バックアップ</string>
     <string name="menu_share">送信</string>
     <string name="menu_settings">設定</string>
@@ -83,9 +80,6 @@
     <string name="text_enter_saved_settings_name">名を入力、たとえ\'カタン\'</string>
     <string name="text_format_rounds">%dラウンド</string>
     <string name="text_format_rounds_singular">%dラウンド</string>
-    <plurals name="text_game_count">
-        <item quantity="other">ゲームは%d</item>
-    </plurals>
     <string name="text_game_name_separator">：</string>
     <string name="text_game_will_be_deleted">ゲームは削除されます。</string>
     <string name="text_games_will_be_deleted">%dのゲームは削除されます。</string>
@@ -99,7 +93,6 @@
     <string name="text_num_players">選手の数</string>
     <string name="text_player">選手</string>
     <string name="text_player_names">選手の名 （随意）</string>
-    <string name="text_players">選手%s人</string>
     <string name="text_reset_confirm">全部の設定はリセットします。</string>
     <string name="text_restore_initial">KeepScoreのゲームはもうあるらしいです。バックアップをインポートしましょうか？</string>
     <string  name="text_round_total">ロウンド%1$dのトータル：%2$d</string>
@@ -153,7 +146,6 @@ https://play.google.com/store/apps/details?id=ovh.litapp.keepscore 。</string>
     <string name="title_choose_backup">バックアップをインポート</string>
     <string name="title_confirm">確認</string>
     <string name="title_confirm_delete">削除確認</string>
-    <string name="title_confirm_reset">リセットを確認</string>
     <string name="title_edit_game_name">名をエディと</string>
     <string name="title_last_month">一ヶ月前から</string>
     <string name="title_last_week">一週間前から</string>

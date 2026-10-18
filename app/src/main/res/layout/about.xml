@@ -24,6 +24,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="top"
+                android:contentDescription="@null"
                 android:paddingTop="6dip"
                 android:paddingRight="10dip"
                 android:src="@drawable/icon" />
@@ -39,6 +40,7 @@
         <ImageView 
             android:layout_width="fill_parent"
             android:layout_height="1dip"
+            android:contentDescription="@null"
             android:visibility="visible"
             android:scaleType="fitXY"
             android:gravity="fill_horizontal"
