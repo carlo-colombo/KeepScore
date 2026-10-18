@@ -92,7 +92,6 @@ public class HistoryActivity extends AppCompatActivity implements ActionBar.TabL
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         
         viewPager = (ViewPager) findViewById(R.id.pager);
-        viewPager.setAdapter(appSectionsPagerAdapter);
         viewPager.addOnPageChangeListener(this);
         
         // home button goes back
@@ -108,6 +107,11 @@ public class HistoryActivity extends AppCompatActivity implements ActionBar.TabL
             }
             actionBar.addTab(actionBar.newTab().setText(tab.getTitleResId()).setTag(tab).setTabListener(this));
         }
+
+        // Set the adapter only after the tabs exist: the adapter's item count is
+        // actionBar.getTabCount(), and ViewPager throws if that count changes
+        // without notifyDataSetChanged.
+        viewPager.setAdapter(appSectionsPagerAdapter);
 
         log.d("intent is %s", getIntent());
         log.d("game is %s", game);
