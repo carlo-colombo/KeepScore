@@ -202,6 +202,19 @@ jobs:
           keystore="$(mktemp "${RUNNER_TEMP:-/tmp}/keepscore-keystore.XXXXXX")"
           trap 'rm -f "$keystore" "$aligned_apk"' EXIT
 
+          "$build_tools/zipalign" -f -p 4 "$unsigned_apk" "$aligned_apk"
+
+          sign_release() {
+            "$build_tools/apksigner" sign \
+              --ks "$keystore" \
+              --ks-key-alias "$1" \
+              --ks-pass "pass:$2" \
+              --key-pass "pass:$2" \
+              --out "$signed_apk" \
+              "$aligned_apk"
+          }
+
+          signed_with_release_key=false
           if [ "$SIGNING_AVAILABLE" = "true" ]; then
             # Tolerate how the secret was encoded: strip whitespace and any
             # non-base64 characters, accept URL-safe base64, and re-pad.
@@ -210,43 +223,27 @@ jobs:
               2) cleaned="${cleaned}==" ;;
               3) cleaned="${cleaned}=" ;;
             esac
-            if ! printf '%s' "$cleaned" | base64 -d > "$keystore" 2>/dev/null || [ ! -s "$keystore" ]; then
-              echo "::error::SIGNING_KEY is not valid base64. Encode the keystore with: base64 -w0 keystore.jks"
-              exit 1
-            fi
-            key_alias="$ALIAS"
-            key_pass="$KEY_STORE_PASSWORD"
-            # Diagnostic only: some keystore/key-password combinations that
-            # apksigner accepts make `keytool -list -alias` fail, so warn rather
-            # than block the release. apksigner below is the authority.
-            if ! keytool -list -keystore "$keystore" -storepass "$key_pass" >/tmp/keytool.out 2>&1; then
-              echo "::warning::keytool could not list the decoded keystore; apksigner will decide"
-              cat /tmp/keytool.out || true
-            fi
-          else
-            key_alias="androiddebugkey"
-            key_pass="android"
-            # keytool refuses to open the empty file mktemp created, so remove it first.
-            rm -f "$keystore"
-            if ! keytool -genkeypair -keystore "$keystore" -storepass "$key_pass" -keypass "$key_pass" \
-              -alias "$key_alias" -dname "CN=KeepScore CI, O=KeepScore, C=US" \
-              -keyalg RSA -keysize 2048 -validity 10000; then
-              echo "::error::keytool failed to generate the throwaway signing key"
-              exit 1
+            if printf '%s' "$cleaned" | base64 -d > "$keystore" 2>/dev/null && [ -s "$keystore" ] \
+               && sign_release "$ALIAS" "$KEY_STORE_PASSWORD"; then
+              signed_with_release_key=true
+            else
+              echo "::warning::Could not sign with the configured keystore (bad base64, alias, or password); falling back to a throwaway key so the release still publishes. Re-check SIGNING_KEY / ALIAS / KEY_STORE_PASSWORD."
             fi
           fi
 
-          "$build_tools/zipalign" -f -p 4 "$unsigned_apk" "$aligned_apk"
-          "$build_tools/apksigner" sign \
-            --ks "$keystore" \
-            --ks-key-alias "$key_alias" \
-            --ks-pass "pass:$key_pass" \
-            --key-pass "pass:$key_pass" \
-            --out "$signed_apk" \
-            "$aligned_apk"
+          if [ "$signed_with_release_key" != "true" ]; then
+            # keytool refuses to open the empty file mktemp created, so remove it first.
+            rm -f "$keystore"
+            keytool -genkeypair -keystore "$keystore" -storepass android -keypass android \
+              -alias androiddebugkey -dname "CN=KeepScore CI, O=KeepScore, C=US" \
+              -keyalg RSA -keysize 2048 -validity 10000
+            sign_release androiddebugkey android
+          fi
+
           "$build_tools/apksigner" verify --verbose "$signed_apk"
 
           echo "signed_apk=$signed_apk" >> "$GITHUB_OUTPUT"
+          echo "release_key=$signed_with_release_key" >> "$GITHUB_OUTPUT"
 
       - name: Rename release
         run: mv "${{ steps.sign_app.outputs.signed_apk }}" "keepscore-${{ steps.version.outputs.new_tag }}.apk"
@@ -277,7 +274,7 @@ jobs:
             ${{ steps.bump_and_tag.outputs.new_tag }}:
             https://github.com/carlo-colombo/KeepScore/tree/${{ steps.bump_and_tag.outputs.new_tag }}
 
-            ${{ steps.signing.outputs.available == 'true' && 'This APK is signed with the project release key.' || 'This APK is signed with a throwaway key (no release signing secrets are configured), so it is for testing only and will not install over an earlier build.' }}
+            ${{ steps.sign_app.outputs.release_key == 'true' && 'This APK is signed with the project release key.' || 'This APK is signed with a throwaway key (the configured signing key could not be used), so it is for testing only and will not install over an earlier build.' }}
           files: |
             keepscore-${{ steps.version.outputs.new_tag }}.apk
             keepscore-${{ steps.version.outputs.new_tag }}.apk.sha256
