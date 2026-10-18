@@ -3,12 +3,12 @@ plugins {
 }
 
 android {
-    namespace = 'com.nolanlawson.keepscore'
+    namespace = 'ovh.litapp.keepscore'
     compileSdk 36
 
     defaultConfig {
-        applicationId "com.nolanlawson.keepscore"
-        minSdk 26
+        applicationId "ovh.litapp.keepscore"
+        minSdk 34
         targetSdk 36
         // CI passes -Pandroid.versionName/-Pandroid.versionCode derived from the release tag.
         versionCode = (findProperty("android.versionCode") ?: "28").toString().toInteger()

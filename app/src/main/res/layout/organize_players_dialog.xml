@@ -6,7 +6,7 @@
     android:orientation="vertical" 
     android:gravity="center_horizontal">
 
-    <com.nolanlawson.keepscore.widget.dragndrop.DragSortListView
+    <ovh.litapp.keepscore.widget.dragndrop.DragSortListView
         android:id="@android:id/list"
         android:layout_width="wrap_content"
         android:layout_height="0px"

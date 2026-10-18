@@ -44,57 +44,57 @@
 
     <PreferenceCategory android:title="@string/pref_cat_config" />
 
-    <com.nolanlawson.keepscore.widget.IntegerEditTextPreference
+    <ovh.litapp.keepscore.widget.IntegerEditTextPreference
         android:defaultValue="@string/CONSTANT_pref_initial_score_default"
         android:key="@string/CONSTANT_pref_initial_score"
         android:persistent="true"
         android:title="@string/pref_initial_score_name" />
-    <com.nolanlawson.keepscore.widget.IntegerEditTextPreference
+    <ovh.litapp.keepscore.widget.IntegerEditTextPreference
         android:defaultValue="@string/CONSTANT_pref_plus_button_default"
         android:key="@string/CONSTANT_pref_plus_button"
         android:persistent="true"
         android:title="@string/pref_plus_button_name" />
-    <com.nolanlawson.keepscore.widget.IntegerEditTextPreference
+    <ovh.litapp.keepscore.widget.IntegerEditTextPreference
         android:defaultValue="@string/CONSTANT_pref_minus_button_default"
         android:key="@string/CONSTANT_pref_minus_button"
         android:persistent="true"
         android:title="@string/pref_minus_button_name" />    
-    <com.nolanlawson.keepscore.widget.IntegerEditTextPreference
+    <ovh.litapp.keepscore.widget.IntegerEditTextPreference
         android:defaultValue="@string/CONSTANT_pref_button_1_default"
         android:key="@string/CONSTANT_pref_button_1"
         android:persistent="true"
         android:title="@string/pref_button_1_name" />
-    <com.nolanlawson.keepscore.widget.IntegerEditTextPreference
+    <ovh.litapp.keepscore.widget.IntegerEditTextPreference
         android:defaultValue="@string/CONSTANT_pref_button_2_default"
         android:key="@string/CONSTANT_pref_button_2"
         android:persistent="true"
         android:title="@string/pref_button_2_name" />
-    <com.nolanlawson.keepscore.widget.IntegerEditTextPreference
+    <ovh.litapp.keepscore.widget.IntegerEditTextPreference
         android:defaultValue="@string/CONSTANT_pref_button_3_default"
         android:key="@string/CONSTANT_pref_button_3"
         android:persistent="true"
         android:title="@string/pref_button_3_name" />
-    <com.nolanlawson.keepscore.widget.IntegerEditTextPreference
+    <ovh.litapp.keepscore.widget.IntegerEditTextPreference
         android:defaultValue="@string/CONSTANT_pref_button_4_default"
         android:key="@string/CONSTANT_pref_button_4"
         android:persistent="true"
         android:title="@string/pref_button_4_name" />
-    <com.nolanlawson.keepscore.widget.IntegerEditTextPreference
+    <ovh.litapp.keepscore.widget.IntegerEditTextPreference
         android:defaultValue="@string/CONSTANT_pref_2p_button_1_default"
         android:key="@string/CONSTANT_pref_2p_button_1"
         android:persistent="true"
         android:title="@string/pref_2p_button_1_name" />
-    <com.nolanlawson.keepscore.widget.IntegerEditTextPreference
+    <ovh.litapp.keepscore.widget.IntegerEditTextPreference
         android:defaultValue="@string/CONSTANT_pref_2p_button_2_default"
         android:key="@string/CONSTANT_pref_2p_button_2"
         android:persistent="true"
         android:title="@string/pref_2p_button_2_name" />
-    <com.nolanlawson.keepscore.widget.IntegerEditTextPreference
+    <ovh.litapp.keepscore.widget.IntegerEditTextPreference
         android:defaultValue="@string/CONSTANT_pref_2p_button_3_default"
         android:key="@string/CONSTANT_pref_2p_button_3"
         android:persistent="true"
         android:title="@string/pref_2p_button_3_name" />
-    <com.nolanlawson.keepscore.widget.IntegerEditTextPreference
+    <ovh.litapp.keepscore.widget.IntegerEditTextPreference
         android:defaultValue="@string/CONSTANT_pref_2p_button_4_default"
         android:key="@string/CONSTANT_pref_2p_button_4"
         android:persistent="true"
@@ -102,7 +102,7 @@
 
     <PreferenceCategory android:title="@string/pref_cat_advanced" />
 
-    <com.nolanlawson.keepscore.widget.NonnegativeIntegerEditTextPreference
+    <ovh.litapp.keepscore.widget.NonnegativeIntegerEditTextPreference
         android:defaultValue="@string/CONSTANT_pref_update_delay_default"
         android:key="@string/CONSTANT_pref_update_delay"
         android:persistent="true"

@@ -159,7 +159,7 @@ Duplicates: %4$d</string>
     <string name="text_share_mail_body">מצורף קובץ גיבוי ל- KeepScore.\
 \n\nבכדי לייבא אותו ל- KeepScore, פתח את הקובץ המצורף באמצעות תוכנת הדוא"ל האהובה עליך.\
 \n\nאם זה לא מצליח, שמור את הקובץ ל- /sdcard/keepscore/backups ובחר \"שחזר\" מהתפריט הראשי של KeepScore.
-\n\nבכדי להשיג את KeepScore, בקר ב- https://play.google.com/store/apps/details?id=com.nolanlawson.keepscore .</string>
+\n\nבכדי להשיג את KeepScore, בקר ב- https://play.google.com/store/apps/details?id=ovh.litapp.keepscore .</string>
     
     <string name="text_undo_last">מחק תוצאה אחרונה</string>
     <string name="text_welcome_title">ברוך הבא ל- KeepScore!</string>

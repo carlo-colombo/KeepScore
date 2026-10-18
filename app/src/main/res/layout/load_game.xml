@@ -10,7 +10,7 @@
         android:layout_height="fill_parent" 
         android:orientation="vertical">
 
-        <com.nolanlawson.keepscore.widget.CustomFastScrollView
+        <ovh.litapp.keepscore.widget.CustomFastScrollView
             android:id="@+id/fast_scroll_view"
             android:layout_width="fill_parent"
             android:layout_height="0px"
@@ -20,7 +20,7 @@
             fastscroll:overlayTextColor="@color/emphasis"
             fastscroll:overlayWidth="@dimen/fast_scroll_overlay_width" >
 
-            <com.nolanlawson.keepscore.widget.ExceptionCatchingListView
+            <ovh.litapp.keepscore.widget.ExceptionCatchingListView
                 android:id="@android:id/list"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
@@ -34,7 +34,7 @@
                 android:padding="3dp"
                 android:text="@string/text_no_saved_games"
                 android:textSize="18sp" />
-        </com.nolanlawson.keepscore.widget.CustomFastScrollView>
+        </ovh.litapp.keepscore.widget.CustomFastScrollView>
 
         <View
             android:id="@+id/view_spacer"

@@ -145,7 +145,7 @@ LibreOffice, o Google Docs.</string>
     <string name="text_share_mail_body">In allegato un file di backup di KeepScore.\
 \n\nPer importarlo in KeepScore basta che lo apri con la tua app email preferita.\
 \n\nSe non funziona salva il file in /sdcard/keepscore/backups e scegli \"Ripristina\" dal menu principale di KeepScore.
-\n\nPer scaricare KeepScore visita https://play.google.com/store/apps/details?id=com.nolanlawson.keepscore</string>
+\n\nPer scaricare KeepScore visita https://play.google.com/store/apps/details?id=ovh.litapp.keepscore</string>
 
     <string name="text_undo_last">Cancella ultimo punteggio</string>
     <string name="text_welcome_title">Benvenuti in KeepScore!</string>

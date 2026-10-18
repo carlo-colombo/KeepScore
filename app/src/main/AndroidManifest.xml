@@ -6,6 +6,16 @@
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
 
+    <!-- Package visibility (targetSdk 30+): the app checks for a mail app able to
+         receive a share, and for the optional donate companion. -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.SEND" />
+            <data android:mimeType="*/*" />
+        </intent>
+        <package android:name="com.nolanlawson.keepscore.donate" />
+    </queries>
+
     <application
         android:icon="@drawable/icon"
         android:label="@string/CONSTANT_app_name"
@@ -72,6 +82,16 @@
             android:name=".PeriodicAutomaticBackupService"
             android:exported="false"
             android:label="PeriodicAutomaticBackupService" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
 
 </manifest>

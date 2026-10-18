@@ -147,7 +147,7 @@ LibreOffice oder Google Docs.</string>
     <string name="text_share_mail_body">Im Anhang befindet sich ein KeepScore Backup.\
 \n\nUm es in KeepScore zu importieren, öffne den Anhang mit deinem Mailprogramm.\
 \n\nWenn das nicht funktioniert, speichere die Datei unter /sdcard/keepscore/backups und wähle \"Backup laden\" im KeepScore Hauptmenü.\
-\n\nKeepScore findet du unter https://play.google.com/store/apps/details?id=com.nolanlawson.keepscore .</string>
+\n\nKeepScore findet du unter https://play.google.com/store/apps/details?id=ovh.litapp.keepscore .</string>
     <string name="text_undo_last">Letzten Eintrag löschen</string>
     <string name="text_welcome_title">Willkommen in KeepScore!</string>
     <string name="text_welcome_message" ><![CDATA[

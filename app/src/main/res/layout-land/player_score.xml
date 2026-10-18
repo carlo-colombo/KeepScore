@@ -13,7 +13,7 @@
         android:inflatedId="@+id/onscreen_delta_buttons_stub"
         android:layout="@layout/onscreen_delta_buttons" />
 
-    <com.nolanlawson.keepscore.widget.AutofitTextView
+    <ovh.litapp.keepscore.widget.AutofitTextView
         android:id="@+id/text_history"
         android:layout_width="@dimen/history_width"
         android:layout_height="fill_parent"
@@ -46,7 +46,7 @@
         android:layout_height="wrap_content"
         android:layout_toLeftOf="@+id/player_score_divider_1" >
 
-        <com.nolanlawson.keepscore.widget.AutoResizeTextView
+        <ovh.litapp.keepscore.widget.AutoResizeTextView
             android:id="@+id/text_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -76,7 +76,7 @@
             android:paddingLeft="5dp"
             >
 
-            <com.nolanlawson.keepscore.widget.PlayerColorView
+            <ovh.litapp.keepscore.widget.PlayerColorView
                 android:id="@+id/player_color_image"
                 android:layout_width="10dp"
                 android:layout_height="fill_parent"
@@ -140,7 +140,7 @@
             android:typeface="monospace" />
     </LinearLayout>
 
-    <com.nolanlawson.keepscore.widget.AutoResizeTextView
+    <ovh.litapp.keepscore.widget.AutoResizeTextView
         android:id="@+id/text_score"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"

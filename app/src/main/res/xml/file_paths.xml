@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Paths the FileProvider may expose for sharing backups and spreadsheets. -->
+<paths>
+    <external-path name="keepscore_external" path="keepscore/" />
+    <external-files-path name="keepscore_external_files" path="." />
+    <cache-path name="keepscore_cache" path="." />
+    <files-path name="keepscore_files" path="." />
+</paths>

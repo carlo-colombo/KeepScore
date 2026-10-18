@@ -16,8 +16,8 @@
 -keep public class * extends android.preference.Preference
 
 # Custom views inflated from XML layouts.
--keep public class com.nolanlawson.keepscore.widget.*
--keep public class com.nolanlawson.keepscore.fragment.*
+-keep public class ovh.litapp.keepscore.widget.*
+-keep public class ovh.litapp.keepscore.fragment.*
 
 -keepclasseswithmembers class * {
     public <init>(android.content.Context, android.util.AttributeSet);

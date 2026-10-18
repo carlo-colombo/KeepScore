@@ -9,6 +9,6 @@ LibreOffice, or Google Docs.</string>
     <string name="text_share_mail_body">Attached is a KeepScore backup file.\
 \n\nTo import it into KeepScore, simply open the attachment using your favorite email app.\
 \n\nIf that doesn\'t work, save the file to /sdcard/keepscore/backups and choose \"Restore\" from the KeepScore main  menu.
-\n\nTo get KeepScore, visit https://play.google.com/store/apps/details?id=com.nolanlawson.keepscore .</string>
+\n\nTo get KeepScore, visit https://play.google.com/store/apps/details?id=ovh.litapp.keepscore .</string>
     <string name="title_choose_color">Choose a Color</string>
 </resources>

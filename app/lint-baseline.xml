@@ -40,7 +40,7 @@
         errorLine1="        editor.commit();"
         errorLine2="               ~~~~~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/helper/PreferenceHelper.java"
+            file="src/main/java/ovh/litapp/keepscore/helper/PreferenceHelper.java"
             line="143"
             column="16"/>
     </issue>
@@ -51,7 +51,7 @@
         errorLine1="        editor.commit();"
         errorLine2="               ~~~~~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/helper/PreferenceHelper.java"
+            file="src/main/java/ovh/litapp/keepscore/helper/PreferenceHelper.java"
             line="151"
             column="16"/>
     </issue>
@@ -62,7 +62,7 @@
         errorLine1="        editor.commit();"
         errorLine2="               ~~~~~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/helper/PreferenceHelper.java"
+            file="src/main/java/ovh/litapp/keepscore/helper/PreferenceHelper.java"
             line="159"
             column="16"/>
     </issue>
@@ -73,7 +73,7 @@
         errorLine1="        editor.commit();"
         errorLine2="               ~~~~~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/helper/PreferenceHelper.java"
+            file="src/main/java/ovh/litapp/keepscore/helper/PreferenceHelper.java"
             line="166"
             column="16"/>
     </issue>
@@ -84,7 +84,7 @@
         errorLine1="  metaEditor.commit();"
         errorLine2="             ~~~~~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/helper/SettingSetHelper.java"
+            file="src/main/java/ovh/litapp/keepscore/helper/SettingSetHelper.java"
             line="49"
             column="14"/>
     </issue>
@@ -95,7 +95,7 @@
         errorLine1="  editor.commit();"
         errorLine2="         ~~~~~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/helper/SettingSetHelper.java"
+            file="src/main/java/ovh/litapp/keepscore/helper/SettingSetHelper.java"
             line="77"
             column="10"/>
     </issue>
@@ -106,7 +106,7 @@
         errorLine1="  editor.commit();"
         errorLine2="         ~~~~~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/helper/SettingSetHelper.java"
+            file="src/main/java/ovh/litapp/keepscore/helper/SettingSetHelper.java"
             line="99"
             column="10"/>
     </issue>
@@ -117,7 +117,7 @@
         errorLine1="        editor.commit();"
         errorLine2="               ~~~~~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/SettingsActivity.java"
+            file="src/main/java/ovh/litapp/keepscore/SettingsActivity.java"
             line="203"
             column="16"/>
     </issue>
@@ -128,7 +128,7 @@
         errorLine1="                    R.styleable.LineChart);"
         errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/widget/chart/LineChartView.java"
+            file="src/main/java/ovh/litapp/keepscore/widget/chart/LineChartView.java"
             line="165"
             column="21"/>
     </issue>
@@ -139,7 +139,7 @@
         errorLine1="                entries.add(String.format(&quot;%02d:%02d:%02d&quot;, duration / 3600, (duration % 3600) / 60, duration % 60));"
         errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/helper/SdcardHelper.java"
+            file="src/main/java/ovh/litapp/keepscore/helper/SdcardHelper.java"
             line="215"
             column="29"/>
     </issue>
@@ -509,7 +509,7 @@
         errorLine1="        dateFormat = new SimpleDateFormat(context.getString(R.string.text_backup_date_format));"
         errorLine2="                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/data/GamesBackupSummaryAdapter.java"
+            file="src/main/java/ovh/litapp/keepscore/data/GamesBackupSummaryAdapter.java"
             line="42"
             column="22"/>
     </issue>
@@ -520,11 +520,11 @@
         errorLine1="   mMaxScrollSpeed = a.getFloat("
         errorLine2="~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/widget/dragndrop/DragSortListView.java"
+            file="src/main/java/ovh/litapp/keepscore/widget/dragndrop/DragSortListView.java"
             line="184"
             column="1"/>
         <location
-            file="src/main/java/com/nolanlawson/keepscore/widget/dragndrop/DragSortListView.java"
+            file="src/main/java/ovh/litapp/keepscore/widget/dragndrop/DragSortListView.java"
             line="182"
             column="1"
             message="Previous line indentation here"/>
@@ -536,11 +536,11 @@
         errorLine1="  mDragScroller = new DragScroller();"
         errorLine2="~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/widget/dragndrop/DragSortListView.java"
+            file="src/main/java/ovh/litapp/keepscore/widget/dragndrop/DragSortListView.java"
             line="192"
             column="1"/>
         <location
-            file="src/main/java/com/nolanlawson/keepscore/widget/dragndrop/DragSortListView.java"
+            file="src/main/java/ovh/litapp/keepscore/widget/dragndrop/DragSortListView.java"
             line="164"
             column="1"
             message="Previous line indentation here"/>
@@ -552,11 +552,11 @@
         errorLine1="    child = mAdapter.getView(position, null, v);"
         errorLine2="~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/widget/dragndrop/DragSortListView.java"
+            file="src/main/java/ovh/litapp/keepscore/widget/dragndrop/DragSortListView.java"
             line="274"
             column="1"/>
         <location
-            file="src/main/java/com/nolanlawson/keepscore/widget/dragndrop/DragSortListView.java"
+            file="src/main/java/ovh/litapp/keepscore/widget/dragndrop/DragSortListView.java"
             line="273"
             column="1"
             message="Previous line indentation here"/>
@@ -568,11 +568,11 @@
         errorLine1="     mExpDragPos = itemnum;"
         errorLine2="~~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/widget/dragndrop/DragSortListView.java"
+            file="src/main/java/ovh/litapp/keepscore/widget/dragndrop/DragSortListView.java"
             line="696"
             column="1"/>
         <location
-            file="src/main/java/com/nolanlawson/keepscore/widget/dragndrop/DragSortListView.java"
+            file="src/main/java/ovh/litapp/keepscore/widget/dragndrop/DragSortListView.java"
             line="694"
             column="1"
             message="Previous line indentation here"/>
@@ -584,11 +584,11 @@
         errorLine1="  mUpScrollStartY = (int) mUpScrollStartYF;"
         errorLine2="~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/widget/dragndrop/DragSortListView.java"
+            file="src/main/java/ovh/litapp/keepscore/widget/dragndrop/DragSortListView.java"
             line="768"
             column="1"/>
         <location
-            file="src/main/java/com/nolanlawson/keepscore/widget/dragndrop/DragSortListView.java"
+            file="src/main/java/ovh/litapp/keepscore/widget/dragndrop/DragSortListView.java"
             line="766"
             column="1"
             message="Previous line indentation here"/>
@@ -600,11 +600,11 @@
         errorLine1="   return v.getMeasuredHeight();"
         errorLine2="~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/widget/dragndrop/DragSortListView.java"
+            file="src/main/java/ovh/litapp/keepscore/widget/dragndrop/DragSortListView.java"
             line="794"
             column="1"/>
         <location
-            file="src/main/java/com/nolanlawson/keepscore/widget/dragndrop/DragSortListView.java"
+            file="src/main/java/ovh/litapp/keepscore/widget/dragndrop/DragSortListView.java"
             line="793"
             column="1"
             message="Previous line indentation here"/>
@@ -616,11 +616,11 @@
         errorLine1="  mHeaderHeights.add(getViewHeight(v));"
         errorLine2="~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/widget/dragndrop/DragSortListView.java"
+            file="src/main/java/ovh/litapp/keepscore/widget/dragndrop/DragSortListView.java"
             line="803"
             column="1"/>
         <location
-            file="src/main/java/com/nolanlawson/keepscore/widget/dragndrop/DragSortListView.java"
+            file="src/main/java/ovh/litapp/keepscore/widget/dragndrop/DragSortListView.java"
             line="801"
             column="1"
             message="Previous line indentation here"/>
@@ -632,11 +632,11 @@
         errorLine1="  mFooterHeights.add(getViewHeight(v));"
         errorLine2="~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/widget/dragndrop/DragSortListView.java"
+            file="src/main/java/ovh/litapp/keepscore/widget/dragndrop/DragSortListView.java"
             line="813"
             column="1"/>
         <location
-            file="src/main/java/com/nolanlawson/keepscore/widget/dragndrop/DragSortListView.java"
+            file="src/main/java/ovh/litapp/keepscore/widget/dragndrop/DragSortListView.java"
             line="811"
             column="1"
             message="Previous line indentation here"/>
@@ -648,11 +648,11 @@
         errorLine1="        post(this);"
         errorLine2="        ~~~~~~~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/widget/dragndrop/DragSortListView.java"
+            file="src/main/java/ovh/litapp/keepscore/widget/dragndrop/DragSortListView.java"
             line="1448"
             column="9"/>
         <location
-            file="src/main/java/com/nolanlawson/keepscore/widget/dragndrop/DragSortListView.java"
+            file="src/main/java/ovh/litapp/keepscore/widget/dragndrop/DragSortListView.java"
             line="1447"
             column="5"
             message="Previous statement here"/>
@@ -664,11 +664,11 @@
         errorLine1="   if (!mFile.exists()) {"
         errorLine2="~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/widget/dragndrop/DragSortListView.java"
+            file="src/main/java/ovh/litapp/keepscore/widget/dragndrop/DragSortListView.java"
             line="1564"
             column="1"/>
         <location
-            file="src/main/java/com/nolanlawson/keepscore/widget/dragndrop/DragSortListView.java"
+            file="src/main/java/ovh/litapp/keepscore/widget/dragndrop/DragSortListView.java"
             line="1562"
             column="1"
             message="Previous line indentation here"/>
@@ -680,11 +680,11 @@
         errorLine1="   playerScores.add(playerScore);"
         errorLine2="~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/db/Game.java"
+            file="src/main/java/ovh/litapp/keepscore/db/Game.java"
             line="36"
             column="1"/>
         <location
-            file="src/main/java/com/nolanlawson/keepscore/db/Game.java"
+            file="src/main/java/ovh/litapp/keepscore/db/Game.java"
             line="33"
             column="1"
             message="Previous line indentation here"/>
@@ -696,11 +696,11 @@
         errorLine1="  secondaryPaint = new Paint(Paint.ANTI_ALIAS_FLAG);"
         errorLine2="~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/widget/chart/LineChartView.java"
+            file="src/main/java/ovh/litapp/keepscore/widget/chart/LineChartView.java"
             line="179"
             column="1"/>
         <location
-            file="src/main/java/com/nolanlawson/keepscore/widget/chart/LineChartView.java"
+            file="src/main/java/ovh/litapp/keepscore/widget/chart/LineChartView.java"
             line="177"
             column="1"
             message="Previous line indentation here"/>
@@ -712,11 +712,11 @@
         errorLine1="  this.type = type;"
         errorLine2=" ~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/data/RecordedChange.java"
+            file="src/main/java/ovh/litapp/keepscore/data/RecordedChange.java"
             line="18"
             column="2"/>
         <location
-            file="src/main/java/com/nolanlawson/keepscore/data/RecordedChange.java"
+            file="src/main/java/ovh/litapp/keepscore/data/RecordedChange.java"
             line="17"
             column="2"
             message="Previous line indentation here"/>
@@ -937,7 +937,7 @@
         errorLine1="        final View view = inflater.inflate(R.layout.color_chooser_dialog, null, false);"
         errorLine2="                                                                          ~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/helper/DialogHelper.java"
+            file="src/main/java/ovh/litapp/keepscore/helper/DialogHelper.java"
             line="309"
             column="75"/>
     </issue>
@@ -948,20 +948,9 @@
         errorLine1="   view = LayoutInflater.from(getContext()).inflate(R.layout.spinner_dropdown_two_lines, null, false);"
         errorLine2="                                                                                         ~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/data/SimpleTwoLineAdapter.java"
+            file="src/main/java/ovh/litapp/keepscore/data/SimpleTwoLineAdapter.java"
             line="56"
             column="90"/>
-    </issue>
-
-    <issue
-        id="QueryPermissionsNeeded"
-        message="Consider adding a `&lt;queries>` declaration to your manifest when calling this method; see https://g.co/dev/packagevisibility for details"
-        errorLine1="        List&lt;ResolveInfo> resolveInfos = context.getPackageManager().queryIntentActivities(intent, 0);"
-        errorLine2="                                                                     ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/nolanlawson/keepscore/helper/MailHelper.java"
-            line="35"
-            column="70"/>
     </issue>
 
     <issue
@@ -971,7 +960,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/AndroidManifest.xml"
-            line="16"
+            line="26"
             column="13"/>
     </issue>
 
@@ -982,7 +971,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/AndroidManifest.xml"
-            line="35"
+            line="45"
             column="13"/>
     </issue>
 
@@ -993,7 +982,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/AndroidManifest.xml"
-            line="39"
+            line="49"
             column="13"/>
     </issue>
 
@@ -1003,7 +992,7 @@
         errorLine1="public class AutoResizeTextView extends TextView {"
         errorLine2="                                        ~~~~~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/widget/AutoResizeTextView.java"
+            file="src/main/java/ovh/litapp/keepscore/widget/AutoResizeTextView.java"
             line="22"
             column="41"/>
     </issue>
@@ -1014,7 +1003,7 @@
         errorLine1="public class AutofitTextView extends TextView {"
         errorLine2="                                     ~~~~~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/widget/AutofitTextView.java"
+            file="src/main/java/ovh/litapp/keepscore/widget/AutofitTextView.java"
             line="20"
             column="38"/>
     </issue>
@@ -1025,7 +1014,7 @@
         errorLine1="public class SquareImage extends ImageView {"
         errorLine2="                                 ~~~~~~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/widget/SquareImage.java"
+            file="src/main/java/ovh/litapp/keepscore/widget/SquareImage.java"
             line="17"
             column="34"/>
     </issue>
@@ -1092,7 +1081,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/AndroidManifest.xml"
-            line="44"
+            line="54"
             column="13"/>
     </issue>
 
@@ -1114,7 +1103,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/AndroidManifest.xml"
-            line="44"
+            line="54"
             column="13"/>
     </issue>
 
@@ -1125,7 +1114,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/AndroidManifest.xml"
-            line="49"
+            line="59"
             column="13"/>
     </issue>
 
@@ -1135,7 +1124,7 @@
         errorLine1="            int actionBarResId = getResources().getIdentifier(&quot;action_bar&quot;, &quot;id&quot;, &quot;android&quot;);"
         errorLine2="                                                ~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/HistoryActivity.java"
+            file="src/main/java/ovh/litapp/keepscore/HistoryActivity.java"
             line="216"
             column="49"/>
     </issue>
@@ -1157,7 +1146,7 @@
         errorLine1="        Drawable zoomInIcon = getResources().getDrawable(R.drawable.action_zoom_in);"
         errorLine2="                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/fragment/AbstractHistoryChartFragment.java"
+            file="src/main/java/ovh/litapp/keepscore/fragment/AbstractHistoryChartFragment.java"
             line="82"
             column="31"/>
     </issue>
@@ -1168,7 +1157,7 @@
         errorLine1="        Drawable zoomOutIcon = getResources().getDrawable(R.drawable.action_zoom_out);"
         errorLine2="                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/fragment/AbstractHistoryChartFragment.java"
+            file="src/main/java/ovh/litapp/keepscore/fragment/AbstractHistoryChartFragment.java"
             line="83"
             column="32"/>
     </issue>
@@ -1179,7 +1168,7 @@
         errorLine1="                res.getDrawable(THUMB_DRAWABLE_PRESSED));"
         errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/widget/CustomFastScrollView.java"
+            file="src/main/java/ovh/litapp/keepscore/widget/CustomFastScrollView.java"
             line="132"
             column="17"/>
     </issue>
@@ -1190,7 +1179,7 @@
         errorLine1="                res.getDrawable(THUMB_DRAWABLE));"
         errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/widget/CustomFastScrollView.java"
+            file="src/main/java/ovh/litapp/keepscore/widget/CustomFastScrollView.java"
             line="135"
             column="17"/>
     </issue>
@@ -1201,7 +1190,7 @@
         errorLine1="        mOverlayDrawable = res.getDrawable(OVERLAY_DRAWABLE);"
         errorLine2="                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/widget/CustomFastScrollView.java"
+            file="src/main/java/ovh/litapp/keepscore/widget/CustomFastScrollView.java"
             line="138"
             column="28"/>
     </issue>
@@ -1212,8 +1201,8 @@
         errorLine1="                    button.setBackgroundDrawable(getResources().getDrawable("
         errorLine2="                                                 ^">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/GameActivity.java"
-            line="391"
+            file="src/main/java/ovh/litapp/keepscore/GameActivity.java"
+            line="385"
             column="50"/>
     </issue>
 
@@ -1223,7 +1212,7 @@
         errorLine1="            return context.getResources().getDrawable(backgroundResId);"
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/helper/PlayerColor.java"
+            file="src/main/java/ovh/litapp/keepscore/helper/PlayerColor.java"
             line="47"
             column="20"/>
     </issue>
@@ -1234,7 +1223,7 @@
         errorLine1="            GradientDrawable normal = (GradientDrawable)context.getResources().getDrawable("
         errorLine2="                                                        ^">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/helper/PlayerColor.java"
+            file="src/main/java/ovh/litapp/keepscore/helper/PlayerColor.java"
             line="124"
             column="57"/>
     </issue>
@@ -1245,7 +1234,7 @@
         errorLine1="            GradientDrawable pressed = (GradientDrawable)context.getResources().getDrawable("
         errorLine2="                                                         ^">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/helper/PlayerColor.java"
+            file="src/main/java/ovh/litapp/keepscore/helper/PlayerColor.java"
             line="126"
             column="58"/>
     </issue>
@@ -1256,7 +1245,7 @@
         errorLine1="            borderDrawable = context.getResources().getDrawable(borderDrawableResId);"
         errorLine2="                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/widget/PlayerView.java"
+            file="src/main/java/ovh/litapp/keepscore/widget/PlayerView.java"
             line="330"
             column="30"/>
     </issue>
@@ -1715,7 +1704,7 @@
     <issue
         id="MissingTranslation"
         message="&quot;CONSTANT_link_donate&quot; is not translated in &quot;de&quot; (German), &quot;ja&quot; (Japanese), &quot;en&quot; (English), &quot;it&quot; (Italian), &quot;fr&quot; (French), &quot;he&quot; (Hebrew), &quot;iw&quot; (Hebrew)"
-        errorLine1="    &lt;string name=&quot;CONSTANT_link_donate&quot;>market://details?id=com.nolanlawson.keepscore.donate&lt;/string>"
+        errorLine1="    &lt;string name=&quot;CONSTANT_link_donate&quot;>market://details?id=ovh.litapp.keepscore.donate&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
@@ -4221,23 +4210,12 @@
     </issue>
 
     <issue
-        id="UnspecifiedImmutableFlag"
-        message="Missing `PendingIntent` mutability flag"
-        errorLine1="                PendingIntent.FLAG_CANCEL_CURRENT);"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/nolanlawson/keepscore/GameActivity.java"
-            line="202"
-            column="17"/>
-    </issue>
-
-    <issue
         id="DrawAllocation"
         message="Avoid object allocations during draw/layout operations (preallocate and reuse instead)"
         errorLine1="                SpannableStringBuilder builder = new SpannableStringBuilder()"
         errorLine2="                                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/widget/AutofitTextView.java"
+            file="src/main/java/ovh/litapp/keepscore/widget/AutofitTextView.java"
             line="78"
             column="50"/>
     </issue>
@@ -4248,20 +4226,9 @@
         errorLine1="                builder.setSpan(new TopDownGradientSpan(startColor, endColor, startY, endY), "
         errorLine2="                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/widget/AutofitTextView.java"
+            file="src/main/java/ovh/litapp/keepscore/widget/AutofitTextView.java"
             line="81"
             column="33"/>
-    </issue>
-
-    <issue
-        id="WakelockTimeout"
-        message="Provide a timeout when requesting a wakelock with `PowerManager.Wakelock.acquire(long timeout)`. This will ensure the OS will cleanup any wakelocks that last longer than you intend, and will save your user&apos;s battery."
-        errorLine1="            wakeLock.acquire();"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/nolanlawson/keepscore/GameActivity.java"
-            line="176"
-            column="13"/>
     </issue>
 
     <issue
@@ -4270,14 +4237,14 @@
         errorLine1="            TypedArray typedArray = context.obtainStyledAttributes(attrs,"
         errorLine2="                                            ~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/widget/CustomFastScrollView.java"
+            file="src/main/java/ovh/litapp/keepscore/widget/CustomFastScrollView.java"
             line="115"
             column="45"/>
     </issue>
 
     <issue
         id="ObsoleteSdkInt"
-        message="This folder configuration (`v11`) is unnecessary; `minSdkVersion` is 26. Merge all the resources in this folder into `values`.">
+        message="This folder configuration (`v11`) is unnecessary; `minSdkVersion` is 34. Merge all the resources in this folder into `values`.">
         <location
             file="src/main/res/values-v11"/>
     </issue>
@@ -4288,8 +4255,8 @@
         errorLine1="            new AsyncTask&lt;Void, Void, Void>() {"
         errorLine2="            ^">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/GameActivity.java"
-            line="510"
+            file="src/main/java/ovh/litapp/keepscore/GameActivity.java"
+            line="504"
             column="13"/>
     </issue>
 
@@ -4299,8 +4266,8 @@
         errorLine1="        new AsyncTask&lt;Void, Void, Void>() {"
         errorLine2="        ^">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/GameActivity.java"
-            line="873"
+            file="src/main/java/ovh/litapp/keepscore/GameActivity.java"
+            line="867"
             column="9"/>
     </issue>
 
@@ -4310,8 +4277,8 @@
         errorLine1="        new AsyncTask&lt;Void, Void, String>(){"
         errorLine2="        ^">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/MainActivity.java"
-            line="414"
+            file="src/main/java/ovh/litapp/keepscore/MainActivity.java"
+            line="422"
             column="9"/>
     </issue>
 
@@ -4321,8 +4288,8 @@
         errorLine1="        new AsyncTask&lt;Void, Void, Boolean>() {"
         errorLine2="        ^">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/MainActivity.java"
-            line="592"
+            file="src/main/java/ovh/litapp/keepscore/MainActivity.java"
+            line="600"
             column="9"/>
     </issue>
 
@@ -4332,8 +4299,8 @@
         errorLine1="        new AsyncTask&lt;Void, Void, List&lt;GamesBackupSummary>>(){"
         errorLine2="        ^">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/MainActivity.java"
-            line="676"
+            file="src/main/java/ovh/litapp/keepscore/MainActivity.java"
+            line="684"
             column="9"/>
     </issue>
 
@@ -4343,8 +4310,8 @@
         errorLine1="        new AsyncTask&lt;Void, Void, LoadGamesBackupResult>() {"
         errorLine2="        ^">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/MainActivity.java"
-            line="753"
+            file="src/main/java/ovh/litapp/keepscore/MainActivity.java"
+            line="761"
             column="9"/>
     </issue>
 
@@ -4354,8 +4321,8 @@
         errorLine1="        new AsyncTask&lt;Void, Void, Void>() {"
         errorLine2="        ^">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/MainActivity.java"
-            line="961"
+            file="src/main/java/ovh/litapp/keepscore/MainActivity.java"
+            line="969"
             column="9"/>
     </issue>
 
@@ -4365,8 +4332,8 @@
         errorLine1="        new AsyncTask&lt;Void, Void, Game>() {"
         errorLine2="        ^">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/MainActivity.java"
-            line="1037"
+            file="src/main/java/ovh/litapp/keepscore/MainActivity.java"
+            line="1045"
             column="9"/>
     </issue>
 
@@ -4376,8 +4343,8 @@
         errorLine1="        new AsyncTask&lt;Void, Void, Void>() {"
         errorLine2="        ^">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/MainActivity.java"
-            line="1086"
+            file="src/main/java/ovh/litapp/keepscore/MainActivity.java"
+            line="1094"
             column="9"/>
     </issue>
 
@@ -4387,8 +4354,8 @@
         errorLine1="                        new AsyncTask&lt;Void, Void, Void>() {"
         errorLine2="                        ^">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/MainActivity.java"
-            line="1287"
+            file="src/main/java/ovh/litapp/keepscore/MainActivity.java"
+            line="1295"
             column="25"/>
     </issue>
 
@@ -4398,18 +4365,18 @@
         errorLine1="        new AsyncTask&lt;Void, Void, List&lt;String>>() {"
         errorLine2="        ^">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/NamePlayersActivity.java"
+            file="src/main/java/ovh/litapp/keepscore/NamePlayersActivity.java"
             line="153"
             column="9"/>
     </issue>
 
     <issue
         id="StaticFieldLeak"
-        message="This `AsyncTask` class should be static or leaks might occur (com.nolanlawson.keepscore.widget.PlayerView.IncrementDeltaAsyncTask)"
+        message="This `AsyncTask` class should be static or leaks might occur (ovh.litapp.keepscore.widget.PlayerView.IncrementDeltaAsyncTask)"
         errorLine1="    private class IncrementDeltaAsyncTask extends AsyncTask&lt;Void, Void, Void> {"
         errorLine2="                  ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/widget/PlayerView.java"
+            file="src/main/java/ovh/litapp/keepscore/widget/PlayerView.java"
             line="851"
             column="19"/>
     </issue>
@@ -4442,7 +4409,7 @@
         errorLine1="  view = inflater.inflate(R.layout.text_with_delete, parent, false);"
         errorLine2="         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/data/TextWithDeleteAdapter.java"
+            file="src/main/java/ovh/litapp/keepscore/data/TextWithDeleteAdapter.java"
             line="55"
             column="10"/>
     </issue>
@@ -5437,7 +5404,7 @@
         errorLine1="    public boolean onTouchEvent(MotionEvent me) {"
         errorLine2="                   ~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/widget/CustomFastScrollView.java"
+            file="src/main/java/ovh/litapp/keepscore/widget/CustomFastScrollView.java"
             line="388"
             column="20"/>
     </issue>
@@ -5448,7 +5415,7 @@
         errorLine1=" public boolean onTouchEvent(MotionEvent ev) {"
         errorLine2="                ~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/widget/dragndrop/DragSortListView.java"
+            file="src/main/java/ovh/litapp/keepscore/widget/dragndrop/DragSortListView.java"
             line="1012"
             column="17"/>
     </issue>
@@ -5602,7 +5569,7 @@
         errorLine1="        textView2.setText(Long.toString(historyItem.getRunningTotal()));"
         errorLine2="                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/fragment/AbstractHistoryTableFragment.java"
+            file="src/main/java/ovh/litapp/keepscore/fragment/AbstractHistoryTableFragment.java"
             line="99"
             column="27"/>
     </issue>
@@ -5613,7 +5580,7 @@
         errorLine1="                editText.setText(Integer.toString(editTextValue + delta));"
         errorLine2="                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/helper/DialogHelper.java"
+            file="src/main/java/ovh/litapp/keepscore/helper/DialogHelper.java"
             line="201"
             column="34"/>
     </issue>
@@ -5624,7 +5591,7 @@
         errorLine1="        numberTextView.setText(&apos;#&apos; + Integer.toString(playerScore.getPlayerNumber() + 1));"
         errorLine2="                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/data/EditablePlayerAdapter.java"
+            file="src/main/java/ovh/litapp/keepscore/data/EditablePlayerAdapter.java"
             line="81"
             column="32"/>
     </issue>
@@ -5635,7 +5602,7 @@
         errorLine1="        numberTextView.setText(&apos;#&apos; + Integer.toString(playerScore.getPlayerNumber() + 1));"
         errorLine2="                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/data/EditablePlayerAdapter.java"
+            file="src/main/java/ovh/litapp/keepscore/data/EditablePlayerAdapter.java"
             line="81"
             column="38"/>
     </issue>
@@ -5646,7 +5613,7 @@
         errorLine1="        scoreTextView.setText(Long.toString(playerScore.getScore()));"
         errorLine2="                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/data/EditablePlayerAdapter.java"
+            file="src/main/java/ovh/litapp/keepscore/data/EditablePlayerAdapter.java"
             line="82"
             column="31"/>
     </issue>
@@ -5657,7 +5624,7 @@
         errorLine1="        viewWrapper.getNumGamesTextView().setText(Integer.toString(summary.getGameCount()));"
         errorLine2="                                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/data/GamesBackupSummaryAdapter.java"
+            file="src/main/java/ovh/litapp/keepscore/data/GamesBackupSummaryAdapter.java"
             line="92"
             column="51"/>
     </issue>
@@ -5668,7 +5635,7 @@
         errorLine1="        textView1.setText(Integer.toString(sum));"
         errorLine2="                          ~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/fragment/HistoryRoundTableFragment.java"
+            file="src/main/java/ovh/litapp/keepscore/fragment/HistoryRoundTableFragment.java"
             line="148"
             column="27"/>
     </issue>
@@ -5679,7 +5646,7 @@
         errorLine1="        scoreTextView.setText(Long.toString(playerScore.getScore()));"
         errorLine2="                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/widget/PlayerView.java"
+            file="src/main/java/ovh/litapp/keepscore/widget/PlayerView.java"
             line="340"
             column="31"/>
     </issue>
@@ -5690,7 +5657,7 @@
         errorLine1="        numPlayersTextView.setText(Integer.toString(game.getPlayerNames().size()));"
         errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/data/SavedGameAdapter.java"
+            file="src/main/java/ovh/litapp/keepscore/data/SavedGameAdapter.java"
             line="92"
             column="36"/>
     </issue>
@@ -6273,7 +6240,7 @@
         errorLine1="  mWindowParams.gravity = Gravity.TOP | Gravity.LEFT;"
         errorLine2="                                                ~~~~">
         <location
-            file="src/main/java/com/nolanlawson/keepscore/widget/dragndrop/DragSortListView.java"
+            file="src/main/java/ovh/litapp/keepscore/widget/dragndrop/DragSortListView.java"
             line="1126"
             column="49"/>
     </issue>

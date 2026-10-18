@@ -68,7 +68,7 @@
         android:layout_toRightOf="@+id/text_player_number"
         android:orientation="horizontal" >
 
-        <com.nolanlawson.keepscore.widget.PlayerColorView
+        <ovh.litapp.keepscore.widget.PlayerColorView
             android:id="@+id/player_color_image"
             android:layout_width="20dp"
             android:layout_height="fill_parent"

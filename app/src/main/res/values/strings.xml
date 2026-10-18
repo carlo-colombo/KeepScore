@@ -13,7 +13,7 @@
     <string name="CONSTANT_button_7_players">7</string>
     <string name="CONSTANT_button_8_players">8</string>
     
-    <string name="CONSTANT_link_donate">market://details?id=com.nolanlawson.keepscore.donate</string>
+    <string name="CONSTANT_link_donate">market://details?id=ovh.litapp.keepscore.donate</string>
     <string name="CONSTANT_link_translate">https://github.com/nolanlawson/KeepScore#add-a-translation</string>
     
     <string name="CONSTANT_pref_plus_button">plus_button</string>
@@ -233,7 +233,7 @@ LibreOffice, or Google Docs.</string>
     <string name="text_share_mail_body">Attached is a KeepScore backup file.\
 \n\nTo import it into KeepScore, simply open the attachment using your favourite email app.\
 \n\nIf that doesn\'t work, save the file to /sdcard/keepscore/backups and choose \"Restore\" from the KeepScore main  menu.
-\n\nTo get KeepScore, visit https://play.google.com/store/apps/details?id=com.nolanlawson.keepscore .</string>
+\n\nTo get KeepScore, visit https://play.google.com/store/apps/details?id=ovh.litapp.keepscore .</string>
     
     <string name="text_undo_last">Delete Last Score</string>
     <string name="text_welcome_title">Welcome to KeepScore!</string>

@@ -8,7 +8,7 @@
     android:isScrollContainer="true"
     android:padding="5dp" >
 
-    <com.nolanlawson.keepscore.widget.chart.LineChartView
+    <ovh.litapp.keepscore.widget.chart.LineChartView
         android:id="@+id/timeline_view"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
