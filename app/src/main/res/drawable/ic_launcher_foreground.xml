@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Launcher foreground: a calculator, sized to fit the 66dp adaptive-icon safe
+     zone inside the 108x108dp canvas. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Calculator body -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M39,22 L69,22 A9,9 0 0 1 78,31 L78,77 A9,9 0 0 1 69,86 L39,86 A9,9 0 0 1 30,77 L30,31 A9,9 0 0 1 39,22 Z" />
+
+    <!-- Display -->
+    <path
+        android:fillColor="#FF1F2A33"
+        android:pathData="M37.5,27 L70.5,27 A2.5,2.5 0 0 1 73,29.5 L73,38.5 A2.5,2.5 0 0 1 70.5,41 L37.5,41 A2.5,2.5 0 0 1 35,38.5 L35,29.5 A2.5,2.5 0 0 1 37.5,27 Z" />
+
+    <!-- Button grid: each key is 10x9 at 4dp gaps, starting at x=35, y=46 -->
+    <path
+        android:fillColor="#FF0C6995"
+        android:pathData="M37,46 L43,46 A2,2 0 0 1 45,48 L45,53 A2,2 0 0 1 43,55 L37,55 A2,2 0 0 1 35,53 L35,48 A2,2 0 0 1 37,46 Z M51,46 L57,46 A2,2 0 0 1 59,48 L59,53 A2,2 0 0 1 57,55 L51,55 A2,2 0 0 1 49,53 L49,48 A2,2 0 0 1 51,46 Z M65,46 L71,46 A2,2 0 0 1 73,48 L73,53 A2,2 0 0 1 71,55 L65,55 A2,2 0 0 1 63,53 L63,48 A2,2 0 0 1 65,46 Z M37,59 L43,59 A2,2 0 0 1 45,61 L45,66 A2,2 0 0 1 43,68 L37,68 A2,2 0 0 1 35,66 L35,61 A2,2 0 0 1 37,59 Z M51,59 L57,59 A2,2 0 0 1 59,61 L59,66 A2,2 0 0 1 57,68 L51,68 A2,2 0 0 1 49,66 L49,61 A2,2 0 0 1 51,59 Z M65,59 L71,59 A2,2 0 0 1 73,61 L73,66 A2,2 0 0 1 71,68 L65,68 A2,2 0 0 1 63,66 L63,61 A2,2 0 0 1 65,59 Z" />
+
+    <!-- Accent row (operators) -->
+    <path
+        android:fillColor="#FFF26700"
+        android:pathData="M37,72 L43,72 A2,2 0 0 1 45,74 L45,79 A2,2 0 0 1 43,81 L37,81 A2,2 0 0 1 35,79 L35,74 A2,2 0 0 1 37,72 Z M51,72 L57,72 A2,2 0 0 1 59,74 L59,79 A2,2 0 0 1 57,81 L51,81 A2,2 0 0 1 49,79 L49,74 A2,2 0 0 1 51,72 Z M65,72 L71,72 A2,2 0 0 1 73,74 L73,79 A2,2 0 0 1 71,81 L65,81 A2,2 0 0 1 63,79 L63,74 A2,2 0 0 1 65,72 Z" />
+</vector>
