@@ -100,6 +100,9 @@ public class MainActivity extends AppCompatListActivity implements OnClickListen
     private Set<GameSummary> lastChecked;
 
     private boolean selectedMode;
+
+    // identifies the most recent games load, so that a stale background load cannot overwrite it
+    private int gamesLoadId;
     
     private Handler handler = new Handler(Looper.getMainLooper());
 
@@ -107,7 +110,10 @@ public class MainActivity extends AppCompatListActivity implements OnClickListen
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         log.d("onCreate()");
-        
+
+        // start with an empty adapter: the games themselves are loaded off the UI thread in
+        // onResume(), and the adapter must not be null while that load is still running
+        adapter = new SeparatedListAdapter<SavedGameAdapter>(this);
         setListAdapter(adapter);
 
         setContentView(R.layout.main);
@@ -148,7 +154,36 @@ public class MainActivity extends AppCompatListActivity implements OnClickListen
         super.onResume();
         log.d("onResume()");
 
-        List<GameSummary> games = getAllGames();
+        loadGamesInBackground();
+    }
+
+    /**
+     * Load the saved games off the UI thread, then rebuild the list on the UI thread.
+     */
+    private void loadGamesInBackground() {
+        final int loadId = ++gamesLoadId;
+
+        new AsyncTask<Void, Void, List<GameSummary>>() {
+
+            @Override
+            protected List<GameSummary> doInBackground(Void... params) {
+                return getAllGames();
+            }
+
+            @Override
+            protected void onPostExecute(List<GameSummary> games) {
+                super.onPostExecute(games);
+                if (loadId != gamesLoadId || isFinishing() || isDestroyed()) {
+                    // a newer load superseded this one, or the activity is gone
+                    return;
+                }
+                showGames(games);
+            }
+
+        }.execute((Void) null);
+    }
+
+    private void showGames(List<GameSummary> games) {
         Collections.sort(games, GameSummary.byRecentlySaved());
         log.d("loaded games %s", games);
 
@@ -879,6 +914,9 @@ public class MainActivity extends AppCompatListActivity implements OnClickListen
         return ids;
     }
     
+    /**
+     * Reads the games database. Must not be called on the UI thread.
+     */
     private List<GameSummary> getAllGames() {
         GameDBHelper dbHelper = null;
         try {
