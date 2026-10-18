@@ -3,257 +3,96 @@ package ovh.litapp.keepscore.db;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-import android.database.sqlite.SQLiteStatement;
-import android.text.TextUtils;
-import android.util.SparseArray;
+
+import androidx.room.Room;
 
 import ovh.litapp.keepscore.helper.PlayerColor;
 import ovh.litapp.keepscore.util.Pair;
 import ovh.litapp.keepscore.util.StringUtil;
 import ovh.litapp.keepscore.util.UtilLogger;
 
-public class GameDBHelper extends SQLiteOpenHelper {
+/**
+ * Data access for saved games. This used to be a hand-written {@code SQLiteOpenHelper}; it now
+ * delegates to Room while keeping its public API (and therefore every call site) unchanged.
+ *
+ * <p>The database file name and schema are unchanged, so an existing "games.db" is upgraded by
+ * {@link AppDatabase}'s migrations. Room normally forbids database access on the main thread,
+ * but legacy call sites (notably {@code GameActivity}'s foreground autosave and
+ * {@code createExistingGameFromId}) query synchronously from the UI thread, so main-thread
+ * queries are allowed to preserve the existing behavior.
+ */
+public class GameDBHelper {
 
     private static UtilLogger log = new UtilLogger(GameDBHelper.class);
 
     private static final String DB_NAME = "games.db";
-    private static final int DB_VERSION = 4;
 
-    private static final String TABLE_GAMES = "Games";
-    private static final String TABLE_PLAYER_SCORES = "PlayerScores";
-
-    private static final String COLUMN_ID = "_id";
-    private static final String COLUMN_DATE_STARTED = "dateStarted";
-    private static final String COLUMN_DATE_SAVED = "dateSaved";
-    private static final String COLUMN_NAME = "name";
-    private static final String COLUMN_SCORE = "score";
-    private static final String COLUMN_AUTOSAVED = "autosaved"; // legacy
-    private static final String COLUMN_PLAYER_NUMBER = "playerNumber";
-    private static final String COLUMN_GAME_ID = "gameId";
-    private static final String COLUMN_HISTORY = "history";
-    private static final String COLUMN_LAST_UPDATE = "lastUpdate";
-    private static final String COLUMN_HISTORY_TIMESTAMPS = "historyTimestamps";
-    private static final String COLUMN_COLOR = "color";
-
-    // my crazy system for using sqlite's group_concat, since it's not ambiguous to use regular old commas
-    private static final String GROUP_CONCAT_SEPARATOR = "^__%^%__";
-    private static final String GROUP_CONCAT_INNER_SEPARATOR = "$__%$%__";
-    
-    private static final String JOINED_TABLES = TABLE_GAMES + " g join " + TABLE_PLAYER_SCORES + " ps ON " + "g."
-            + COLUMN_ID + "=ps." + COLUMN_GAME_ID;
-    private static final String[] JOINED_COLUMNS = new String[] { 
-        "g." + COLUMN_ID, 
-        "g." + COLUMN_DATE_STARTED,
-        "g." + COLUMN_DATE_SAVED, 
-        "g." + COLUMN_NAME, 
-        "ps." + COLUMN_ID, 
-        "ps." + COLUMN_NAME, 
-        "ps." + COLUMN_SCORE,
-        "ps." + COLUMN_PLAYER_NUMBER, 
-        "ps." + COLUMN_HISTORY, 
-        "ps." + COLUMN_HISTORY_TIMESTAMPS,
-        "ps." + COLUMN_LAST_UPDATE,
-        "ps." + COLUMN_COLOR
-        };
-
-    private ThreadLocal<SQLiteStatement> updateGame = new ThreadLocal<SQLiteStatement>() {
-
-        @Override
-        protected SQLiteStatement initialValue() {
-            String sql = "update " + TABLE_GAMES + " set " + COLUMN_DATE_STARTED + "=?," + COLUMN_DATE_SAVED + "=?,"
-                    + COLUMN_NAME + "=? " + "where " + COLUMN_ID + "=?";
-            return db.compileStatement(sql);
-        }
-    };
-
-    private ThreadLocal<SQLiteStatement> updatePlayerScore = new ThreadLocal<SQLiteStatement>() {
-
-        @Override
-        protected SQLiteStatement initialValue() {
-            String sql = "update " + TABLE_PLAYER_SCORES + " set " + COLUMN_NAME + "=?," + COLUMN_SCORE + "=?,"
-                    + COLUMN_PLAYER_NUMBER + "=?," + COLUMN_HISTORY + "=?," + COLUMN_HISTORY_TIMESTAMPS + "=?,"
-                    + COLUMN_LAST_UPDATE + "=?," 
-                    + COLUMN_COLOR + "=? "
-                    + "where "
-                    + COLUMN_ID + "=?";
-            return db.compileStatement(sql);
-        }
-    };
-    
-    private SQLiteDatabase db;
+    private final AppDatabase database;
+    private final GameDao dao;
 
     public GameDBHelper(Context context) {
-        super(context, DB_NAME, null, DB_VERSION);
-        db = getWritableDatabase();
+        database = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, DB_NAME)
+                .allowMainThreadQueries()
+                .addMigrations(AppDatabase.MIGRATIONS)
+                .build();
+        dao = database.gameDao();
     }
 
-    @Override
-    public void onCreate(SQLiteDatabase db) {
-        String createSql1 = "create table if not exists " + TABLE_GAMES + " (" + COLUMN_ID
-                + " integer not null primary key autoincrement, " + COLUMN_NAME + " text, " + COLUMN_AUTOSAVED
-                + " int not null, " + COLUMN_DATE_STARTED + " int not null, " + COLUMN_DATE_SAVED + " int not null);";
-
-        db.execSQL(createSql1);
-
-        String createSql2 = "create table if not exists " + TABLE_PLAYER_SCORES + " (" + COLUMN_ID
-                + " integer not null primary key autoincrement, " + COLUMN_NAME + " text not null, " + COLUMN_SCORE
-                + " int not null, " + COLUMN_PLAYER_NUMBER + " int not null, " + COLUMN_HISTORY + " text, "
-                + COLUMN_LAST_UPDATE + " int not null default 0, "
-                + COLUMN_HISTORY_TIMESTAMPS + " text, "
-                + COLUMN_COLOR + " string, "
-                + COLUMN_GAME_ID + " int not null);";
-
-        db.execSQL(createSql2);
-
-        String indexSql1 = "create index if not exists index_game_id on " + TABLE_PLAYER_SCORES + " (" + COLUMN_GAME_ID
-                + ");";
-
-        db.execSQL(indexSql1);
-
-    }
-
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
-        if (oldVersion <= 1) {
-        
-            // add an index for the startTime
-            String index = "create index if not exists index_date_started on " + TABLE_GAMES + "(" + COLUMN_DATE_STARTED
-                    + ");";
-    
-            db.execSQL(index);
+    public void close() {
+        synchronized (GameDBHelper.class) {
+            database.close();
         }
-        
-        if (oldVersion <= 2) {
-            // add a lastUpdate time for each playerScore
-            String addColumn = "alter table " + TABLE_PLAYER_SCORES + " add column " + COLUMN_LAST_UPDATE 
-                    + " int not null default 0";
-            db.execSQL(addColumn);
-        }
-        
-        if (oldVersion <= 3) {
-            // add history timestamps and color
-            db.execSQL("alter table " + TABLE_PLAYER_SCORES + " add column " + COLUMN_HISTORY_TIMESTAMPS
-                    + " text;");
-            db.execSQL("alter table " + TABLE_PLAYER_SCORES + " add column " + COLUMN_COLOR
-                    + " string;");
-            
-            // older versions of keepscore only had 8 players, and there are 16 colors, so using the player
-            // number as an ordinal is fine here
-            db.execSQL("update " + TABLE_PLAYER_SCORES + " set " + COLUMN_COLOR + "=" + COLUMN_PLAYER_NUMBER + ";");
-        }
-        
     }
 
     /**
      * Return true if a game with that dateStarted value exists.
-     * 
-     * @param dateStarted
-     * @return
      */
     public boolean existsByDateStarted(long dateStarted) {
         synchronized (GameDBHelper.class) {
-            Cursor cursor = null;
-            try {
-                cursor = db.query(TABLE_GAMES, new String[] { COLUMN_ID }, "dateStarted=" + dateStarted, null, null,
-                        null, null);
-                return cursor.moveToNext();
-            } finally {
-                if (cursor != null) {
-                    cursor.close();
-                }
-            }
-
+            return dao.findGameIdByDateStarted(dateStarted) != null;
         }
     }
 
     public Game findGameById(int gameId) {
         synchronized (GameDBHelper.class) {
-            Cursor cursor = null;
-            try {
-                String where = "g." + COLUMN_ID + "=" + gameId;
-                cursor = db.query(JOINED_TABLES, JOINED_COLUMNS, where, null, null, null, null);
-                List<Game> result = convertToGames(cursor);
-
-                return result.isEmpty() ? null : result.get(0);
-            } finally {
-                if (cursor != null) {
-                    cursor.close();
-                }
+            GameEntity entity = dao.findGameEntityById(gameId);
+            if (entity == null) {
+                return null;
             }
+            return toGame(entity, dao.findPlayerScoresByGameId(gameId));
         }
     }
 
     public int findGameCount() {
         synchronized (GameDBHelper.class) {
-            String[] columns = { "count(" + COLUMN_ID + ")" };
-            Cursor cursor = null;
-            try {
-                cursor = db.query(TABLE_GAMES, columns, null, null, null, null, null);
-                if (cursor.moveToNext()) {
-                    return cursor.getInt(0);
-                }
-            } finally {
-                if (cursor != null) {
-                    cursor.close();
-                }
-            }
-            return 0;
+            return dao.findGameCount();
         }
     }
 
     public int findMostRecentGameId() {
         synchronized (GameDBHelper.class) {
-            Cursor cursor = null;
-            try {
-                String orderBy = COLUMN_DATE_SAVED + " desc";
-                cursor = db.query(TABLE_GAMES, new String[] { COLUMN_ID }, null, null, null, null, orderBy);
-
-                if (cursor.moveToNext()) {
-                    return cursor.getInt(0);
-                }
-            } finally {
-                if (cursor != null) {
-                    cursor.close();
-                }
-            }
+            Integer gameId = dao.findMostRecentGameId();
+            return gameId != null ? gameId : -1;
         }
-        return -1;
     }
 
     public Game findMostRecentGame() {
         synchronized (GameDBHelper.class) {
-            Cursor cursor = null;
-            try {
-
-                String sql = new StringBuilder("select ").append(TextUtils.join(",", JOINED_COLUMNS)).append(" from ")
-                        .append(JOINED_TABLES).append(" order by ").append(COLUMN_DATE_SAVED).append(" desc ")
-                        .append(" limit 1").toString();
-
-                cursor = db.rawQuery(sql, null);
-                List<Game> result = convertToGames(cursor);
-
-                return result.isEmpty() ? null : result.get(0);
-            } finally {
-                if (cursor != null) {
-                    cursor.close();
-                }
+            GameEntity entity = dao.findMostRecentGameEntity();
+            if (entity == null) {
+                return null;
             }
+            return toGame(entity, dao.findPlayerScoresByGameId(entity.id));
         }
     }
 
     /**
      * save a game, updating its 'dateSaved' value
-     * 
-     * @param game
-     * @return
      */
     public void saveGame(Game game) {
         saveGame(game, true);
@@ -261,376 +100,208 @@ public class GameDBHelper extends SQLiteOpenHelper {
 
     /**
      * save a game, optionally updating its 'dateSaved' value
-     * 
-     * @param game
-     * @return
      */
     public void saveGame(Game game, boolean updateDateSaved) {
         synchronized (GameDBHelper.class) {
-            db.beginTransaction();
-            try {
-                saveGameWithinTransaction(game, updateDateSaved);
-                db.setTransactionSuccessful();
-            } finally {
-                db.endTransaction();
-            }
+            database.runInTransaction(() -> saveGameWithinTransaction(game, updateDateSaved));
         }
     }
 
     private void saveGameWithinTransaction(Game game, boolean updateDateSaved) {
-
         long dateSaved = updateDateSaved ? System.currentTimeMillis() : game.getDateSaved();
         game.setDateSaved(dateSaved);
 
         if (game.getId() != -1) {
             // game was already saved, so try to overwrite
-
-            updateGame(game.getId(), game.getDateStarted(), game.getDateSaved(), game.getName());
+            dao.updateGame(toGameEntity(game));
         } else {
             // else create a new row in the table
-
-            int newGameId = getMaxGameId() + 1;
-
-            ContentValues contentValues = new ContentValues();
-
-            contentValues.put(COLUMN_DATE_STARTED, game.getDateStarted());
-            contentValues.put(COLUMN_DATE_SAVED, dateSaved);
-            contentValues.put(COLUMN_NAME, game.getName());
-            contentValues.put(COLUMN_ID, newGameId);
-            contentValues.put(COLUMN_AUTOSAVED, 1); // legacy "autosaved" column
-                                                    // that must be specified
-
-            db.insert(TABLE_GAMES, null, contentValues);
-
+            int newGameId = (int) dao.insertGame(toGameEntity(game));
             game.setId(newGameId);
             log.d("new game id is %s", newGameId);
         }
 
-        savePlayerScores(game.getId(), game.getPlayerScores());
-
+        savePlayerScoresWithinTransaction(game.getId(), game.getPlayerScores());
     }
 
-    private int getMaxPlayerScoreId() {
-        Cursor cursor = null;
-        try {
-            cursor = db.query(TABLE_PLAYER_SCORES, new String[] { "max(" + COLUMN_ID + ")" }, null, null, null, null,
-                    null);
-            if (cursor.moveToNext()) {
-                return cursor.getInt(0);
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-        return 0;
-    }
-
-    private int getMaxGameId() {
-        Cursor cursor = null;
-        try {
-            cursor = db.query(TABLE_GAMES, new String[] { "max(" + COLUMN_ID + ")" }, null, null, null, null, null);
-            if (cursor.moveToNext()) {
-                return cursor.getInt(0);
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-        return 0;
-    }
-
-    private void savePlayerScores(int gameId, List<PlayerScore> playerScores) {
-        synchronized (GameDBHelper.class) {
-
-            int newId = -1;
-
-            for (PlayerScore playerScore : playerScores) {
-
-                Pair<String, String> historyAsStrings = Delta.toJoinedStrings(playerScore.getHistory());
-
-                if (playerScore.getId() != -1) {
-                    // already exists; update
-
-                    updatePlayerScore(playerScore.getId(), playerScore.getName(), playerScore.getScore(),
-                            playerScore.getPlayerNumber(), historyAsStrings.getFirst(), 
-                            historyAsStrings.getSecond(), playerScore.getLastUpdate(), 
-                            PlayerColor.serialize(playerScore.getPlayerColor()));
-
-                } else {
-                    // else insert new rows in the table
-
-                    if (newId == -1) {
-                        newId = getMaxPlayerScoreId() + 1;
-                    } else {
-                        newId++;
-                    }
-
-                    ContentValues values = new ContentValues();
-                    values.put(COLUMN_ID, newId);
-                    values.put(COLUMN_GAME_ID, gameId);
-                    values.put(COLUMN_HISTORY, historyAsStrings.getFirst());
-                    values.put(COLUMN_HISTORY_TIMESTAMPS, historyAsStrings.getSecond());
-                    values.put(COLUMN_NAME, playerScore.getName());
-                    values.put(COLUMN_PLAYER_NUMBER, playerScore.getPlayerNumber());
-                    values.put(COLUMN_SCORE, playerScore.getScore());
-                    values.put(COLUMN_COLOR, PlayerColor.serialize(playerScore.getPlayerColor()));
-                    values.put(COLUMN_LAST_UPDATE, playerScore.getLastUpdate());
-                    db.insert(TABLE_PLAYER_SCORES, null, values);
-
-                    // set the new id on the PlayerScore
-                    playerScore.setId(newId);
-
-                    log.d("new playerScore id is %s", newId);
-                }
+    private void savePlayerScoresWithinTransaction(int gameId, List<PlayerScore> playerScores) {
+        for (PlayerScore playerScore : playerScores) {
+            if (playerScore.getId() != -1) {
+                // already exists; update
+                dao.updatePlayerScore(toPlayerScoreEntity(gameId, playerScore));
+            } else {
+                // else insert a new row in the table
+                int newId = (int) dao.insertPlayerScore(toPlayerScoreEntity(gameId, playerScore));
+                playerScore.setId(newId);
+                log.d("new playerScore id is %s", newId);
             }
         }
     }
-    
+
     public List<Game> findAllGames() {
         synchronized (GameDBHelper.class) {
-            String orderBy = COLUMN_DATE_SAVED;
+            List<GameEntity> gameEntities = dao.findAllGames();
+            Map<Integer, List<PlayerScoreEntity>> playerScoresByGameId = groupByGameId(dao.findAllPlayerScores());
 
-            Cursor cursor = null;
-
-            try {
-
-                cursor = db.query(JOINED_TABLES, JOINED_COLUMNS, null, null, null, null, orderBy);
-
-                return convertToGames(cursor);
-
-            } finally {
-                if (cursor != null) {
-                    cursor.close();
-                }
-            }
-        }
-    }    
-
-    public List<GameSummary> findAllGameSummaries() {
-        synchronized (GameDBHelper.class) {
-            
-            String[] columns = {
-                    "g." + COLUMN_ID, 
-                    "g." + COLUMN_NAME, 
-                    "g." + COLUMN_DATE_SAVED, 
-                    // player names; the "separator" is a trick to ensure that we can cleanly separate the response,
-                    // and put it into the proper order, since group_concat is always unordered in sqlite
-                    "group_concat((ps.name || '" + GROUP_CONCAT_INNER_SEPARATOR +"' || ps.playerNumber), '" + GROUP_CONCAT_SEPARATOR + "')",
-                    "max(length(ps.history) - length(replace(ps.history, ',', '')) + 1)" // num rounds
-                    };
-            
-            String table = TABLE_GAMES + " g join " + TABLE_PLAYER_SCORES + " ps " + 
-                    " on g." + COLUMN_ID + " = ps." + COLUMN_GAME_ID;
-            String groupBy = "g." + COLUMN_ID;
-            
-            Cursor cursor = null;
-            
-            try {
-
-                cursor = db.query(table, columns, null, null, groupBy, null, null);
-                
-                List<GameSummary> result = new ArrayList<GameSummary>();
-                
-                // re-use sparse array for performance
-                SparseArray<String> playerNumbersToNames = new SparseArray<String>();
-                
-                while (cursor.moveToNext()) {
-                    GameSummary gameSummary = new GameSummary();
-                    
-                    gameSummary.setId(cursor.getInt(0));
-                    gameSummary.setName(cursor.getString(1));
-                    gameSummary.setDateSaved(cursor.getLong(2));
-                    
-                    String playerNumbersAndNames = cursor.getString(3);
-                    // sort by player number, get player names in order (no way to do this in sqlite, unfortunately)
-                    
-                    playerNumbersToNames.clear();
-                    for (String playerNumberAndName : StringUtil.split(playerNumbersAndNames, GROUP_CONCAT_SEPARATOR)) {
-                        int idx = playerNumberAndName.indexOf(GROUP_CONCAT_INNER_SEPARATOR);
-                        String playerName = playerNumberAndName.substring(0, idx);
-                        int playerNumber = Integer.parseInt(playerNumberAndName.substring(
-                                idx + GROUP_CONCAT_INNER_SEPARATOR.length()));
-                        playerNumbersToNames.put(playerNumber, playerName);
-                    }
-                    List<String> playerNames = new ArrayList<String>(playerNumbersToNames.size());
-                    for (int i = 0, len = playerNumbersToNames.size(); i < len; i++) {
-                        int playerNumber = playerNumbersToNames.keyAt(i);
-                        playerNames.add(playerNumbersToNames.get(playerNumber));
-                    }
-                    gameSummary.setPlayerNames(playerNames);
-                    
-                    gameSummary.setNumRounds(cursor.getInt(4));
-                    
-                    result.add(gameSummary);
-                }
-                
-                return result;
-
-            } finally {
-                if (cursor != null) {
-                    cursor.close();
-                }
-            }
-        }
-    }
-
-    public void deleteGame(Game game) {
-        synchronized (GameDBHelper.class) {
-            try {
-                db.beginTransaction();
-
-                int id = game.getId();
-                db.delete(TABLE_GAMES, COLUMN_ID + "=" + id, null);
-                db.delete(TABLE_PLAYER_SCORES, COLUMN_GAME_ID + "=" + id, null);
-
-                db.setTransactionSuccessful();
-            } finally {
-                db.endTransaction();
-            }
-        }
-    }
-
-    public void updateGameName(int gameId, String newName) {
-        synchronized (GameDBHelper.class) {
-            ContentValues values = new ContentValues();
-            values.put(COLUMN_NAME, newName);
-
-            db.update(TABLE_GAMES, values, COLUMN_ID + "=" + gameId, null);
-        }
-    }
-
-    public List<String> findDistinctPlayerNames() {
-        synchronized (GameDBHelper.class) {
-            List<String> result = new ArrayList<String>();
-            String[] columns = { "distinct " + COLUMN_NAME };
-            Cursor cursor = null;
-            try {
-                cursor = db.query(TABLE_PLAYER_SCORES, columns, null, null, null, null, null);
-                while (cursor.moveToNext()) {
-                    result.add(cursor.getString(0));
-                }
-            } finally {
-                if (cursor != null) {
-                    cursor.close();
-                }
+            List<Game> result = new ArrayList<Game>(gameEntities.size());
+            for (GameEntity entity : gameEntities) {
+                result.add(toGame(entity, playerScoresByGameId.get(entity.id)));
             }
             return result;
         }
     }
 
-    public void deleteGames(Collection<Integer> gameIds) {
+    public List<GameSummary> findAllGameSummaries() {
         synchronized (GameDBHelper.class) {
-            try {
-                db.beginTransaction();
-                String where = " in ("
-                        + TextUtils.join(",", gameIds) + ")";
-                db.delete(TABLE_GAMES, COLUMN_ID + where, null);
-                db.delete(TABLE_PLAYER_SCORES, COLUMN_GAME_ID + where, null);
+            List<GameEntity> gameEntities = dao.findAllGames();
+            Map<Integer, List<PlayerScoreEntity>> playerScoresByGameId = groupByGameId(dao.findAllPlayerScores());
 
-                db.setTransactionSuccessful();
-            } finally {
-                db.endTransaction();
+            List<GameSummary> result = new ArrayList<GameSummary>(gameEntities.size());
+            for (GameEntity entity : gameEntities) {
+                List<PlayerScoreEntity> playerScores = playerScoresByGameId.get(entity.id);
+
+                GameSummary gameSummary = new GameSummary();
+                gameSummary.setId(entity.id);
+                gameSummary.setName(entity.name);
+                gameSummary.setDateSaved(entity.dateSaved);
+
+                List<String> playerNames = new ArrayList<String>();
+                int numRounds = 0;
+                if (playerScores != null) {
+                    for (PlayerScoreEntity playerScore : playerScores) {
+                        playerNames.add(playerScore.name);
+                        // replicate the old SQL: number of commas in the history string, plus one
+                        // (a NULL history contributes nothing to the max)
+                        numRounds = Math.max(numRounds, numberOfRounds(playerScore.history));
+                    }
+                }
+                gameSummary.setPlayerNames(playerNames);
+                gameSummary.setNumRounds(numRounds);
+
+                result.add(gameSummary);
             }
+            return result;
         }
     }
 
-    private List<Game> convertToGames(Cursor cursor) {
-        List<Game> result = new ArrayList<Game>();
-
-        Game currentGame = null;
-
-        while (cursor.moveToNext()) {
-
-            int currentId = cursor.getInt(0);
-
-            if (currentGame == null || currentGame.getId() != currentId) { // new
-                                                                           // Game
-
-                currentGame = new Game();
-                currentGame.setId(currentId);
-                currentGame.setDateStarted(cursor.getLong(1));
-                currentGame.setDateSaved(cursor.getLong(2));
-                currentGame.setName(cursor.getString(3));
-                result.add(currentGame);
-            }
-
-            List<PlayerScore> playerScores = new ArrayList<PlayerScore>();
-
-            // build up all the PlayerScores
-            do {
-
-                if (cursor.getInt(0) != currentId) {
-                    cursor.moveToPrevious(); // went too far
-                    break;
-                }
-
-                PlayerScore playerScore = new PlayerScore();
-
-                playerScore.setId(cursor.getInt(4));
-                playerScore.setName(cursor.getString(5));
-                playerScore.setScore(cursor.getLong(6));
-                playerScore.setPlayerNumber(cursor.getInt(7));
-                playerScore.setHistory(Delta.fromJoinedStrings(
-                        StringUtil.nullToEmpty(cursor.getString(8)),
-                        StringUtil.nullToEmpty(cursor.getString(9))));
-                playerScore.setLastUpdate(cursor.getLong(10));
-                playerScore.setPlayerColor(PlayerColor.deserialize(cursor.getString(11)));
-                playerScores.add(playerScore);
-
-            } while (cursor.moveToNext());
-
-            Collections.sort(playerScores, PlayerScore.sortByPlayerNumber());
-
-            currentGame.setPlayerScores(playerScores);
+    public void deleteGame(Game game) {
+        synchronized (GameDBHelper.class) {
+            final int id = game.getId();
+            database.runInTransaction(() -> {
+                dao.deletePlayerScoresByGameId(id);
+                dao.deleteGameById(id);
+            });
         }
+    }
 
+    public void updateGameName(int gameId, String newName) {
+        synchronized (GameDBHelper.class) {
+            dao.updateGameName(gameId, newName);
+        }
+    }
+
+    public List<String> findDistinctPlayerNames() {
+        synchronized (GameDBHelper.class) {
+            return new ArrayList<String>(dao.findDistinctPlayerNames());
+        }
+    }
+
+    public void deleteGames(Collection<Integer> gameIds) {
+        synchronized (GameDBHelper.class) {
+            if (gameIds.isEmpty()) {
+                return;
+            }
+            database.runInTransaction(() -> {
+                dao.deletePlayerScoresByGameIds(gameIds);
+                dao.deleteGamesByIds(gameIds);
+            });
+        }
+    }
+
+    private static Map<Integer, List<PlayerScoreEntity>> groupByGameId(List<PlayerScoreEntity> playerScores) {
+        Map<Integer, List<PlayerScoreEntity>> result = new HashMap<Integer, List<PlayerScoreEntity>>();
+        for (PlayerScoreEntity playerScore : playerScores) {
+            List<PlayerScoreEntity> scoresForGame = result.get(playerScore.gameId);
+            if (scoresForGame == null) {
+                scoresForGame = new ArrayList<PlayerScoreEntity>();
+                result.put(playerScore.gameId, scoresForGame);
+            }
+            scoresForGame.add(playerScore);
+        }
         return result;
     }
 
-    /**
-     * convenience method for updating games, using prepared statements for
-     * performance boosts.
-     * 
-     * @param id
-     * @param dateStarted
-     * @param dateSaved
-     * @param name
-     * @return
-     */
-    private void updateGame(int id, long dateStarted, long dateSaved, String name) {
-        SQLiteStatement statement = updateGame.get();
-
-        statement.bindLong(1, dateStarted);
-        statement.bindLong(2, dateSaved);
-        bindStringOrNull(statement, 3, name);
-        statement.bindLong(4, id);
-
-        statement.execute();
-    }
-
-    private void updatePlayerScore(int id, String name, long score, int playerNumber, String history, 
-            String historyTimestamps, long lastUpdate, String color) {
-        SQLiteStatement statement = updatePlayerScore.get();
-
-        bindStringOrNull(statement, 1, name);
-        statement.bindLong(2, score);
-        statement.bindLong(3, playerNumber);
-        bindStringOrNull(statement, 4, history);
-        bindStringOrNull(statement, 5, historyTimestamps);
-        statement.bindLong(6, lastUpdate);
-        statement.bindString(7, color);
-        statement.bindLong(8, id);
-
-        statement.execute();
-    }
-
-    private void bindStringOrNull(SQLiteStatement statement, int index, String str) {
-        if (str == null) {
-            statement.bindNull(index);
-        } else {
-            statement.bindString(index, str);
+    private static int numberOfRounds(String history) {
+        if (history == null) {
+            return 0;
         }
+        int commas = 0;
+        for (int i = 0, len = history.length(); i < len; i++) {
+            if (history.charAt(i) == ',') {
+                commas++;
+            }
+        }
+        return commas + 1;
+    }
+
+    private static GameEntity toGameEntity(Game game) {
+        GameEntity entity = new GameEntity();
+        entity.id = game.getId() == -1 ? 0 : game.getId();
+        entity.name = game.getName();
+        entity.autosaved = 1; // legacy column that must be specified
+        entity.dateStarted = game.getDateStarted();
+        entity.dateSaved = game.getDateSaved();
+        return entity;
+    }
+
+    private static PlayerScoreEntity toPlayerScoreEntity(int gameId, PlayerScore playerScore) {
+        Pair<String, String> historyAsStrings = Delta.toJoinedStrings(playerScore.getHistory());
+
+        PlayerScoreEntity entity = new PlayerScoreEntity();
+        entity.id = playerScore.getId() == -1 ? 0 : playerScore.getId();
+        entity.name = StringUtil.nullToEmpty(playerScore.getName());
+        entity.score = playerScore.getScore();
+        entity.playerNumber = playerScore.getPlayerNumber();
+        entity.history = historyAsStrings.getFirst();
+        entity.historyTimestamps = historyAsStrings.getSecond();
+        entity.lastUpdate = playerScore.getLastUpdate();
+        entity.color = PlayerColor.serialize(playerScore.getPlayerColor());
+        entity.gameId = gameId;
+        return entity;
+    }
+
+    private static Game toGame(GameEntity entity, List<PlayerScoreEntity> playerScoreEntities) {
+        Game game = new Game();
+        game.setId(entity.id);
+        game.setName(entity.name);
+        game.setDateStarted(entity.dateStarted);
+        game.setDateSaved(entity.dateSaved);
+
+        List<PlayerScore> playerScores = new ArrayList<PlayerScore>(
+                playerScoreEntities != null ? playerScoreEntities.size() : 0);
+        if (playerScoreEntities != null) {
+            for (PlayerScoreEntity playerScoreEntity : playerScoreEntities) {
+                playerScores.add(toPlayerScore(playerScoreEntity));
+            }
+        }
+        Collections.sort(playerScores, PlayerScore.sortByPlayerNumber());
+        game.setPlayerScores(playerScores);
+        return game;
+    }
+
+    private static PlayerScore toPlayerScore(PlayerScoreEntity entity) {
+        PlayerScore playerScore = new PlayerScore();
+        playerScore.setId(entity.id);
+        playerScore.setName(entity.name);
+        playerScore.setScore(entity.score);
+        playerScore.setPlayerNumber(entity.playerNumber);
+        playerScore.setHistory(Delta.fromJoinedStrings(
+                StringUtil.nullToEmpty(entity.history),
+                StringUtil.nullToEmpty(entity.historyTimestamps)));
+        playerScore.setLastUpdate(entity.lastUpdate);
+        playerScore.setPlayerColor(entity.color == null
+                ? PlayerColor.BUILT_INS[entity.playerNumber]
+                : PlayerColor.deserialize(entity.color));
+        return playerScore;
     }
 }

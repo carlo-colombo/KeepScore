@@ -16,6 +16,12 @@ android {
         versionName = (findProperty("android.versionName") ?: "1.5.1").toString()
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments["room.schemaLocation"] = "$projectDir/schemas"
+            }
+        }
     }
 
     buildTypes {
@@ -53,6 +59,7 @@ dependencies {
     implementation libs.androidx.viewpager
     implementation libs.androidx.preference
     implementation libs.androidx.work.runtime
+    implementation libs.androidx.room.runtime
     implementation libs.androidx.activity
     implementation libs.androidx.activity.compose
     implementation platform(libs.androidx.compose.bom)
@@ -63,6 +70,8 @@ dependencies {
     implementation libs.google.material
     implementation libs.ambilwarna
     implementation files('libs/exp4j-0.3.11.jar')
+
+    annotationProcessor libs.androidx.room.compiler
 
     testImplementation libs.junit
     testImplementation libs.robolectric
