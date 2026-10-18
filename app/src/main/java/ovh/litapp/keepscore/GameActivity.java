@@ -24,7 +24,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.util.TypedValue;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewStub;
@@ -40,6 +39,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.WindowManager;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import ovh.litapp.keepscore.data.RecordedChange;
 import ovh.litapp.keepscore.data.RecordedChange.Type;
@@ -75,9 +77,6 @@ public abstract class GameActivity extends AppCompatActivity {
     public static final String EXTRA_PLAYER_COLORS = "playerColors";
     public static final String EXTRA_GAME_ID = "gameId";
     public static final String EXTRA_GAME = "game";
-
-    public static final int REQUEST_CODE_ADD_EDIT_PLAYERS = 2;
-    public static final int REQUEST_CODE_SETTINGS = 3;
 
     private static final long PERIODIC_SAVE_PERIOD = TimeUnit.SECONDS.toMillis(30);
 
@@ -116,6 +115,30 @@ public abstract class GameActivity extends AppCompatActivity {
     private DataExpiringStack<RecordedChange> undoStack = new DataExpiringStack<RecordedChange>(UNDO_STACK_SIZE);
     private DataExpiringStack<RecordedChange> redoStack = new DataExpiringStack<RecordedChange>(UNDO_STACK_SIZE);
 
+    private final ActivityResultLauncher<Intent> settingsActivityLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null
+                        && result.getData().getBooleanExtra(SettingsActivity.EXTRA_ORIENTATION_CHANGED, false)) {
+                    // orientation changed; need to refresh this activity
+                    GameActivityHelper.openGameWithClearTop(this, game);
+                }
+            });
+
+    private final ActivityResultLauncher<Intent> organizePlayersActivityLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    final List<PlayerScore> newPlayerScores = result.getData()
+                            .getParcelableArrayListExtra(OrganizePlayersActivity.EXTRA_PLAYER_SCORES);
+                    handler.post(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            saveWithNewPlayerScores(newPlayerScores);
+                        }
+                    });
+                }
+            });
+
     protected abstract void hideAbsentPlayers();
     protected abstract boolean getShouldShowOnscreenDeltaButtons();
     
@@ -128,6 +151,26 @@ public abstract class GameActivity extends AppCompatActivity {
         setContentView(R.layout.game);
         EdgeToEdge.apply(this);
         setUpWidgets();
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+
+            @Override
+            public void handleOnBackPressed() {
+                if (gameWasSaved() || shouldAutosave()) {
+                    // back button pressed
+                    // if the game has been modified at all, skip showing the "enter player names"
+                    // screen and just go directly to the main screen
+
+                    Intent intent = new Intent(GameActivity.this, MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                } else {
+                    // no saved game, so fall back to the default behavior of finishing this activity
+                    setEnabled(false);
+                    getOnBackPressedDispatcher().onBackPressed();
+                }
+            }
+        });
     }
 
     @Override
@@ -254,7 +297,7 @@ public abstract class GameActivity extends AppCompatActivity {
             startActivity(historyIntent);
         } else if (itemId == R.id.menu_settings) {
             Intent settingsIntent = new Intent(GameActivity.this, SettingsActivity.class);
-            startActivityForResult(settingsIntent, REQUEST_CODE_SETTINGS);
+            settingsActivityLauncher.launch(settingsIntent);
         } else if (itemId == R.id.menu_add_edit_players) {
             startOrganizePlayersActivity();
         } else if (itemId == R.id.menu_rematch) {
@@ -317,7 +360,7 @@ public abstract class GameActivity extends AppCompatActivity {
 
         Intent intent = new Intent(this, OrganizePlayersActivity.class);
         intent.putExtra(EXTRA_GAME, game);
-        startActivityForResult(intent, REQUEST_CODE_ADD_EDIT_PLAYERS);
+        organizePlayersActivityLauncher.launch(intent);
     }
 
     private void showRematchDialogue() {
@@ -794,45 +837,6 @@ public abstract class GameActivity extends AppCompatActivity {
         default:
             return R.id.player_30;
         }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == REQUEST_CODE_ADD_EDIT_PLAYERS && resultCode == RESULT_OK) {
-            final List<PlayerScore> newPlayerScores = data
-                    .getParcelableArrayListExtra(OrganizePlayersActivity.EXTRA_PLAYER_SCORES);
-            handler.post(new Runnable() {
-
-                @Override
-                public void run() {
-                    saveWithNewPlayerScores(newPlayerScores);
-                }
-            });
-        } else if (requestCode == REQUEST_CODE_SETTINGS && resultCode == RESULT_OK) {
-            if (data != null && data.getBooleanExtra(SettingsActivity.EXTRA_ORIENTATION_CHANGED, false)) {
-                // orientation changed; need to refresh this activity
-                GameActivityHelper.openGameWithClearTop(this, game);
-            }
-        }
-    }
-    
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event)  {
-
-        boolean backButtonPressed = keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0;
-        if (backButtonPressed && (gameWasSaved() || shouldAutosave())) {
-            // back button pressed
-            // if the game has been modified at all, skip showing the "enter player names"
-            // screen and just go directly to the main screen
-        
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
     }
 
     private void saveWithNewPlayerScores(final List<PlayerScore> newPlayerScores) {
