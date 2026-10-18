@@ -17,9 +17,13 @@
     </queries>
 
     <application
+        android:name=".KeepScoreApplication"
         android:icon="@drawable/icon"
         android:label="@string/CONSTANT_app_name"
-        android:theme="@style/KeepScoreMainTheme" >
+        android:theme="@style/KeepScoreMainTheme"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules" >
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -77,11 +81,6 @@
             android:name=".AboutActivity"
             android:exported="false"
             android:theme="@style/KeepScorePopupTheme" />
-
-        <service
-            android:name=".PeriodicAutomaticBackupService"
-            android:exported="false"
-            android:label="PeriodicAutomaticBackupService" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

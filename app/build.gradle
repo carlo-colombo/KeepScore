@@ -50,6 +50,7 @@ dependencies {
     implementation libs.androidx.viewpager2
     implementation libs.androidx.viewpager
     implementation libs.androidx.preference
+    implementation libs.androidx.work.runtime
     implementation libs.google.material
     implementation libs.ambilwarna
     implementation files('libs/exp4j-0.3.11.jar')

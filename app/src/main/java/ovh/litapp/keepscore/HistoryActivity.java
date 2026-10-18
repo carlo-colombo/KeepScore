@@ -1,5 +1,7 @@
 package ovh.litapp.keepscore;
 
+import ovh.litapp.keepscore.android.EdgeToEdge;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -74,6 +76,7 @@ public class HistoryActivity extends AppCompatActivity implements ActionBar.TabL
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.history);
+        EdgeToEdge.apply(this);
         
         game = getIntent().getParcelableExtra(EXTRA_GAME);
         showTimeline = determineIfShouldShowTimeline();

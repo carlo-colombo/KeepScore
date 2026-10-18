@@ -1,5 +1,7 @@
 package ovh.litapp.keepscore;
 
+import ovh.litapp.keepscore.android.EdgeToEdge;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -124,8 +126,8 @@ public abstract class GameActivity extends AppCompatActivity {
         createGame();
 
         setContentView(R.layout.game);
+        EdgeToEdge.apply(this);
         setUpWidgets();
-        scheduleAutomaticBackup();
     }
 
     @Override
@@ -184,32 +186,6 @@ public abstract class GameActivity extends AppCompatActivity {
         savedGameBeforeExit = false;
 
         getSupportActionBar().hide();
-    }
-
-    private void scheduleAutomaticBackup() {
-        // schedule a backup to run around 4AM the next day, to ensure that this
-        // game is saved as an XML backup when the user is probably done modifying it
-
-        Intent intent = new Intent(this, PeriodicAutomaticBackupService.class);
-        PendingIntent pendingIntent = PendingIntent.getService(this, 
-                PeriodicAutomaticBackupService.INTENT_REQUEST_CODE, intent, 
-                PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-        
-        AlarmManager alarmManager = (AlarmManager) getSystemService(Activity.ALARM_SERVICE);
-
-        Calendar dateCal = Calendar.getInstance();
-        // make it tomorrow (+1 day)
-        dateCal.setTime(new Date(System.currentTimeMillis() + (1000 * 60 * 60 * 24)));
-        // Set it to 4AM
-        dateCal.set(Calendar.HOUR_OF_DAY, 4);
-        dateCal.set(Calendar.MINUTE, 0);
-        dateCal.set(Calendar.SECOND, 0);
-        dateCal.set(Calendar.MILLISECOND, 0);
-
-        log.d("Setting automatic backup for %s", dateCal);
-        
-        // Create an offset from the current time in which the alarm will go off.
-        alarmManager.set(AlarmManager.RTC_WAKEUP, dateCal.getTimeInMillis(), pendingIntent);
     }
 
     private GameDBHelper getDbHelper() {

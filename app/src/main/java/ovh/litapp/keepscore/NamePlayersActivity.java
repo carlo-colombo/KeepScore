@@ -1,5 +1,7 @@
 package ovh.litapp.keepscore;
 
+import ovh.litapp.keepscore.android.EdgeToEdge;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,6 +62,7 @@ public class NamePlayersActivity extends Activity implements OnClickListener {
         int contentResId = R.layout.name_players;
 
         setContentView(contentResId);
+        EdgeToEdge.apply(this);
 
         setUpWidgets();
     }

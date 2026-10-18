@@ -7,6 +7,8 @@ import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import ovh.litapp.keepscore.android.EdgeToEdge;
+
 /**
  * Minimal AppCompat replacement for the framework's {@code ListActivity}, which
  * has no AppCompat equivalent. It mirrors the {@code ListActivity} adapter and
@@ -22,6 +24,7 @@ public abstract class AppCompatListActivity extends AppCompatActivity {
     @Override
     public void onContentChanged() {
         super.onContentChanged();
+        EdgeToEdge.apply(this);
         View empty = findViewById(android.R.id.empty);
         listView = findViewById(android.R.id.list);
         if (listView == null) {

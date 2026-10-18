@@ -1,5 +1,7 @@
 package ovh.litapp.keepscore;
 
+import ovh.litapp.keepscore.android.EdgeToEdge;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +25,7 @@ public class NewGameActivity extends Activity implements OnClickListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.new_game);
+        EdgeToEdge.apply(this);
         
         setUpWidgets();
     }

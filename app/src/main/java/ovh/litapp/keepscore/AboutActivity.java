@@ -1,5 +1,7 @@
 package ovh.litapp.keepscore;
 
+import ovh.litapp.keepscore.android.EdgeToEdge;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,6 +40,7 @@ public class AboutActivity extends Activity implements OnClickListener {
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.about);
+        EdgeToEdge.apply(this);
 
         topPanel = findViewById(R.id.topPanel);
         topPanel.setVisibility(View.GONE);

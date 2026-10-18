@@ -35,9 +35,9 @@ import java.util.zip.GZIPOutputStream;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
-import android.os.Environment;
 import android.text.TextUtils;
 
+import ovh.litapp.keepscore.KeepScoreApplication;
 import ovh.litapp.keepscore.R;
 import ovh.litapp.keepscore.db.Game;
 import ovh.litapp.keepscore.db.PlayerScore;
@@ -105,12 +105,30 @@ public class SdcardHelper {
     private static UtilLogger log = new UtilLogger(SdcardHelper.class);
 
     public static boolean isAvailable() {
-        return Environment.getExternalStorageDirectory() != null 
-                && Environment.getExternalStorageDirectory().exists();
+        return getRootDir() != null;
+    }
+
+    /**
+     * App-specific external storage: needs no permission and is exempt from
+     * scoped-storage restrictions, unlike the old {@code /sdcard/keepscore}.
+     */
+    private static File getRootDir() {
+        Context context = KeepScoreApplication.getInstance();
+        if (context == null) {
+            return null;
+        }
+        File base = context.getExternalFilesDir(null);
+        if (base == null) {
+            base = context.getFilesDir();
+        }
+        return base == null ? null : getOrCreateDir(base, ROOT_DIR);
     }
 
     public static File getDirectory(Location location) {
-        File rootDir = getOrCreateDir(Environment.getExternalStorageDirectory(), ROOT_DIR);
+        File rootDir = getRootDir();
+        if (rootDir == null) {
+            return null;
+        }
         return getOrCreateDir(rootDir, location.getDirectoryName());
     }
     
@@ -133,6 +151,7 @@ public class SdcardHelper {
     public static String open(Uri uri, Format format, ContentResolver contentResolver) {
         StringBuilder stringBuilder = new StringBuilder();
         BufferedReader bufferedReader = null;
+        String line;
 
         try {
             InputStream fileInputStream = contentResolver.openInputStream(uri);
@@ -142,8 +161,8 @@ public class SdcardHelper {
             InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8");
             bufferedReader = new BufferedReader(inputStreamReader, BUFFER);
 
-            while (bufferedReader.ready()) {
-                stringBuilder.append(bufferedReader.readLine());
+            while ((line = bufferedReader.readLine()) != null) {
+                stringBuilder.append(line);
             }
         } catch (IOException ex) {
             log.e(ex, "couldn't read file");
@@ -189,6 +208,10 @@ public class SdcardHelper {
         });
         
         File file = new File(getDirectory(Location.Spreadsheets), filename);
+        if (file.getParentFile() == null) {
+            log.e("no spreadsheet directory available");
+            return;
+        }
         
         BufferedWriter writer = null;
         try {
@@ -274,7 +297,12 @@ public class SdcardHelper {
      * @return
      */
     public static boolean save(String filename, Format format, Location location, String xmlData) {
-        File newFile = new File(getDirectory(location), filename);
+        File directory = getDirectory(location);
+        if (directory == null) {
+            log.e("no backup directory available");
+            return false;
+        }
+        File newFile = new File(directory, filename);
         try {
             if (!newFile.exists()) {
                 newFile.createNewFile();
@@ -289,7 +317,9 @@ public class SdcardHelper {
         try {
 
             // specifying BUFFER gets rid of an annoying warning message in the logs
-            out = new BufferedOutputStream(new FileOutputStream(newFile, true), BUFFER);
+            // overwrite rather than append: a repeat save of the same (timestamped)
+            // name must not corrupt the file
+            out = new BufferedOutputStream(new FileOutputStream(newFile, false), BUFFER);
             if (format == Format.GZIP) {
                 out = new GZIPOutputStream(out);
             }
@@ -359,6 +389,9 @@ public class SdcardHelper {
     }
 
     private static File getOrCreateDir(File parent, String name) {
+        if (parent == null) {
+            return null;
+        }
         File file = new File(parent, name);
         if (!file.exists()) {
             file.mkdir();
@@ -367,6 +400,7 @@ public class SdcardHelper {
     }
 
     public static File getFile(String shortFilename, Location location) {
-        return new File(getDirectory(location), shortFilename);
+        File directory = getDirectory(location);
+        return directory == null ? null : new File(directory, shortFilename);
     }
 }
