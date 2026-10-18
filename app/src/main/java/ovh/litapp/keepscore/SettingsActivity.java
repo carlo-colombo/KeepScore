@@ -200,7 +200,7 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
         // delete all preferences
         Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
         editor.clear();
-        editor.commit();
+        editor.apply();
         PreferenceHelper.resetCache();
 
         ToastHelper.showShort(this, R.string.toast_settings_reset);

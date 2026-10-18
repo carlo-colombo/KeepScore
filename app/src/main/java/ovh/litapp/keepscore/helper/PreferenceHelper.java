@@ -140,7 +140,7 @@ public class PreferenceHelper {
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
         Editor editor = sharedPrefs.edit();
         editor.putBoolean(context.getString(resId), value);
-        editor.commit();
+        editor.apply();
     }
 
     public static void setBooleanPreference(int resId, int valueResId, Context context) {
@@ -148,7 +148,7 @@ public class PreferenceHelper {
         Editor editor = sharedPrefs.edit();
         boolean value = Boolean.parseBoolean(context.getString(valueResId));
         editor.putBoolean(context.getString(resId), value);
-        editor.commit();
+        editor.apply();
     }
 
     public static void setStringPreference(int resId, int valueResId, Context context) {
@@ -156,14 +156,14 @@ public class PreferenceHelper {
         Editor editor = sharedPrefs.edit();
         String value = context.getString(valueResId);
         editor.putString(context.getString(resId), value);
-        editor.commit();
+        editor.apply();
     }
 
     public static void setIntPreference(int resId, int valueResId, Context context) {
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
         Editor editor = sharedPrefs.edit();
         editor.putString(context.getString(resId), context.getString(valueResId));
-        editor.commit();
+        editor.apply();
     }
 
     public static int getIntPreference(int resId, int defaultValueResId, Context context) {

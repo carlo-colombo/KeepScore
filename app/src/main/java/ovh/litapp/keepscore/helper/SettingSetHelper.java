@@ -46,7 +46,7 @@ public class SettingSetHelper {
 		availableSet.add(settingSetName);
 		Editor metaEditor = getMeta(context).edit();
 		metaEditor.putString(AVAILABLE_SETTINGS_SET, TextUtils.join(",", availableSet)); // comma-separated
-		metaEditor.commit();
+		metaEditor.apply();
 	}
 
 	/**
@@ -74,7 +74,11 @@ public class SettingSetHelper {
 		
 		Editor editor = getMeta(context).edit();
 		editor.putString(AVAILABLE_SETTINGS_SET, TextUtils.join(",", availableSets));
-		editor.commit();
+		editor.apply();
+
+		// the settings set is backed by its own preferences file - remove it too,
+		// otherwise it lingers on disk after being dropped from the available list
+		context.deleteSharedPreferences(settingSetName);
 	}
 	
 	private static void copySettings(SharedPreferences source, SharedPreferences target) {
@@ -96,7 +100,7 @@ public class SettingSetHelper {
 				editor.putString(key, (String)value);
 			}
 		}
-		editor.commit();
+		editor.apply();
 	}
 	
 
