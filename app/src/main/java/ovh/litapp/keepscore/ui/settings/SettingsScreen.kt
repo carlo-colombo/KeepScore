@@ -34,6 +34,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
@@ -91,7 +93,10 @@ fun SettingsScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.menu_settings)) },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(
+                        onClick = onBack,
+                        modifier = Modifier.semantics { contentDescription = "Back" },
+                    ) {
                         Text(text = "\u2190", fontSize = 24.sp)
                     }
                 },
@@ -500,7 +505,10 @@ private fun LoadSettingSetDialog(
                                 .clickable { contentsToShow = name }
                                 .padding(vertical = 12.dp),
                         )
-                        IconButton(onClick = { deleteToConfirm = name }) {
+                        IconButton(
+                            onClick = { deleteToConfirm = name },
+                            modifier = Modifier.semantics { contentDescription = "Delete" },
+                        ) {
                             Text(text = "\u2715")
                         }
                     }

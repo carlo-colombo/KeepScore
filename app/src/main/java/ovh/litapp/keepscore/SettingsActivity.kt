@@ -23,7 +23,12 @@ class SettingsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        startingOrientation = PreferenceHelper.getOrientation(this)
+        // Preserve the baseline across recreate() (used by load/reset); otherwise the
+        // recreated activity would compare the new orientation against itself.
+        startingOrientation = intent?.getSerializableExtra(EXTRA_STARTING_ORIENTATION) as? Orientation
+            ?: PreferenceHelper.getOrientation(this).also {
+                intent?.putExtra(EXTRA_STARTING_ORIENTATION, it)
+            }
 
         // The hardware/gesture back button tells the caller whether the preferred orientation
         // changed, so the game screens can restart in the new orientation. The toolbar's up arrow
@@ -58,5 +63,6 @@ class SettingsActivity : ComponentActivity() {
     companion object {
         const val EXTRA_SCROLL_TO_CONFIGURATIONS = "scrollToConfigurations"
         const val EXTRA_ORIENTATION_CHANGED = "orientationChanged"
+        const val EXTRA_STARTING_ORIENTATION = "startingOrientation"
     }
 }

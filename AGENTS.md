@@ -31,8 +31,10 @@ module). It is a fork of Nolan Lawson's original app, maintained at
   `LandscapeGameActivity`, `NamePlayersActivity`, `HistoryActivity`
   (charts/tables in `fragment/`, custom views in `widget/`),
   `SettingsActivity`, `OrganizePlayersActivity`, `AboutActivity`.
-- **Persistence.** SQLite through `db/GameDBHelper` (a `SQLiteOpenHelper`) with
-  the `db/Game` and `db/PlayerScore` models. The backup/export format is
+- **Persistence.** Room: `db/AppDatabase` (version 5, `exportSchema`, migrations
+  1→5) with `db/GameEntity`/`db/PlayerScoreEntity`, reached through the
+  `db/GameDBHelper` facade so call sites stay unchanged; the on-disk schema is
+  covered by `GameDBHelperMigrationTest`. The backup/export format is
   `serialization/GamesBackup` + `GamesBackupSerializer` (XML, GZIP-compressed);
   it must stay readable by released versions, so treat it as a stable contract.
 - **Background work.** `data/work/BackupScheduler` enqueues one unique daily
