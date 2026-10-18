@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    android:installLocation="auto" >
+
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
+
+    <application
+        android:icon="@drawable/icon"
+        android:label="@string/CONSTANT_app_name"
+        android:theme="@style/KeepScoreMainTheme" >
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/CONSTANT_app_name"
+            android:launchMode="singleTop" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+  			<!--  associate with KeepScore xml backup files -->
+            <intent-filter>
+			    <action android:name="android.intent.action.VIEW" />
+			    <category android:name="android.intent.category.DEFAULT" />
+			    <data android:mimeType="text/xml" />
+			    <data android:scheme="content" />
+  			</intent-filter>
+        </activity>
+        <activity
+            android:name=".NewGameActivity"
+            android:exported="false"
+            android:label="@string/CONSTANT_app_name" />
+        <activity
+            android:name=".NamePlayersActivity"
+            android:exported="false"
+            android:label="@string/CONSTANT_app_name" />
+        <activity
+            android:name=".PortraitGameActivity"
+            android:exported="false"
+            android:configChanges="orientation|keyboardHidden|keyboard"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".LandscapeGameActivity"
+            android:exported="false"
+            android:configChanges="orientation|keyboardHidden|keyboard"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="false"
+            android:configChanges="orientation|keyboardHidden|keyboard"
+            android:label="@string/menu_settings"
+            android:theme="@android:style/Theme.DeviceDefault.Light" />
+        <activity
+            android:name=".HistoryActivity"
+            android:exported="false"
+            android:configChanges="orientation|keyboardHidden|keyboard"
+            android:label="@string/menu_history" />
+        <activity
+            android:name=".OrganizePlayersActivity"
+            android:exported="false"
+            android:configChanges="orientation|keyboardHidden|keyboard"
+            android:label="@string/menu_add_edit_players" />
+        <activity
+            android:name=".AboutActivity"
+            android:exported="false"
+            android:theme="@style/KeepScorePopupTheme" />
+
+        <service
+            android:name=".PeriodicAutomaticBackupService"
+            android:exported="false"
+            android:label="PeriodicAutomaticBackupService" />
+    </application>
+
+</manifest>

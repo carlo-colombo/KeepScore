@@ -1,0 +1,63 @@
+plugins {
+    alias(libs.plugins.android.application)
+}
+
+android {
+    namespace = 'com.nolanlawson.keepscore'
+    compileSdk 36
+
+    defaultConfig {
+        applicationId "com.nolanlawson.keepscore"
+        minSdk 26
+        targetSdk 36
+        // CI passes -Pandroid.versionName/-Pandroid.versionCode derived from the release tag.
+        versionCode = (findProperty("android.versionCode") ?: "28").toString().toInteger()
+        versionName = (findProperty("android.versionName") ?: "1.5.1").toString()
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
+    }
+
+    buildFeatures {
+        buildConfig = true
+    }
+
+    lint {
+        // Full lint must fail the build on errors. The baseline records the pre-existing debt from
+        // the legacy codebase; burn it down in later waves. Warnings stay visible.
+        abortOnError = true
+        warningsAsErrors = false
+        baseline = file("lint-baseline.xml")
+    }
+}
+
+dependencies {
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.core
+    implementation libs.androidx.fragment
+    implementation libs.androidx.viewpager2
+    implementation libs.androidx.viewpager
+    implementation libs.androidx.preference
+    implementation libs.google.material
+    implementation libs.ambilwarna
+    implementation files('libs/exp4j-0.3.11.jar')
+
+    testImplementation libs.junit
+    testImplementation libs.robolectric
+    testImplementation libs.androidx.test.core
+    testImplementation libs.androidx.junit
+    androidTestImplementation libs.androidx.junit
+    androidTestImplementation libs.androidx.espresso.core
+}

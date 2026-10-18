@@ -1,0 +1,267 @@
+name: Build
+
+# Least privilege by default; the push-only build/release job opts into
+# contents: write below so it can push the build tag and create the GitHub
+# release. PRs never run this workflow (they run pr.yml), so no run that can be
+# triggered by a pull_request can ever hold a write-capable token.
+permissions:
+  contents: read
+
+on:
+  push:
+    branches:
+      - 'main'
+
+concurrency:
+  # A release must not be cancelled once its tag exists, so queued main runs
+  # wait instead of superseding each other. PR runs still cancel each other in
+  # pr.yml.
+  group: ci-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Resolve release version
+        # Dry run: computes the tag this run is going to publish (`new_tag`)
+        # without creating it, so the APK below can be stamped with the
+        # versionName the published release will carry. The tag is pushed only
+        # after validation succeeds, because a failure anywhere between a
+        # pushed tag and the GitHub release leaves an orphan tag with no release.
+        id: version
+        uses: anothrNick/github-tag-action@4ed44965e0db8dab2b466a16da04aec3cc312fd8 # 1.75.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WITH_V: false
+          PRERELEASE: true
+          PRERELEASE_SUFFIX: build
+          INITIAL_VERSION: 1.5.1
+          DRY_RUN: true
+
+      - name: Set Up JDK and Gradle
+        uses: ./.github/actions/setup-jdk-gradle
+
+      - name: Derive version code
+        # Android's versionCode is a single integer, so encode the resolved tag
+        # as major*1e8 + minor*1e6 + patch*1e3 + prerelease-build-number. The tag
+        # action bumps the patch for every release and increments the `build.N`
+        # prerelease counter within a base, so the value is monotonic across
+        # releases. `-Pandroid.versionCode` is read by app/build.gradle via
+        # findProperty.
+        id: build_config
+        run: |
+          set -euo pipefail
+          tag="${{ steps.version.outputs.new_tag }}"
+          base="${tag%%-*}"
+          IFS='.' read -r major minor patch <<< "$base"
+          for name in major minor patch; do
+            value="${!name:-0}"
+            case "$value" in
+              ''|*[!0-9]*) echo "::error::cannot parse version from tag '$tag'"; exit 1 ;;
+            esac
+          done
+          major="${major:-0}"
+          minor="${minor:-0}"
+          patch="${patch:-0}"
+          build_number="${tag##*-build.}"
+          case "$build_number" in
+            ''|*[!0-9]*) build_number=0 ;;
+          esac
+          version_code=$(( major * 100000000 + minor * 1000000 + patch * 1000 + build_number ))
+          echo "tag=$tag"
+          echo "versionCode=$version_code"
+          echo "version_code=$version_code" >> "$GITHUB_OUTPUT"
+
+      - name: Check signing secrets
+        # Signing is optional for this fork: the release still publishes when the
+        # secrets are absent, signed with a throwaway key, so every push to main
+        # produces a release. Set SIGNING_KEY/ALIAS/KEY_STORE_PASSWORD to publish
+        # an APK that can be updated over an earlier install.
+        id: signing
+        env:
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          ALIAS: ${{ secrets.ALIAS }}
+          KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
+        run: |
+          set -euo pipefail
+          if [ -n "${SIGNING_KEY:-}" ] && [ -n "${ALIAS:-}" ] && [ -n "${KEY_STORE_PASSWORD:-}" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Signing secrets are not set; the release APK will be signed with a throwaway key."
+          fi
+
+      - name: Assemble release APK
+        # R8 minification, resource shrinking and lintVitalRelease run here, so
+        # the release asset is the same artefact the validator then exercises.
+        run: |
+          ./gradlew \
+            -Pandroid.versionName="${{ steps.version.outputs.new_tag }}" \
+            -Pandroid.versionCode="${{ steps.build_config.outputs.version_code }}" \
+            :app:assembleRelease
+
+      - name: Stop the Gradle daemon before validation
+        # `assembleRelease` leaves a Gradle daemon that has just run R8;
+        # releasing it before the test+lint validation keeps the runner's
+        # memory headroom.
+        run: ./gradlew --stop
+
+      - name: Validate prod variant before signing
+        # AGP only creates unit-test tasks for the tested build type (`debug`),
+        # so there is no `:app:testReleaseUnitTest`; these are the tasks that
+        # exist. A release-only breakage cannot reach signing - and the tag push.
+        run: |
+          ./gradlew \
+            -Pandroid.versionName="${{ steps.version.outputs.new_tag }}" \
+            -Pandroid.versionCode="${{ steps.build_config.outputs.version_code }}" \
+            :app:testDebugUnitTest \
+            :app:lintRelease
+
+      - name: Bump version and push tag
+        # Runs only once validation has passed, so a validation failure cannot
+        # leave a tag without a release. `CUSTOM_TAG` pins the pushed tag to the
+        # version the APK was built and validated with.
+        id: bump_and_tag
+        uses: anothrNick/github-tag-action@4ed44965e0db8dab2b466a16da04aec3cc312fd8 # 1.75.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WITH_V: false
+          PRERELEASE: true
+          PRERELEASE_SUFFIX: build
+          INITIAL_VERSION: 1.5.1
+          CUSTOM_TAG: ${{ steps.version.outputs.new_tag }}
+
+      - name: Resolve build-tools version from the SDK
+        id: build_tools
+        # The signing step below shells out to <sdk>/build-tools/<version>/zipalign
+        # and apksigner. Resolve the highest installed version that actually
+        # ships apksigner instead of hard-coding one.
+        run: |
+          set -euo pipefail
+          sdk_root="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-}}"
+          if [ -z "$sdk_root" ] || [ ! -d "$sdk_root/build-tools" ]; then
+            echo "::error::No Android SDK build-tools directory (ANDROID_SDK_ROOT='${ANDROID_SDK_ROOT:-}' ANDROID_HOME='${ANDROID_HOME:-}')"
+            exit 1
+          fi
+          version=""
+          while IFS= read -r candidate; do
+            if [ -x "$sdk_root/build-tools/$candidate/apksigner" ]; then
+              version="$candidate"
+              break
+            fi
+          done < <(find "$sdk_root/build-tools" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort -Vr)
+          if [ -z "$version" ]; then
+            echo "::error::No build-tools directory under $sdk_root/build-tools contains apksigner"
+            exit 1
+          fi
+          echo "Signing with build-tools $version"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Sign Android release
+        id: sign_app
+        # 1. use the configured keystore when the secrets are present, otherwise
+        #    generate a throwaway one so the release still publishes
+        # 2. zipalign the unsigned APK
+        # 3. apksigner sign --out
+        # 4. apksigner verify the result
+        env:
+          SIGNING_AVAILABLE: ${{ steps.signing.outputs.available }}
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          ALIAS: ${{ secrets.ALIAS }}
+          KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
+          BUILD_TOOLS_VERSION: ${{ steps.build_tools.outputs.version }}
+        run: |
+          set -euo pipefail
+          release_dir="app/build/outputs/apk/release"
+          unsigned_apk="$release_dir/app-release-unsigned.apk"
+          aligned_apk="$release_dir/keepscore-release-aligned.apk"
+          signed_apk="$release_dir/keepscore-release-signed.apk"
+          if [ ! -f "$unsigned_apk" ]; then
+            echo "::error::No unsigned release APK at $unsigned_apk"
+            exit 1
+          fi
+          sdk_root="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-}}"
+          build_tools="$sdk_root/build-tools/$BUILD_TOOLS_VERSION"
+          for tool in zipalign apksigner; do
+            if [ ! -x "$build_tools/$tool" ]; then
+              echo "::error::$build_tools/$tool is missing or not executable"
+              exit 1
+            fi
+          done
+
+          umask 077
+          keystore="$(mktemp "${RUNNER_TEMP:-/tmp}/keepscore-keystore.XXXXXX")"
+          trap 'rm -f "$keystore" "$aligned_apk"' EXIT
+
+          if [ "$SIGNING_AVAILABLE" = "true" ]; then
+            printf '%s' "$SIGNING_KEY" | tr -d '[:space:]' | base64 -d > "$keystore"
+            if [ ! -s "$keystore" ]; then
+              echo "::error::SIGNING_KEY did not decode to a keystore"
+              exit 1
+            fi
+            key_alias="$ALIAS"
+            key_pass="$KEY_STORE_PASSWORD"
+          else
+            key_alias="androiddebugkey"
+            key_pass="android"
+            keytool -genkeypair -keystore "$keystore" -storepass android -keypass android \
+              -alias "$key_alias" -dname "CN=KeepScore CI, O=KeepScore, C=US" \
+              -keyalg RSA -keysize 2048 -validity 10000 >/dev/null 2>&1
+          fi
+
+          "$build_tools/zipalign" -f -p 4 "$unsigned_apk" "$aligned_apk"
+          "$build_tools/apksigner" sign \
+            --ks "$keystore" \
+            --ks-key-alias "$key_alias" \
+            --ks-pass "pass:$key_pass" \
+            --key-pass "pass:$key_pass" \
+            --out "$signed_apk" \
+            "$aligned_apk"
+          "$build_tools/apksigner" verify --verbose "$signed_apk"
+
+          echo "signed_apk=$signed_apk" >> "$GITHUB_OUTPUT"
+
+      - name: Rename release
+        run: mv "${{ steps.sign_app.outputs.signed_apk }}" "keepscore-${{ steps.version.outputs.new_tag }}.apk"
+
+      - name: Generate release checksum
+        run: sha256sum "keepscore-${{ steps.version.outputs.new_tag }}.apk" > "keepscore-${{ steps.version.outputs.new_tag }}.apk.sha256"
+
+      - name: Upload release artifact
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: keepscore-apk
+          path: |
+            keepscore-${{ steps.version.outputs.new_tag }}.apk
+            keepscore-${{ steps.version.outputs.new_tag }}.apk.sha256
+            LICENSE
+            NOTICE
+          retention-days: 90
+
+      - name: Release
+        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3
+        with:
+          tag_name: ${{ steps.bump_and_tag.outputs.new_tag }}
+          body: |
+            KeepScore is free software, licensed under the WTFPL v2.
+            Copyright (C) Nolan Lawson and contributors.
+
+            Corresponding Source for this binary is the source tree at tag
+            ${{ steps.bump_and_tag.outputs.new_tag }}:
+            https://github.com/carlo-colombo/KeepScore/tree/${{ steps.bump_and_tag.outputs.new_tag }}
+
+            ${{ steps.signing.outputs.available == 'true' && 'This APK is signed with the project release key.' || 'This APK is signed with a throwaway key (no release signing secrets are configured), so it is for testing only and will not install over an earlier build.' }}
+          files: |
+            keepscore-${{ steps.version.outputs.new_tag }}.apk
+            keepscore-${{ steps.version.outputs.new_tag }}.apk.sha256
+            LICENSE
+            NOTICE

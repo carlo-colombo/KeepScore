@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fastscroll="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:gravity="center_horizontal">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" 
+        android:orientation="vertical">
+
+        <com.nolanlawson.keepscore.widget.CustomFastScrollView
+            android:id="@+id/fast_scroll_view"
+            android:layout_width="fill_parent"
+            android:layout_height="0px"
+            android:layout_weight="1"
+            fastscroll:overlayHeight="75dp"
+            fastscroll:overlayTextSize="24dp"
+            fastscroll:overlayTextColor="@color/emphasis"
+            fastscroll:overlayWidth="@dimen/fast_scroll_overlay_width" >
+
+            <com.nolanlawson.keepscore.widget.ExceptionCatchingListView
+                android:id="@android:id/list"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:scrollbars="none"
+                android:cacheColorHint="#00000000" />
+
+            <TextView
+                android:id="@android:id/empty"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:padding="3dp"
+                android:text="@string/text_no_saved_games"
+                android:textSize="18sp" />
+        </com.nolanlawson.keepscore.widget.CustomFastScrollView>
+
+        <View
+            android:id="@+id/view_spacer"
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/button_row_height"
+            android:visibility="gone"/>
+    </LinearLayout>
+    
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" 
+        android:id="@+id/foreground">
+
+        <LinearLayout
+            android:id="@+id/layout_button_row"
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/button_row_height"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/gray_menu_background"
+            android:orientation="horizontal"
+            android:padding="3dp"
+            android:visibility="gone"
+            android:gravity="center_vertical|center_horizontal" >
+
+            <Button
+                android:id="@+id/button_select_all"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_weight="0.5"
+                android:ellipsize="marquee"
+                android:gravity="center_vertical|center_horizontal"
+                android:singleLine="true"
+                android:text="@string/button_select_all" />
+
+            <Button
+                android:id="@+id/button_deselect_all"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_weight="0.5"
+                android:ellipsize="marquee"
+                android:gravity="center_vertical|center_horizontal"
+                android:singleLine="true"
+                android:text="@string/button_deselect_all" />
+
+        </LinearLayout>
+    </RelativeLayout>
+
+</FrameLayout>

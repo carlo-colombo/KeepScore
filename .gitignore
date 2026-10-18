@@ -1,8 +1,48 @@
+# Gradle files
+.gradle/
+build/
+app/build/
+/.kotlin/
+/.artifacts/
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Legacy Ant/Eclipse output
 gen
 bin
 dump.txt
 seeds.txt
 usage.txt
-*~
 target
+*~
+
+# Log/OS files
+*.log
 .DS_Store
+
+# Android Studio generated files and folders
+captures/
+.externalNativeBuild/
+.cxx/
+*.aab
+*.apk
+*.idsig
+output-metadata.json
+
+# IntelliJ
+*.iml
+.idea/
+misc.xml
+deploymentTargetDropDown.xml
+render.experimental.xml
+
+# Keystore files
+*.jks
+*.keystore
+
+# Android Profiling
+*.hprof
+
+# Pi agent scaffolding (local)
+.pi/

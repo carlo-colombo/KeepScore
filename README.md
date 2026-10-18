@@ -1,4 +1,4 @@
-KeepScore ![project unmaintained](https://img.shields.io/badge/project-unmaintained-red.svg)
+KeepScore ![targets Android 16](https://img.shields.io/badge/Android-16%20(API%2036)-3DDC84.svg)
 =========
 
 Author
@@ -30,26 +30,30 @@ More details about KeepScore can also be found in [my blog posts][10].
 Build it yourself
 ------------------
 
-KeepScore is built using [Maven][8].
+KeepScore is built with Gradle (the wrapper is committed) and targets Android 16
+(API 36), with `minSdk 26`. Requirements: JDK 21 and an Android SDK with
+platform 36 installed.
 
-KeepScore has a dependency, [AmbilWarna][11], which is not avilable in Maven.  So you'll have to first install it manually:
+Create `local.properties` (gitignored) pointing at your SDK:
 
 ```
-git clone https://code.google.com/p/yuku-android-util/
-cd yuku-android-util/AmbilWarna
-zip -r AmbilWarna.zip *.xml *.properties res src
-mvn install:install-file -Dfile=AmbilWarna.zip -DgroupId=yuku.ambilwarna -DartifactId=yuku.ambilwarna-apk -Dversion=1.0 -Dpackaging=apklib
+sdk.dir=/path/to/Android/Sdk
 ```
 
-Then, to build, install, and run KeepScore on your device, simply cd to the ```KeepScore/``` directory and do:
+Then, from the repository root:
 
-```mvn clean install android:deploy android:run```
+```
+./gradlew :app:assembleDebug            # build a debug APK
+./gradlew :app:testDebugUnitTest        # run the unit tests
+./gradlew :app:lintDebug                # run lint
+./gradlew :app:assembleRelease          # build the minified release APK
+```
 
-To run the unit tests, cd to the ```KeepScoreTest/``` directory and do:
+The debug APK is written to `app/build/outputs/apk/debug/app-debug.apk` and the
+release APK to `app/build/outputs/apk/release/app-release-unsigned.apk`.
 
-```mvn clean install```
-
-You must have Maven 3.0.3+ installed in order for this to work.
+CI (`.github/workflows/`) builds, tests and lints every pull request, and every
+push to `main` publishes a tagged prerelease APK.
 
 Add a translation
 -------------------
