@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -31,9 +30,9 @@ import android.widget.TextView;
 
 import ovh.litapp.keepscore.R;
 import ovh.litapp.keepscore.data.RecordedChange;
-import ovh.litapp.keepscore.data.RecordedChange.Type;
 import ovh.litapp.keepscore.db.Delta;
 import ovh.litapp.keepscore.db.PlayerScore;
+import ovh.litapp.keepscore.game.PlayerScoreModel;
 import ovh.litapp.keepscore.helper.ColorScheme;
 import ovh.litapp.keepscore.helper.DialogHelper;
 import ovh.litapp.keepscore.helper.DialogHelper.ResultListener;
@@ -66,6 +65,7 @@ public class PlayerView implements OnClickListener, OnLongClickListener {
             Delta.GET_VALUE, Functions.INTEGER_TO_LENGTH_WITH_SIGN);
     
     private PlayerScore playerScore;
+    private PlayerScoreModel playerScoreModel;
     
     // use atomic booleans because I'm paranoid and frankly don't understand
     // Android concurrency (and plus it seems to change from version to version
@@ -91,7 +91,6 @@ public class PlayerView implements OnClickListener, OnLongClickListener {
     private Handler handler;
     private boolean showOnscreenDeltaButtons;
 
-    private AtomicLong lastIncremented = new AtomicLong(0);
     private HistoryUpdateRunnable historyUpdateRunnable;
     private final Object lock = new Object();
     
@@ -103,6 +102,7 @@ public class PlayerView implements OnClickListener, OnLongClickListener {
             boolean showOnscreenDeltaButtons) {
         this.view = view;
         this.playerScore = playerScore;
+        this.playerScoreModel = new PlayerScoreModel(playerScore);
         this.context = context;
         this.handler = handler;
         this.showOnscreenDeltaButtons = showOnscreenDeltaButtons;
@@ -278,37 +278,10 @@ public class PlayerView implements OnClickListener, OnLongClickListener {
 
     private void incrementInBackground(int value) {
         log.d("incrementInBackground()");
-        
-        long currentTime = System.currentTimeMillis();
-        long lastIncrementedTime = lastIncremented.getAndSet(currentTime);
 
-        if (currentTime - lastIncrementedTime > getUpdateDelayInMs() || playerScore.getHistory().isEmpty()) {
-            log.d("it's been awhile");
-            Delta delta = new Delta(currentTime, value);
-            // if it's been awhile since the last time we incremented
-            changeRecorder.onCallback(new RecordedChange(playerScore.getPlayerNumber(), Type.AddNew, delta));
-            playerScore.getHistory().add(delta);
-        } else {
-            log.d("it hasn't been awhile");
-            // else just update the most recent history item
-            int lastIndex = playerScore.getHistory().size() - 1;
-            int newValue = playerScore.getHistory().get(lastIndex).getValue() + value;
-            if (newValue == 0) { // don't add "0" to the list; just delete the
-                // last history item
-                Delta deletedDelta = playerScore.getHistory().remove(lastIndex);
-                changeRecorder.onCallback(new RecordedChange(playerScore.getPlayerNumber(), Type.DeleteLastZero,
-                        deletedDelta));
-                lastIncremented.set(0); // reset the lastIncremented time so we
-                // don't update the
-                // previous value later
-            } else {
-                playerScore.getHistory().set(lastIndex, new Delta(currentTime, newValue));
-                changeRecorder.onCallback(new RecordedChange(playerScore.getPlayerNumber(), Type.ModifyLast, 
-                        new Delta(currentTime, value)));
-            }
-        }
-
-        playerScore.setScore(playerScore.getScore() + value);
+        RecordedChange recordedChange = playerScoreModel.applyDelta(value, System.currentTimeMillis(),
+                getUpdateDelayInMs());
+        changeRecorder.onCallback(recordedChange);
 
         shouldAutosave.set(true);
 
@@ -340,7 +313,8 @@ public class PlayerView implements OnClickListener, OnLongClickListener {
         scoreTextView.setText(Long.toString(playerScore.getScore()));
         scoreTextView.resizeText();
 
-        if (currentTime < (lastIncremented.get() + getUpdateDelayInMs()) && !playerScore.getHistory().isEmpty()) { 
+        if (currentTime < (playerScoreModel.getLastIncremented() + getUpdateDelayInMs())
+                && !playerScore.getHistory().isEmpty()) { 
             log.d("showing badge");
             // still
             // modifiable
@@ -418,7 +392,7 @@ public class PlayerView implements OnClickListener, OnLongClickListener {
 
             if (!animationRunning.get() // animation is already running, so shouldn't
                     // start a new one
-                    && lastIncremented.get() != 0 // counter was reset, in which
+                    && playerScoreModel.getLastIncremented() != 0 // counter was reset, in which
                     // case it would be
                     // unintuitive for the badge
                     // to fade
@@ -518,7 +492,7 @@ public class PlayerView implements OnClickListener, OnLongClickListener {
      */
     private List<Delta> historyToShow(List<Delta> history, long currentTime) {
 
-        boolean stillModifiable = currentTime < (lastIncremented.get() + getUpdateDelayInMs());
+        boolean stillModifiable = currentTime < (playerScoreModel.getLastIncremented() + getUpdateDelayInMs());
 
         if (history == null || history.isEmpty() || (stillModifiable && history.size() <= 1)) {
             return Collections.emptyList();
@@ -617,7 +591,8 @@ public class PlayerView implements OnClickListener, OnLongClickListener {
 
         // don't show "confirm" unless the last history entry is still
         // modifiable
-        boolean showConfirm = System.currentTimeMillis() < (lastIncremented.get() + getUpdateDelayInMs());
+        boolean showConfirm = System.currentTimeMillis() < (playerScoreModel.getLastIncremented()
+                + getUpdateDelayInMs());
 
         if (showConfirm) {
             items.add(context.getString(R.string.text_confirm));
@@ -657,13 +632,9 @@ public class PlayerView implements OnClickListener, OnLongClickListener {
         // may be a round
         // with no points for a particular player
         synchronized (lock) {
-            Delta delta = new Delta(System.currentTimeMillis(), 0);
-            changeRecorder.onCallback(new RecordedChange(playerScore.getPlayerNumber(), Type.AddNew, 
-                    delta));
-            playerScore.getHistory().add(delta);
+            changeRecorder.onCallback(playerScoreModel.addZero(System.currentTimeMillis()));
         }
 
-        lastIncremented.set(0); // reset last incremented
         shouldAutosave.set(true);
         updateViews();
 
@@ -672,15 +643,12 @@ public class PlayerView implements OnClickListener, OnLongClickListener {
     private void deleteLast() {
 
         synchronized (lock) {
-            List<Delta> history = playerScore.getHistory();
-            // undo the last history items
-            if (history != null && !history.isEmpty()) {
-                Delta removed = history.remove((int) (history.size() - 1));
-                playerScore.setScore(playerScore.getScore() - removed.getValue());
-                changeRecorder.onCallback(new RecordedChange(playerScore.getPlayerNumber(), Type.DeleteLast, removed));
+            // undo the last history item
+            RecordedChange recordedChange = playerScoreModel.deleteLast();
+            if (recordedChange != null) {
+                changeRecorder.onCallback(recordedChange);
             }
         }
-        lastIncremented.set(0); // reset lastIncremented
         shouldAutosave.set(true);
         updateViews();
     }
@@ -706,11 +674,9 @@ public class PlayerView implements OnClickListener, OnLongClickListener {
 
     public void reset(Context context) {
         synchronized (lock) {
-            playerScore.setScore(PreferenceHelper.getIntPreference(R.string.CONSTANT_pref_initial_score,
+            playerScoreModel.reset(PreferenceHelper.getIntPreference(R.string.CONSTANT_pref_initial_score,
                     R.string.CONSTANT_pref_initial_score_default, context));
-            playerScore.setHistory(new ArrayList<Delta>());
         }
-        lastIncremented.set(0);
         shouldAutosave.set(true);
 
         updateViews();
@@ -718,7 +684,7 @@ public class PlayerView implements OnClickListener, OnLongClickListener {
     }
 
     public void confirmHistory() {
-        lastIncremented.set(0); // reset so that the history views will refresh
+        playerScoreModel.resetLastIncremented(); // reset so that the history views will refresh
         handler.removeCallbacks(getHistoryUpdateRunnable()); // remove pending
         // runnables
         updateViews();
@@ -780,49 +746,13 @@ public class PlayerView implements OnClickListener, OnLongClickListener {
 
     public void revertChange(RecordedChange recordedChange) {
         synchronized (lock) {
-
-            switch (recordedChange.getType()) {
-                case AddNew:
-                    playerScore.getHistory().remove(playerScore.getHistory().size() - 1);
-                    playerScore.setScore(playerScore.getScore() - recordedChange.getDelta().getValue());
-                    break;
-                case DeleteLast:
-                case DeleteLastZero:
-                    playerScore.getHistory().add(recordedChange.getDelta());
-                    playerScore.setScore(playerScore.getScore() + recordedChange.getDelta().getValue());
-                    break;
-                case ModifyLast:
-                default:
-                    int lastIdx = playerScore.getHistory().size() - 1;
-                    Delta lastDelta = playerScore.getHistory().get(lastIdx);
-                    lastDelta.setValue(lastDelta.getValue() - recordedChange.getDelta().getValue());
-                    playerScore.setScore(playerScore.getScore() - recordedChange.getDelta().getValue());
-                    break;
-            }
+            playerScoreModel.revertChange(recordedChange);
         }
     }
 
     public void reexecuteChange(RecordedChange recordedChange) {
         synchronized (lock) {
-
-            switch (recordedChange.getType()) {
-                case AddNew:
-                    playerScore.getHistory().add(recordedChange.getDelta());
-                    playerScore.setScore(playerScore.getScore() + recordedChange.getDelta().getValue());
-                    break;
-                case DeleteLast:
-                case DeleteLastZero:
-                    playerScore.getHistory().remove(playerScore.getHistory().size() - 1);
-                    playerScore.setScore(playerScore.getScore() - recordedChange.getDelta().getValue());
-                    break;
-                case ModifyLast:
-                default:
-                    int lastIdx = playerScore.getHistory().size() - 1;
-                    Delta lastDelta = playerScore.getHistory().get(lastIdx);
-                    lastDelta.setValue(lastDelta.getValue() + recordedChange.getDelta().getValue());
-                    playerScore.setScore(playerScore.getScore() + recordedChange.getDelta().getValue());
-                    break;
-            }
+            playerScoreModel.reexecuteChange(recordedChange);
         }
     }
 
@@ -837,7 +767,8 @@ public class PlayerView implements OnClickListener, OnLongClickListener {
                 return;
             }
             long currentTime = System.currentTimeMillis();
-            if (currentTime >= (lastIncremented.get() + getUpdateDelayInMs()) && !playerScore.getHistory().isEmpty()) {
+            if (currentTime >= (playerScoreModel.getLastIncremented() + getUpdateDelayInMs())
+                    && !playerScore.getHistory().isEmpty()) {
                 // not modifiable anymore, need to unbold the last history item
                 updateViews();
             }
@@ -865,6 +796,6 @@ public class PlayerView implements OnClickListener, OnLongClickListener {
     }
 
     public void resetLastIncremented() {
-        lastIncremented.set(0);
+        playerScoreModel.resetLastIncremented();
     }
 }

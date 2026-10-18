@@ -3,12 +3,7 @@ package ovh.litapp.keepscore;
 import ovh.litapp.keepscore.android.EdgeToEdge;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import android.app.Activity;
@@ -44,11 +39,12 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import ovh.litapp.keepscore.data.RecordedChange;
-import ovh.litapp.keepscore.data.RecordedChange.Type;
 import ovh.litapp.keepscore.db.Delta;
 import ovh.litapp.keepscore.db.Game;
 import ovh.litapp.keepscore.db.GameDBHelper;
 import ovh.litapp.keepscore.db.PlayerScore;
+import ovh.litapp.keepscore.game.GameScoringModel;
+import ovh.litapp.keepscore.game.RoundTotal;
 import ovh.litapp.keepscore.helper.ColorScheme;
 import ovh.litapp.keepscore.helper.GameActivityHelper;
 import ovh.litapp.keepscore.helper.PlayerColor;
@@ -56,11 +52,6 @@ import ovh.litapp.keepscore.helper.PlayerTextFormat;
 import ovh.litapp.keepscore.helper.PreferenceHelper;
 import ovh.litapp.keepscore.helper.VersionHelper;
 import ovh.litapp.keepscore.util.Callback;
-import ovh.litapp.keepscore.util.CollectionUtil;
-import ovh.litapp.keepscore.util.CollectionUtil.Function;
-import ovh.litapp.keepscore.util.DataExpiringStack;
-import ovh.litapp.keepscore.util.Functions;
-import ovh.litapp.keepscore.util.Pair;
 import ovh.litapp.keepscore.util.StopWatch;
 import ovh.litapp.keepscore.util.UtilLogger;
 import ovh.litapp.keepscore.widget.PlayerView;
@@ -80,22 +71,6 @@ public abstract class GameActivity extends AppCompatActivity {
 
     private static final long PERIODIC_SAVE_PERIOD = TimeUnit.SECONDS.toMillis(30);
 
-    // how many changes to keep in memory?
-    private static final int UNDO_STACK_SIZE = 500;
-
-    @SuppressWarnings("unchecked")
-    private static final Set<Pair<Type, Type>> ACCEPTABLE_UNDO_TRANSITIONS = new HashSet<Pair<Type, Type>>(
-            Arrays.asList(Pair.create(Type.ModifyLast, Type.ModifyLast), Pair.create(Type.ModifyLast, Type.AddNew),
-                    Pair.create(Type.DeleteLastZero, Type.AddNew), Pair.create(Type.DeleteLastZero, Type.ModifyLast),
-                    Pair.create(Type.ModifyLast, Type.DeleteLastZero),
-                    Pair.create(Type.DeleteLastZero, Type.DeleteLastZero)));
-    @SuppressWarnings("unchecked")
-    private static final Set<Pair<Type, Type>> ACCEPTABLE_REDO_TRANSITIONS = new HashSet<Pair<Type, Type>>(
-            Arrays.asList(Pair.create(Type.ModifyLast, Type.ModifyLast), Pair.create(Type.AddNew, Type.ModifyLast),
-                    Pair.create(Type.AddNew, Type.DeleteLastZero), Pair.create(Type.DeleteLastZero, Type.ModifyLast),
-                    Pair.create(Type.ModifyLast, Type.DeleteLastZero),
-                    Pair.create(Type.DeleteLastZero, Type.DeleteLastZero)));
-
     private static final UtilLogger log = new UtilLogger(GameActivity.class);
 
     private LinearLayout rootLayout;
@@ -112,8 +87,7 @@ public abstract class GameActivity extends AppCompatActivity {
     private GameDBHelper dbHelper;
     private boolean savedGameBeforeExit;
 
-    private DataExpiringStack<RecordedChange> undoStack = new DataExpiringStack<RecordedChange>(UNDO_STACK_SIZE);
-    private DataExpiringStack<RecordedChange> redoStack = new DataExpiringStack<RecordedChange>(UNDO_STACK_SIZE);
+    private GameScoringModel scoringModel;
 
     private final ActivityResultLauncher<Intent> settingsActivityLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -278,8 +252,8 @@ public abstract class GameActivity extends AppCompatActivity {
         MenuItem undoMenuItem = menu.findItem(R.id.menu_undo);
         MenuItem redoMenuItem = menu.findItem(R.id.menu_redo);
 
-        boolean showUndo = !undoStack.isEmpty();
-        boolean showRedo = !redoStack.isEmpty();
+        boolean showUndo = scoringModel.canUndo();
+        boolean showRedo = scoringModel.canRedo();
 
         undoMenuItem.setEnabled(showUndo);
         redoMenuItem.setEnabled(showRedo);
@@ -312,47 +286,23 @@ public abstract class GameActivity extends AppCompatActivity {
 
     private void undoOrRedo(boolean undo) {
 
-        DataExpiringStack<RecordedChange> stackToPoll = undo ? undoStack : redoStack;
-        DataExpiringStack<RecordedChange> stackToPop = !undo ? undoStack : redoStack;
+        List<RecordedChange> recordedChanges = undo ? scoringModel.undoBatch() : scoringModel.redoBatch();
 
-        RecordedChange recordedChange = null;
         int lastPlayerNumber = -1;
-        RecordedChange.Type lastType = null;
-        while ((recordedChange = stackToPoll.peek()) != null
-                && (lastPlayerNumber == -1 || lastPlayerNumber == recordedChange.getPlayerNumber())
-                // only apply multiple changes to the same PlayerScore
-                && (lastType == null || isAcceptableUndoOrRedoTransition(undo, lastType, recordedChange.getType()))) {
-
-            recordedChange = stackToPoll.poll();
+        for (RecordedChange recordedChange : recordedChanges) {
             PlayerView playerView = playerViews.get(recordedChange.getPlayerNumber());
             if (undo) {
                 playerView.revertChange(recordedChange);
             } else {
                 playerView.reexecuteChange(recordedChange);
             }
-            stackToPop.pop(recordedChange);
-
             lastPlayerNumber = recordedChange.getPlayerNumber();
-            lastType = recordedChange.getType();
         }
 
         if (lastPlayerNumber != -1) {
             PlayerView playerView = playerViews.get(lastPlayerNumber);
             playerView.resetLastIncremented(); // keeps the badge from showing
             playerView.updateViews();
-        }
-    }
-
-    private boolean isAcceptableUndoOrRedoTransition(boolean undo, Type lastType, Type type) {
-        // consider "modify last" to be part of a larger task that is being
-        // undone
-        // so e.g. when undoing, MMMMMA is acceptable, whereas with redoing,
-        // AMMMMM is acceptable
-
-        if (undo) {
-            return ACCEPTABLE_UNDO_TRANSITIONS.contains(Pair.create(lastType, type));
-        } else { // redo
-            return ACCEPTABLE_REDO_TRANSITIONS.contains(Pair.create(lastType, type));
         }
     }
 
@@ -433,8 +383,7 @@ public abstract class GameActivity extends AppCompatActivity {
         saveGame(game, true, null); // save the new game
 
         updateRoundTotalViewText();
-        undoStack.clear();
-        redoStack.clear();
+        scoringModel.clearUndoRedo();
 
         Toast.makeText(this, R.string.toast_rematch_created, Toast.LENGTH_SHORT).show();
     }
@@ -584,6 +533,8 @@ public abstract class GameActivity extends AppCompatActivity {
 
         playerViews = new ArrayList<PlayerView>();
 
+        scoringModel = new GameScoringModel(playerScores);
+
         boolean showOnscreenDeltaButtons = getShouldShowOnscreenDeltaButtons();
 
         for (int i = 0; i < playerScores.size(); i++) {
@@ -600,8 +551,7 @@ public abstract class GameActivity extends AppCompatActivity {
 
                 @Override
                 public void onCallback(RecordedChange recordedChange) {
-                    undoStack.pop(recordedChange);
-                    redoStack.clear();
+                    scoringModel.recordChange(recordedChange);
                 }
             });
             playerView.setOnChangeListener(new Runnable() {
@@ -632,25 +582,11 @@ public abstract class GameActivity extends AppCompatActivity {
         // highlight the most recently changed player.  This helps with round-based games
         // (where it's important to know that each player's round has been tallied)
         // or games where the scoring has to happen in a particular order (e.g. Cribbage)
-        
-        long maxLastUpdate = 0;
-        int maxLastUpdateIdx = -1;
-        
-        for (int i = 0; i < playerScores.size(); i++) {
-            PlayerScore playerScore = playerScores.get(i);
-            
-            log.d("playerScore lastUpdate is %s", playerScore.getLastUpdate());
-            
-            if (playerScore.getLastUpdate() > maxLastUpdate) {
-                maxLastUpdate = playerScore.getLastUpdate();
-                maxLastUpdateIdx = i;
-            }
-        }
-        
-        log.d("updating highlighted player score to idx %s", maxLastUpdateIdx);
+
         // if none of the player scores are above 0, then this is a game from an older version
         // of KeepScore where we didn't track the lastUpdate, so we don't highlight anything
-        
+        int maxLastUpdateIdx = scoringModel.getHighlightedPlayerIndex();
+
         boolean disableTagIcon = PreferenceHelper.getBooleanPreference(
                 R.string.CONSTANT_pref_disable_highlight_tag, 
                 R.string.CONSTANT_pref_disable_highlight_tag_default, this);
@@ -676,17 +612,10 @@ public abstract class GameActivity extends AppCompatActivity {
             return;
         }
 
-        final int round = CollectionUtil.max(playerScores, Functions.PLAYER_SCORE_TO_HISTORY_SIZE);
+        RoundTotal roundTotal = scoringModel.computeRoundTotal();
 
-        int roundTotal = round == 0 ? 0 : CollectionUtil.sum(playerScores, new Function<PlayerScore, Integer>() {
-
-            @Override
-            public Integer apply(PlayerScore obj) {
-                return obj.getHistory().size() >= round ? obj.getHistory().get(round - 1).getValue() : 0;
-            }
-        });
-
-        String text = String.format(getString(R.string.text_round_total), Math.max(round, 1), roundTotal);
+        String text = String.format(getString(R.string.text_round_total), Math.max(roundTotal.getRound(), 1),
+                roundTotal.getTotal());
 
         if (roundTotalTextView == null) {
             roundTotalTextView = (TextView) roundTotalViewStub.inflate();
