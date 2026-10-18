@@ -203,13 +203,23 @@ jobs:
           trap 'rm -f "$keystore" "$aligned_apk"' EXIT
 
           if [ "$SIGNING_AVAILABLE" = "true" ]; then
-            printf '%s' "$SIGNING_KEY" | tr -d '[:space:]' | base64 -d > "$keystore"
-            if [ ! -s "$keystore" ]; then
-              echo "::error::SIGNING_KEY did not decode to a keystore"
+            # Tolerate how the secret was encoded: strip whitespace and any
+            # non-base64 characters, accept URL-safe base64, and re-pad.
+            cleaned="$(printf '%s' "$SIGNING_KEY" | tr -d '[:space:]' | tr '_-' '/+' | tr -dc 'A-Za-z0-9+/=')"
+            case $(( ${#cleaned} % 4 )) in
+              2) cleaned="${cleaned}==" ;;
+              3) cleaned="${cleaned}=" ;;
+            esac
+            if ! printf '%s' "$cleaned" | base64 -d > "$keystore" 2>/dev/null || [ ! -s "$keystore" ]; then
+              echo "::error::SIGNING_KEY is not valid base64. Encode the keystore with: base64 -w0 keystore.jks"
               exit 1
             fi
             key_alias="$ALIAS"
             key_pass="$KEY_STORE_PASSWORD"
+            if ! keytool -list -keystore "$keystore" -storepass "$key_pass" -alias "$key_alias" >/dev/null 2>&1; then
+              echo "::error::Could not open the decoded keystore with the given ALIAS/KEY_STORE_PASSWORD"
+              exit 1
+            fi
           else
             key_alias="androiddebugkey"
             key_pass="android"
