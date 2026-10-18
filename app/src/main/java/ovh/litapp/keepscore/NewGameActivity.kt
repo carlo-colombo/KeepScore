@@ -4,9 +4,9 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material3.MaterialTheme
 import ovh.litapp.keepscore.android.EdgeToEdge
 import ovh.litapp.keepscore.ui.newgame.NewGameScreen
+import ovh.litapp.keepscore.ui.theme.KeepScoreTheme
 
 class NewGameActivity : ComponentActivity() {
 
@@ -14,7 +14,7 @@ class NewGameActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            MaterialTheme {
+            KeepScoreTheme {
                 NewGameScreen(onNumPlayersSelected = ::startNamePlayersActivity)
             }
         }

@@ -5,10 +5,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.addCallback
 import androidx.activity.compose.setContent
-import androidx.compose.material3.MaterialTheme
 import ovh.litapp.keepscore.helper.Orientation
 import ovh.litapp.keepscore.helper.PreferenceHelper
 import ovh.litapp.keepscore.ui.settings.SettingsScreen
+import ovh.litapp.keepscore.ui.theme.KeepScoreTheme
 
 /**
  * Settings screen, rendered with Jetpack Compose.
@@ -42,7 +42,7 @@ class SettingsActivity : ComponentActivity() {
             intent?.getBooleanExtra(EXTRA_SCROLL_TO_CONFIGURATIONS, false) == true
 
         setContent {
-            MaterialTheme {
+            KeepScoreTheme {
                 SettingsScreen(
                     scrollToConfigurations = scrollToConfigurations,
                     onNavigateToAbout = {

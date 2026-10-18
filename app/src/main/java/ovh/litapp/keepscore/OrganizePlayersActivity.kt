@@ -5,10 +5,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.addCallback
 import androidx.activity.compose.setContent
-import androidx.compose.material3.MaterialTheme
 import ovh.litapp.keepscore.db.Game
 import ovh.litapp.keepscore.db.PlayerScore
 import ovh.litapp.keepscore.ui.organize.OrganizePlayersScreen
+import ovh.litapp.keepscore.ui.theme.KeepScoreTheme
 
 /**
  * The "Edit Players" screen, rendered with Jetpack Compose.
@@ -32,7 +32,7 @@ class OrganizePlayersActivity : ComponentActivity() {
         }
 
         setContent {
-            MaterialTheme {
+            KeepScoreTheme {
                 OrganizePlayersScreen(
                     initialPlayers = game.playerScores,
                     onConfirm = ::setPlayersResultAndFinish,

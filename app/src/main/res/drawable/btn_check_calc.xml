@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Calculator checkbox background, replacing the Holo-light tick boxes, whose unchecked box was
+     dark grey on the black window background. -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:state_checked="true" android:drawable="@drawable/calc_check_on" />
+    <item android:drawable="@drawable/calc_check_off" />
+</selector>

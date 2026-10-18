@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Calculator button, focused state: calculator-blue outline so the focused button is visible
+     without a keyboard-driven highlight from the Holo theme. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <solid android:color="@color/calc_surface_alt" />
+    <stroke android:width="2dp" android:color="@color/calc_accent_blue" />
+    <corners android:radius="8dp" />
+</shape>

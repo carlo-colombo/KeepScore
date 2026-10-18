@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!--  Google Now-style card look -->
-    <color name="card_background">#FFe5e5e5</color>
-    <color name="card_border">#FFe5e5e5</color>
-    <color name="card_inner">#FFFFFFFF</color>
-    <color name="card_shadow">#FFd4d4d4</color>
-    <color name="card_shadow_2">#FFd8d8d8</color>
-    <color name="card_divider">#FFe5e5e5</color>
-    <color name="card_text_color">#FF434343</color>
+    <!--  Google Now-style card look, retinted to the calculator palette at the bottom of this file -->
+    <color name="card_background">@color/calc_background</color>
+    <color name="card_border">@color/calc_border</color>
+    <color name="card_inner">@color/calc_surface</color>
+    <color name="card_shadow">#FF0D0D0D</color>
+    <color name="card_shadow_2">#FF141414</color>
+    <color name="card_divider">@color/calc_divider</color>
+    <color name="card_text_color">@color/calc_text_primary</color>
     
-    <color name="light_blue">#CC0c6995</color>
-    <color name="light_blue_2">#330c6995</color>
-    <color name="light_blue_3">#770c6995</color>
+    <color name="light_blue">@color/calc_accent_blue</color>
+    <color name="light_blue_2">@color/calc_divider</color>
+    <color name="light_blue_3">@color/calc_accent_blue_dark</color>
     <color name="faint_blue">#FFF0FFFF</color>
     <color name="faint_blue_2">#110c6995</color>
     <color name="faint_blue_3">#550c6995</color>
@@ -41,9 +41,9 @@
     <color name="gray_6">#FFE9E9E9</color>
     <color name="gray_7">#FF191919</color>
     <color name="gray_8">#FF090909</color>
-    <color name="gray_9">#FFCCCCCC</color>
-    <color name="gray_10">#FFDDDDDD</color>
-    <color name="gray_11">#FFCCCCCC</color>
+    <color name="gray_9">@color/calc_surface_alt</color>
+    <color name="gray_10">@color/calc_surface_alt</color>
+    <color name="gray_11">@color/calc_surface</color>
     <color name="gray_12">#FFb1b1b1</color>
         
     <color name="light_gray">#FFE9F3F9</color>
@@ -51,13 +51,13 @@
     <color name="orange_2">#FFff9000</color>
     <color name="yellow_1">#FFfbad00</color>
     <color name="yellow_2">#FFffc600</color>
-    <color name="emphasis">#31b6e7</color>
+    <color name="emphasis">@color/calc_accent_blue</color>
     <color name="bg_gray">#cecbce</color>
     <color name="dark_divider">#33cccccc</color>
     
     <color name="holo_light_blue_1">#FF33B5E5</color>
     
-    <color name="chart_main">#FF000000</color>
+    <color name="chart_main">@color/calc_text_primary</color>
     <color name="chart_secondary">#FFCCCCCC</color>
     <color name="chart_tertiary">#FF999999</color>
     
@@ -94,5 +94,21 @@
 
     <!-- Adaptive launcher icon background -->
     <color name="ic_launcher_background">#FF0C6995</color>
+
+    <!-- Calculator dark palette: black window, dark-grey surfaces, light text, and the
+         calculator-blue / orange-operator accents taken from the launcher icon. Kept at the end
+         of the file so the legacy colour lines above keep their line numbers. -->
+    <color name="calc_background">#FF000000</color>
+    <color name="calc_surface">#FF1E1E1E</color>
+    <color name="calc_surface_alt">#FF2A2A2A</color>
+    <color name="calc_surface_pressed">#FF3C3C3C</color>
+    <color name="calc_border">#FF3F3F3F</color>
+    <color name="calc_divider">#FF3A3A3A</color>
+    <color name="calc_text_primary">#FFEDEDED</color>
+    <color name="calc_text_secondary">#FFA6A6A6</color>
+    <color name="calc_accent_blue">#FF2196F3</color>
+    <color name="calc_accent_blue_dark">#FF0C6995</color>
+    <color name="calc_accent_orange">#FFF26700</color>
+    <color name="calc_accent_orange_dark">#FFC25100</color>
 
 </resources>

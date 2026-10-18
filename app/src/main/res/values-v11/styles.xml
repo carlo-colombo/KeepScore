@@ -1,20 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Generated with http://android-holo-colors.com -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Holo Light style buttons, image buttons, and check boxes -->
+    <!-- Calculator buttons: dark-grey raised surface with a light label, replacing the Holo-light
+         nine-patch buttons that were unreadable on the black window background. -->
     <style name="ButtonAppTheme" parent="android:Widget.Holo.Light.Button">
-        <item name="android:background">@drawable/btn_default_holo_light</item>
+        <item name="android:background">@drawable/btn_calc_default</item>
+        <item name="android:textColor">@color/calc_text_primary</item>
     </style>
 
     <style name="ImageButtonAppTheme" parent="android:Widget.Holo.Light.ImageButton">
-        <item name="android:background">@drawable/btn_default_holo_light</item>
+        <item name="android:background">@drawable/btn_calc_default</item>
+        <!-- The bundled action icons are dark Holo-light artwork, so tint them light. -->
+        <item name="android:tint">@color/calc_text_primary</item>
     </style>
 
-    <style name="KeepScoreMainTheme" parent="@style/Theme.MaterialComponents.Light">
+    <!-- Calculator dark theme: black window, dark-grey surfaces, light text. -->
+    <style name="KeepScoreMainTheme" parent="@style/Theme.MaterialComponents">
+
+        <item name="android:windowBackground">@color/calc_background</item>
+        <item name="android:colorBackground">@color/calc_background</item>
+        <item name="android:statusBarColor">@color/calc_background</item>
+        <item name="android:navigationBarColor">@color/calc_background</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+
+        <item name="colorPrimary">@color/calc_accent_blue</item>
+        <item name="colorPrimaryVariant">@color/calc_accent_blue_dark</item>
+        <item name="colorPrimaryDark">@color/calc_background</item>
+        <item name="colorAccent">@color/calc_accent_blue</item>
+        <item name="colorSecondary">@color/calc_accent_orange</item>
+        <item name="colorSecondaryVariant">@color/calc_accent_orange_dark</item>
+        <item name="colorSurface">@color/calc_surface</item>
+        <item name="colorOnPrimary">@color/calc_text_primary</item>
+        <item name="colorOnSurface">@color/calc_text_primary</item>
+        <item name="colorOnBackground">@color/calc_text_primary</item>
+
+        <item name="android:textColorPrimary">@color/calc_text_primary</item>
+        <item name="android:textColorSecondary">@color/calc_text_secondary</item>
+
         <item name="android:buttonStyle">@style/ButtonAppTheme</item>
         <item name="android:imageButtonStyle">@style/ImageButtonAppTheme</item>
-        <item name="android:listChoiceIndicatorMultiple">@drawable/btn_check_holo_light</item>
+        <item name="android:listChoiceIndicatorMultiple">@drawable/btn_check_calc</item>
     </style>
 
 </resources>
