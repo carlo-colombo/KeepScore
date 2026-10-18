@@ -48,7 +48,7 @@ jobs:
           while IFS= read -r file; do
             [ -z "$file" ] && continue
             case "$file" in
-              documentation/*|gimp/*|*.md|LICENSE|NOTICE|.github/dependabot.yml) ;;
+              documentation/*|docs/*|gimp/*|*.md|LICENSE|NOTICE|.github/dependabot.yml) ;;
               *)
                 build_needed=true
                 break
