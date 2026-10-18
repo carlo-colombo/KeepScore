@@ -3,11 +3,17 @@ KeepScore ![targets Android 16](https://img.shields.io/badge/Android-16%20(API%2
 
 Author
 --------
-Nolan Lawson
+Nolan Lawson wrote KeepScore and all of its original Android code. Upstream
+repository: <https://github.com/nolanlawson/KeepScore>.
+
+This repository is a fork of that work, maintained at
+<https://github.com/carlo-colombo/KeepScore> (see [Fork](#fork) below).
 
 License
 ---------
-[WTFPL][1], although attribution would be nice.
+[WTFPL][1] (Do What The Fuck You Want To Public License, Version 2), although
+attribution would be nice. Copyright (C) Nolan Lawson and contributors; see
+[NOTICE](NOTICE) for the attribution that ships with the app.
 
 Overview
 ----------
@@ -27,14 +33,40 @@ You can also find a direct APK download link from [the KeepScore page on my web 
 
 More details about KeepScore can also be found in [my blog posts][10].
 
+Fork
+------
+
+This repository is a fork of Nolan Lawson's KeepScore, maintained at
+<https://github.com/carlo-colombo/KeepScore>. The original author, the original
+code and the WTFPL license are unchanged; the fork modernizes the app for
+current Android:
+
+- `minSdk 34`, `compileSdk`/`targetSdk` 36 (Android 16)
+- AndroidX AppCompat Views with Jetpack Compose adopted screen by screen
+- WorkManager for the daily automatic backup, app-specific storage plus a
+  FileProvider for sharing backups and spreadsheets
+- a CI/release pipeline that publishes a tagged APK for every push to `main`
+
+Downloadable APKs and their checksums are attached to the
+[releases](https://github.com/carlo-colombo/KeepScore/releases). The Google Play
+link above points at the original app.
+
+The Android module lives in `app/` (upstream kept it in `KeepScore/`), so a path
+such as `KeepScore/res/values-eo/strings.xml` from the translation section below
+maps to `app/src/main/res/values-eo/strings.xml` here.
+
 Build it yourself
 ------------------
 
-KeepScore is built with Gradle (the wrapper is committed) and targets Android 16
-(API 36), with `minSdk 26`. Requirements: JDK 21 and an Android SDK with
-platform 36 installed.
+KeepScore builds with the committed Gradle wrapper (Gradle 9.8.1, AGP 9.4.1,
+Kotlin 2.4.21); dependency versions come from the version catalog in
+`gradle/libs.versions.toml`. The app is a single `:app` module that compiles
+against Android 16 (API 36) with `minSdk 34`, using AndroidX AppCompat Views and
+Jetpack Compose.
 
-Create `local.properties` (gitignored) pointing at your SDK:
+Requirements: JDK 21 and an Android SDK with platform 36 (and matching
+build-tools) installed. Create `local.properties` (gitignored) pointing at your
+SDK:
 
 ```
 sdk.dir=/path/to/Android/Sdk
@@ -44,16 +76,27 @@ Then, from the repository root:
 
 ```
 ./gradlew :app:assembleDebug            # build a debug APK
-./gradlew :app:testDebugUnitTest        # run the unit tests
+./gradlew :app:testDebugUnitTest        # run the unit tests (JUnit4 + Robolectric)
 ./gradlew :app:lintDebug                # run lint
-./gradlew :app:assembleRelease          # build the minified release APK
+./gradlew :app:assembleRelease          # build the minified, shrunk release APK
 ```
 
 The debug APK is written to `app/build/outputs/apk/debug/app-debug.apk` and the
 release APK to `app/build/outputs/apk/release/app-release-unsigned.apk`.
 
-CI (`.github/workflows/`) builds, tests and lints every pull request, and every
-push to `main` publishes a tagged prerelease APK.
+### CI and releases
+
+`.github/workflows/pr.yml` builds, tests and lints every pull request
+(`:app:assembleDebug :app:testDebugUnitTest :app:lintDebug`) and uploads the
+debug APK along with the test and lint reports.
+
+`.github/workflows/build.yml` runs on every push to `main` and publishes a
+tagged release: it assembles the release APK, validates it with
+`:app:testDebugUnitTest :app:lintRelease`, then pushes the version tag, signs
+the APK and creates a GitHub release carrying the APK, its SHA-256 checksum,
+`LICENSE` and `NOTICE`. Signing uses the `SIGNING_KEY`, `ALIAS` and
+`KEY_STORE_PASSWORD` secrets; when they are absent the release still publishes,
+signed with a throwaway key.
 
 Add a translation
 -------------------
