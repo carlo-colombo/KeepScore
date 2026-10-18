@@ -216,9 +216,12 @@ jobs:
             fi
             key_alias="$ALIAS"
             key_pass="$KEY_STORE_PASSWORD"
-            if ! keytool -list -keystore "$keystore" -storepass "$key_pass" -alias "$key_alias" >/dev/null 2>&1; then
-              echo "::error::Could not open the decoded keystore with the given ALIAS/KEY_STORE_PASSWORD"
-              exit 1
+            # Diagnostic only: some keystore/key-password combinations that
+            # apksigner accepts make `keytool -list -alias` fail, so warn rather
+            # than block the release. apksigner below is the authority.
+            if ! keytool -list -keystore "$keystore" -storepass "$key_pass" >/tmp/keytool.out 2>&1; then
+              echo "::warning::keytool could not list the decoded keystore; apksigner will decide"
+              cat /tmp/keytool.out || true
             fi
           else
             key_alias="androiddebugkey"
