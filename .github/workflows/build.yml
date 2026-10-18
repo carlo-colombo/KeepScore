@@ -213,9 +213,14 @@ jobs:
           else
             key_alias="androiddebugkey"
             key_pass="android"
-            keytool -genkeypair -keystore "$keystore" -storepass android -keypass android \
+            # keytool refuses to open the empty file mktemp created, so remove it first.
+            rm -f "$keystore"
+            if ! keytool -genkeypair -keystore "$keystore" -storepass "$key_pass" -keypass "$key_pass" \
               -alias "$key_alias" -dname "CN=KeepScore CI, O=KeepScore, C=US" \
-              -keyalg RSA -keysize 2048 -validity 10000 >/dev/null 2>&1
+              -keyalg RSA -keysize 2048 -validity 10000; then
+              echo "::error::keytool failed to generate the throwaway signing key"
+              exit 1
+            fi
           fi
 
           "$build_tools/zipalign" -f -p 4 "$unsigned_apk" "$aligned_apk"
