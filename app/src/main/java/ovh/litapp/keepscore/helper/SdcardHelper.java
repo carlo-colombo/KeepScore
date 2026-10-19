@@ -151,7 +151,8 @@ public class SdcardHelper {
     public static String open(Uri uri, Format format, ContentResolver contentResolver) {
         StringBuilder stringBuilder = new StringBuilder();
         BufferedReader bufferedReader = null;
-        String line;
+        char[] buffer = new char[BUFFER];
+        int charsRead;
 
         try {
             InputStream fileInputStream = contentResolver.openInputStream(uri);
@@ -161,8 +162,8 @@ public class SdcardHelper {
             InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8");
             bufferedReader = new BufferedReader(inputStreamReader, BUFFER);
 
-            while ((line = bufferedReader.readLine()) != null) {
-                stringBuilder.append(line);
+            while ((charsRead = bufferedReader.read(buffer, 0, buffer.length)) != -1) {
+                stringBuilder.append(buffer, 0, charsRead);
             }
         } catch (IOException ex) {
             log.e(ex, "couldn't read file");

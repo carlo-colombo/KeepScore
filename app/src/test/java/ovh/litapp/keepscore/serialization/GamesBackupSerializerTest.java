@@ -1,33 +1,57 @@
 package ovh.litapp.keepscore.serialization;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
+import android.content.Context;
 import android.graphics.Color;
+import android.net.Uri;
+
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
+import ovh.litapp.keepscore.KeepScoreApplication;
 import ovh.litapp.keepscore.db.Delta;
 import ovh.litapp.keepscore.db.Game;
 import ovh.litapp.keepscore.db.PlayerScore;
 import ovh.litapp.keepscore.helper.PlayerColor;
+import ovh.litapp.keepscore.helper.SdcardHelper;
 import ovh.litapp.keepscore.helper.PlayerColor.CustomPlayerColor;
 
 /**
  * Round-trip tests for {@link GamesBackupSerializer}.
  */
 @RunWith(RobolectricTestRunner.class)
-@Config(sdk = 34)
+@Config(sdk = 34, application = GamesBackupSerializerTest.TestKeepScoreApplication.class)
 public class GamesBackupSerializerTest {
+
+    /** Sets the singleton required by SdcardHelper without scheduling unrelated background work. */
+    public static class TestKeepScoreApplication extends KeepScoreApplication {
+        @Override
+        public void onCreate() {
+            try {
+                Field instance = KeepScoreApplication.class.getDeclaredField("instance");
+                instance.setAccessible(true);
+                instance.set(null, this);
+            } catch (ReflectiveOperationException e) {
+                throw new AssertionError(e);
+            }
+        }
+    }
 
     private static final long BACKUP_DATE_SAVED = 1332617241000L;
 
@@ -38,6 +62,68 @@ public class GamesBackupSerializerTest {
         GamesBackup deserialized = roundTrip(gamesBackup);
 
         assertGamesBackupEquals(gamesBackup, deserialized);
+    }
+
+    @Test
+    public void deserializesVersionFourBackupWithoutColorsOrHistoryTimestamps() {
+        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                + "<GamesBackup><gameCount>1</gameCount><version>4</version><automatic>false</automatic>"
+                + "<backupFilename>legacy.xml</backupFilename><dateBackupSaved>1332617241000</dateBackupSaved>"
+                + "<Games><Game><dateGameSaved>1332617240000</dateGameSaved>"
+                + "<dateGameStarted>1332617000000</dateGameStarted><gameName>R&amp;D &lt;Friday&gt;</gameName>"
+                + "<PlayerScores>"
+                + "<PlayerScore><playerName>Alice &amp; Bob &lt;captain&gt;</playerName><score>12</score>"
+                + "<playerNumber>4</playerNumber><history>5,7</history><lastUpdate>1332617239000</lastUpdate></PlayerScore>"
+                + "<PlayerScore><playerName>Tom &amp; Jerry</playerName><score>9</score>"
+                + "<playerNumber>9</playerNumber><history>-2,3,8</history><lastUpdate>1332617238000</lastUpdate></PlayerScore>"
+                + "</PlayerScores></Game></Games></GamesBackup>";
+
+        GamesBackup deserialized = GamesBackupSerializer.deserialize(xml);
+
+        assertEquals(4, deserialized.getVersion());
+        assertEquals(1, deserialized.getGames().size());
+        Game game = deserialized.getGames().get(0);
+        assertEquals("R&D <Friday>", game.getName());
+        assertEquals(2, game.getPlayerScores().size());
+
+        PlayerScore first = game.getPlayerScores().get(0);
+        assertEquals("Alice & Bob <captain>", first.getName());
+        assertEquals(PlayerColor.BUILT_INS[4], first.getPlayerColor());
+        assertEquals(Arrays.asList(new Delta(0L, 5), new Delta(0L, 7)), first.getHistory());
+
+        PlayerScore second = game.getPlayerScores().get(1);
+        assertEquals("Tom & Jerry", second.getName());
+        assertEquals(PlayerColor.BUILT_INS[9], second.getPlayerColor());
+        assertEquals(Arrays.asList(new Delta(0L, -2), new Delta(0L, 3), new Delta(0L, 8)), second.getHistory());
+        for (PlayerScore playerScore : game.getPlayerScores()) {
+            for (Delta delta : playerScore.getHistory()) {
+                assertEquals(0L, delta.getTimestamp());
+            }
+        }
+    }
+
+    @Test
+    public void gzipSaveAndOpenPreservesSerializedXmlThroughContentResolver() {
+        Context context = ApplicationProvider.getApplicationContext();
+        String xml = GamesBackupSerializer.serialize(createGamesBackup());
+        String filename = "serializer-round-trip-" + UUID.randomUUID() + ".xml.gz";
+        File file = SdcardHelper.getFile(filename, SdcardHelper.Location.Backups);
+        assertNotNull(file);
+
+        try {
+            assertTrue(SdcardHelper.save(filename, SdcardHelper.Format.GZIP,
+                    SdcardHelper.Location.Backups, xml));
+            assertTrue(file.exists());
+
+            String readBack = SdcardHelper.open(Uri.fromFile(file), SdcardHelper.Format.GZIP,
+                    context.getContentResolver());
+
+            assertEquals(xml, readBack);
+        } finally {
+            if (file.exists()) {
+                assertTrue("temporary backup file should be deleted", file.delete());
+            }
+        }
     }
 
     @Test

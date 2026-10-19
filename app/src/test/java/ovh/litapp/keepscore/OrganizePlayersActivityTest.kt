@@ -3,6 +3,7 @@ package ovh.litapp.keepscore
 import android.content.Intent
 import android.os.Parcel
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -23,33 +24,42 @@ class OrganizePlayersActivityTest {
         this.score = score
         playerNumber = number
         playerColor = PlayerColor.BUILT_INS[number % PlayerColor.BUILT_INS.size]
-        history = arrayListOf(Delta(0L, score.toInt()))
+        history = arrayListOf(
+            Delta(1_700_000_000L + number, score.toInt()),
+            Delta(1_700_000_100L + number, -number - 1),
+        )
+        lastUpdate = 1_700_000_200L + number
     }
 
-    /** Reads the player list back the way a receiving activity would, through a parcel. */
-    private fun Intent.playersFromParcel(): List<PlayerScore>? {
+    /** Copies the result Intent through a real Android parcel round-trip. */
+    private fun Intent.parcelRoundTrip(): Intent {
         val parcel = Parcel.obtain()
         try {
             writeToParcel(parcel, 0)
             parcel.setDataPosition(0)
-            return Intent.CREATOR.createFromParcel(parcel).getParcelableArrayListExtra(
-                OrganizePlayersActivity.EXTRA_PLAYER_SCORES,
-                PlayerScore::class.java,
-            )
+            return Intent.CREATOR.createFromParcel(parcel)
         } finally {
             parcel.recycle()
         }
     }
 
     @Test
-    fun theResultCarriesThePlayersInOrderUnderTheExtraGameActivityReads() {
+    fun resultIntentParcelPreservesPlayerFieldsInOrderUnderTheExpectedExtraKey() {
         val players = listOf(player("a", 30, 0), player("b", 10, 1), player("c", 20, 2))
+        val result = playerScoresResult(players)
 
-        val readBack = playerScoresResult(players).playersFromParcel()
-
-        assertEquals(listOf("a", "b", "c"), readBack?.map { it.name })
-        assertEquals(listOf(0, 1, 2), readBack?.map { it.playerNumber })
-        assertEquals(listOf(30L, 10L, 20L), readBack?.map { it.score })
-        assertEquals(players.map { it.playerColor }, readBack?.map { it.playerColor })
+        assertEquals("playerScores", OrganizePlayersActivity.EXTRA_PLAYER_SCORES)
+        val parcelledIntent = result.parcelRoundTrip()
+        assertTrue(parcelledIntent.hasExtra("playerScores"))
+        val parcelledResult = parcelledIntent.getParcelableArrayListExtra(
+            OrganizePlayersActivity.EXTRA_PLAYER_SCORES,
+            PlayerScore::class.java,
+        )
+        assertEquals(listOf("a", "b", "c"), parcelledResult?.map { it.name })
+        assertEquals(listOf(0, 1, 2), parcelledResult?.map { it.playerNumber })
+        assertEquals(listOf(30L, 10L, 20L), parcelledResult?.map { it.score })
+        assertEquals(players.map { it.history }, parcelledResult?.map { it.history })
+        assertEquals(players.map { it.lastUpdate }, parcelledResult?.map { it.lastUpdate })
+        assertEquals(players.map { it.playerColor }, parcelledResult?.map { it.playerColor })
     }
 }
