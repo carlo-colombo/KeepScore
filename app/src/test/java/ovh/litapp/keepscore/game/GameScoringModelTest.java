@@ -23,6 +23,23 @@ public class GameScoringModelTest {
     private static final long UPDATE_DELAY_MS = 10000L;
 
     @Test
+    public void clearUndoRedoClearsBothStacks() {
+        GameScoringModel model = new GameScoringModel(new ArrayList<PlayerScore>());
+        model.recordChange(change(0, Type.AddNew, 5, 1000L));
+        assertTrue(model.canUndo());
+
+        model.recordChange(change(0, Type.AddNew, 6, 2000L));
+        model.undoBatch();
+        assertTrue(model.canUndo());
+        assertTrue(model.canRedo());
+
+        model.clearUndoRedo();
+
+        assertFalse(model.canUndo());
+        assertFalse(model.canRedo());
+    }
+
+    @Test
     public void recordChangeEnablesUndoAndClearsRedo() {
         GameScoringModel model = new GameScoringModel(new ArrayList<PlayerScore>());
         assertFalse(model.canUndo());
@@ -112,15 +129,32 @@ public class GameScoringModelTest {
 
     @Test
     public void transitionRulesMatchTheLegacySets() {
-        assertTrue(GameScoringModel.isAcceptableUndoOrRedoTransition(true, Type.ModifyLast, Type.AddNew));
-        assertTrue(GameScoringModel.isAcceptableUndoOrRedoTransition(true, Type.DeleteLastZero, Type.ModifyLast));
-        assertTrue(GameScoringModel.isAcceptableUndoOrRedoTransition(true, Type.ModifyLast, Type.DeleteLastZero));
-        assertFalse(GameScoringModel.isAcceptableUndoOrRedoTransition(true, Type.AddNew, Type.ModifyLast));
+        Type[] types = Type.values();
+        boolean[][] expectedUndo = {
+                {false, false, false, false},
+                {true, true, false, true},
+                {false, false, false, false},
+                {true, true, false, true}
+        };
+        boolean[][] expectedRedo = {
+                {false, true, false, true},
+                {false, true, false, true},
+                {false, false, false, false},
+                {false, true, false, true}
+        };
 
-        assertTrue(GameScoringModel.isAcceptableUndoOrRedoTransition(false, Type.AddNew, Type.ModifyLast));
-        assertTrue(GameScoringModel.isAcceptableUndoOrRedoTransition(false, Type.AddNew, Type.DeleteLastZero));
-        assertTrue(GameScoringModel.isAcceptableUndoOrRedoTransition(false, Type.ModifyLast, Type.ModifyLast));
-        assertFalse(GameScoringModel.isAcceptableUndoOrRedoTransition(false, Type.AddNew, Type.AddNew));
+        for (int lastIndex = 0; lastIndex < types.length; lastIndex++) {
+            for (int nextIndex = 0; nextIndex < types.length; nextIndex++) {
+                assertEquals("undo " + types[lastIndex] + " -> " + types[nextIndex],
+                        expectedUndo[lastIndex][nextIndex],
+                        GameScoringModel.isAcceptableUndoOrRedoTransition(
+                                true, types[lastIndex], types[nextIndex]));
+                assertEquals("redo " + types[lastIndex] + " -> " + types[nextIndex],
+                        expectedRedo[lastIndex][nextIndex],
+                        GameScoringModel.isAcceptableUndoOrRedoTransition(
+                                false, types[lastIndex], types[nextIndex]));
+            }
+        }
     }
 
     @Test

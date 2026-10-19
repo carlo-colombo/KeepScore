@@ -38,6 +38,21 @@ public class PlayerScoreModelTest {
     }
 
     @Test
+    public void deltaAtDelayBoundaryBatchesIntoLastEntry() {
+        PlayerScore playerScore = newPlayerScore();
+        PlayerScoreModel model = new PlayerScoreModel(playerScore);
+
+        model.applyDelta(5, 1000L, UPDATE_DELAY_MS);
+        RecordedChange change = model.applyDelta(2, 1000L + UPDATE_DELAY_MS, UPDATE_DELAY_MS);
+
+        assertEquals(Type.ModifyLast, change.getType());
+        assertEquals(new Delta(11000L, 2), change.getDelta());
+        assertEquals(Arrays.asList(new Delta(11000L, 7)), playerScore.getHistory());
+        assertEquals(7L, playerScore.getScore());
+        assertEquals(11000L, model.getLastIncremented());
+    }
+
+    @Test
     public void deltaWithinDelayBatchesIntoLastEntry() {
         PlayerScore playerScore = newPlayerScore();
         PlayerScoreModel model = new PlayerScoreModel(playerScore);
@@ -63,8 +78,10 @@ public class PlayerScoreModelTest {
         RecordedChange change = model.applyDelta(2, 1000L + UPDATE_DELAY_MS + 1, UPDATE_DELAY_MS);
 
         assertEquals(Type.AddNew, change.getType());
+        assertEquals(new Delta(11001L, 2), change.getDelta());
         assertEquals(Arrays.asList(new Delta(1000L, 5), new Delta(11001L, 2)), playerScore.getHistory());
         assertEquals(7L, playerScore.getScore());
+        assertEquals(11001L, model.getLastIncremented());
     }
 
     @Test
@@ -190,6 +207,23 @@ public class PlayerScoreModelTest {
         model.reexecuteChange(change);
         assertTrue(playerScore.getHistory().isEmpty());
         assertEquals(0L, playerScore.getScore());
+    }
+
+    @Test
+    public void resetLastIncrementedEndsTheCurrentBatch() {
+        PlayerScore playerScore = newPlayerScore();
+        PlayerScoreModel model = new PlayerScoreModel(playerScore);
+
+        model.applyDelta(5, 100000L, UPDATE_DELAY_MS);
+        assertEquals(100000L, model.getLastIncremented());
+
+        model.resetLastIncremented();
+
+        assertEquals(0L, model.getLastIncremented());
+        RecordedChange next = model.applyDelta(2, 100001L, UPDATE_DELAY_MS);
+        assertEquals(Type.AddNew, next.getType());
+        assertEquals(Arrays.asList(new Delta(100000L, 5), new Delta(100001L, 2)), playerScore.getHistory());
+        assertEquals(7L, playerScore.getScore());
     }
 
     @Test
