@@ -21,16 +21,25 @@ module). It is a fork of Nolan Lawson's original app, maintained at
 
 ## Architecture
 
-- **Views first, Compose incrementally.** Activities, fragments and XML layouts
-  are still the norm; Jetpack Compose is adopted one screen at a time. The
-  pattern to copy is the New Game screen: `NewGameActivity.kt` is a thin host
-  calling `setContent { MaterialTheme { NewGameScreen(...) } }`, with the UI in
-  `ui/newgame/NewGameScreen.kt`. New Compose code belongs in `ui/<screen>/`.
+- **Views + Compose.** The app is a hybrid: Main, Name Players, History and About
+  retain legacy Views, while New Game, Settings, Organize Players and the scoring
+  screen use Jetpack Compose. Compose screens live in `ui/<screen>/`; activity
+  hosts provide Android lifecycle, intents and results. `ui/theme/KeepScoreTheme.kt`
+  is the shared dark calculator theme. The scoring UI uses `GameScoringModel` and
+  `PlayerScoreModel`; keep UI state separate from score/history mutations.
+- **Responsive scoring.** The score screen follows the current device configuration:
+  portrait is a vertically scrolling player column; landscape uses the legacy
+  two-column grid for up to eight players. Larger games retain the scrolling
+  column even in landscape so every player card remains usable. Game activities
+  must not be locked to portrait/landscape in the manifest; retain the saved
+  legacy `orientation` preference key only for settings-set compatibility, not
+  as an active orientation control.
 - **Screens.** `MainActivity` (game list, menus, import/export/share),
   `GameActivity` as the shared base for `PortraitGameActivity` /
   `LandscapeGameActivity`, `NamePlayersActivity`, `HistoryActivity`
   (charts/tables in `fragment/`, custom views in `widget/`),
-  `SettingsActivity`, `OrganizePlayersActivity`, `AboutActivity`.
+  `SettingsActivity`, `OrganizePlayersActivity`, `AboutActivity`. The three
+  migrated Compose activities are thin hosts for their `ui/` screens.
 - **Persistence.** Room: `db/AppDatabase` (version 5, `exportSchema`, migrations
   1→5) with `db/GameEntity`/`db/PlayerScoreEntity`, reached through the
   `db/GameDBHelper` facade so call sites stay unchanged; the on-disk schema is
@@ -149,19 +158,14 @@ away without a decision from the maintainer.
 
 ## Modernization roadmap
 
-1. **Compose the remaining screens**, following the New Game pattern
-   (`ui/<screen>/` screen composable + thin activity host): settings, the
-   scoring/game screens, history, organize players, about. Delete the XML layout
-   and legacy helper code a screen leaves behind; do not keep two
-   implementations of the same screen alive.
-2. **Move persistence to Room** under `db/`, replacing `GameDBHelper`. The
-   on-disk schema and the XML/GZIP backup format must stay compatible with
-   released versions; start with migration + backup round-trip tests.
-3. **Rewrite Organize Players.** `OrganizePlayersActivity` still relies on the
-   legacy `widget/dragndrop/DragSortListView`; reimplement it in Compose and
-   remove the old view code.
-4. **Burn down debt.** Retire entries from `app/lint-baseline.xml` as screens are
-   rewritten, and keep this file and `README.md` in step with the build files.
+1. **Compose remaining legacy screens** (`MainActivity`, `NamePlayersActivity`,
+   `HistoryActivity` and `AboutActivity`) as incremental screen work; keep the
+   scoring model independent of UI and preserve the XML/GZIP backup contract.
+2. **Quality follow-up.** Keep filling the real test gaps around Room update
+   paths, old backup versions, parcel history/timestamps, and the screen/activity
+   rotation path. Do not replace these with mocks of the behavior under test.
+3. **Burn down debt.** Retire entries from `app/lint-baseline.xml` as safe issues
+   are fixed, and keep this file and `README.md` in step with the source/build.
 
 ## Documentation ownership
 

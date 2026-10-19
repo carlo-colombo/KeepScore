@@ -42,7 +42,9 @@ code and the WTFPL license are unchanged; the fork modernizes the app for
 current Android:
 
 - `minSdk 34`, `compileSdk`/`targetSdk` 36 (Android 16)
-- AndroidX AppCompat Views with Jetpack Compose adopted screen by screen
+- AndroidX views plus Compose New Game, Settings, Organize Players and the
+  responsive scoring screen (portrait column; landscape two-column grid for up
+  to eight players, larger games remain a usable scrolling column)
 - WorkManager for the daily automatic backup, app-specific storage plus a
   FileProvider for sharing backups and spreadsheets
 - a CI/release pipeline that publishes a tagged APK for every push to `main`
