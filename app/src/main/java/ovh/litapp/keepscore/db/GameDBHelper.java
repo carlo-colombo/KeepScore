@@ -170,8 +170,7 @@ public class GameDBHelper {
                 if (playerScores != null) {
                     for (PlayerScoreEntity playerScore : playerScores) {
                         playerNames.add(playerScore.name);
-                        // replicate the old SQL: number of commas in the history string, plus one
-                        // (a NULL history contributes nothing to the max)
+                        // Count comma-delimited rounds; an empty history has no recorded rounds.
                         numRounds = Math.max(numRounds, numberOfRounds(playerScore.history));
                     }
                 }
@@ -232,7 +231,7 @@ public class GameDBHelper {
     }
 
     private static int numberOfRounds(String history) {
-        if (history == null) {
+        if (history == null || history.isEmpty()) {
             return 0;
         }
         int commas = 0;
