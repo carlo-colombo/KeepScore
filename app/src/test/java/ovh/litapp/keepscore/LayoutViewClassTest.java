@@ -1,5 +1,6 @@
 package ovh.litapp.keepscore;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -62,9 +63,9 @@ public class LayoutViewClassTest {
         // Detects a broken resource path or filter that silently scans no layout files.
         assertTrue("expected to scan at least one layout XML", scannedLayoutCount > 0);
         // Detects a broken tag matcher that would otherwise let the missing-class check pass vacuously.
-        assertTrue("expected fragment_timeline.xml to reference LineChartView",
-                layoutReferences.contains(
-                        "fragment_timeline.xml -> ovh.litapp.keepscore.widget.chart.LineChartView"));
+        assertFalse("legacy chart layouts must not reference the removed LineChartView",
+                layoutReferences.stream().anyMatch(reference -> reference.endsWith(
+                        " -> ovh.litapp.keepscore.widget.chart.LineChartView")));
         // Detects custom view classes removed while their layout references remain.
         assertTrue("layout(s) reference missing classes: " + failures, failures.isEmpty());
     }
