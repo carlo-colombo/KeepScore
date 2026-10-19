@@ -90,7 +90,8 @@ public abstract class GameActivity extends AppCompatActivity {
         createGame();
 
         setUpScoringScreen();
-        EdgeToEdge.apply(this);
+        // This activity hides the action bar in onResume(), after edge-to-edge insets are applied.
+        EdgeToEdge.apply(this, false);
 
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
 
