@@ -9,7 +9,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -32,18 +34,23 @@ public class LayoutViewClassTest {
     @Test
     public void everyLayoutViewClassExists() throws Exception {
         File res = new File("src/main/res");
+        // Detects running from the wrong directory rather than silently missing the resource tree.
         assertTrue("expected to run from the app module directory: " + res.getAbsolutePath(),
                 res.isDirectory());
 
         List<String> failures = new ArrayList<>();
+        Set<String> layoutReferences = new HashSet<>();
+        int scannedLayoutCount = 0;
         try (Stream<Path> paths = Files.walk(res.toPath())) {
             for (Path path : (Iterable<Path>) paths
                     .filter(p -> p.getFileName().toString().endsWith(".xml"))
                     .filter(p -> p.getParent().getFileName().toString().startsWith("layout"))::iterator) {
+                scannedLayoutCount++;
                 String xml = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
                 Matcher matcher = VIEW_TAG.matcher(xml);
                 while (matcher.find()) {
                     String className = matcher.group(1);
+                    layoutReferences.add(path.getFileName() + " -> " + className);
                     try {
                         Class.forName(className);
                     } catch (ClassNotFoundException e) {
@@ -52,6 +59,13 @@ public class LayoutViewClassTest {
                 }
             }
         }
+        // Detects a broken resource path or filter that silently scans no layout files.
+        assertTrue("expected to scan at least one layout XML", scannedLayoutCount > 0);
+        // Detects a broken tag matcher that would otherwise let the missing-class check pass vacuously.
+        assertTrue("expected fragment_timeline.xml to reference LineChartView",
+                layoutReferences.contains(
+                        "fragment_timeline.xml -> ovh.litapp.keepscore.widget.chart.LineChartView"));
+        // Detects custom view classes removed while their layout references remain.
         assertTrue("layout(s) reference missing classes: " + failures, failures.isEmpty());
     }
 }

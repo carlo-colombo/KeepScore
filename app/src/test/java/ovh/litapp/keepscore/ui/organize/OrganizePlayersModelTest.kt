@@ -86,7 +86,11 @@ class OrganizePlayersModelTest {
 
         model.shuffle(Random(1))
 
+        // Detects a no-op shuffle: this fixed seed must produce the captured, non-identity order.
+        assertEquals(listOf("c", "b", "a"), model.names())
+        // Detects losing or duplicating a player while shuffling.
         assertEquals(listOf("a", "b", "c"), model.names().sorted())
+        // Detects player numbers left stale instead of renumbered after shuffling.
         assertEquals(listOf(0, 1, 2), model.numbers())
     }
 
