@@ -1,10 +1,8 @@
 package ovh.litapp.keepscore;
 
 /**
- * A game played in portrait: the scoreboard stacks one player per row.
- *
- * The manifest locks this activity to portrait and picks the column layout from the configuration's
- * orientation, so the class itself has nothing left to do.
+ * Game activity selected for a game with more than eight players. The scoreboard uses a scrollable
+ * column for these games in either physical orientation.
  */
 public class PortraitGameActivity extends GameActivity {
 }

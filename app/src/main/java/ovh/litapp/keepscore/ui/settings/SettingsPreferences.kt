@@ -71,6 +71,17 @@ internal val SettingsRow.stableKey: Any
         is SettingsRow.Action -> key
     }
 
+internal fun visibleSettingsRows(
+    rows: List<SettingsRow>,
+    legacyOrientation: ChoicePreference,
+): List<SettingsRow> = rows.filterNot {
+    it is SettingsRow.Choice && it.spec === legacyOrientation
+}
+
+internal fun persistentPreferenceRows(rows: List<SettingsRow>): List<SettingsRow> = rows.filter {
+    it is SettingsRow.Toggle || it is SettingsRow.Integer || it is SettingsRow.Choice
+}
+
 internal enum class SettingsAction { RESET, SAVE_SETTINGS_SET, LOAD_SETTINGS_SET, ABOUT }
 
 /** Which preferences the setting-set backup helpers should include, keyed by title. */
@@ -210,7 +221,7 @@ internal class SettingsController(context: Context) {
         summaryRes = R.string.pref_update_delay_summary,
     )
 
-    /** The rows in display order, matching the old PreferenceScreen layout. */
+    /** All rows in legacy display order, including the hidden orientation row kept for compatibility. */
     val rows: List<SettingsRow> = listOf(
         SettingsRow.Category(R.string.pref_cat_appearance),
         SettingsRow.Choice(colorScheme),
@@ -262,8 +273,11 @@ internal class SettingsController(context: Context) {
         ),
     )
 
+    /** Visible settings omit preferred orientation, but retain its legacy row for saved-setting compatibility. */
+    val visibleRows: List<SettingsRow> = visibleSettingsRows(rows, orientation)
+
     private val persistentEntries: List<PersistentEntry> = buildList {
-        rows.forEach { row ->
+        persistentPreferenceRows(rows).forEach { row ->
             when (row) {
                 is SettingsRow.Toggle -> add(PersistentEntry(row.spec.key, row.spec.titleRes))
                 is SettingsRow.Integer -> add(PersistentEntry(row.spec.key, row.spec.titleRes))

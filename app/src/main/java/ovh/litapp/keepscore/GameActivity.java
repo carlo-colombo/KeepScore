@@ -68,15 +68,6 @@ public abstract class GameActivity extends AppCompatActivity {
     private GameDBHelper dbHelper;
     private boolean savedGameBeforeExit;
 
-    private final ActivityResultLauncher<Intent> settingsActivityLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {
-                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null
-                        && result.getData().getBooleanExtra(SettingsActivity.EXTRA_ORIENTATION_CHANGED, false)) {
-                    // orientation changed; need to refresh this activity
-                    GameActivityHelper.openGameWithClearTop(this, game);
-                }
-            });
-
     private final ActivityResultLauncher<Intent> organizePlayersActivityLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
                 if (result.getResultCode() == Activity.RESULT_OK) {
@@ -242,7 +233,7 @@ public abstract class GameActivity extends AppCompatActivity {
             startActivity(historyIntent);
         } else if (itemId == R.id.menu_settings) {
             Intent settingsIntent = new Intent(GameActivity.this, SettingsActivity.class);
-            settingsActivityLauncher.launch(settingsIntent);
+            startActivity(settingsIntent);
         } else if (itemId == R.id.menu_add_edit_players) {
             startOrganizePlayersActivity();
         } else if (itemId == R.id.menu_rematch) {

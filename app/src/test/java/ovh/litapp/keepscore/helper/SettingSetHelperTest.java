@@ -65,4 +65,28 @@ public class SettingSetHelperTest {
         SettingSetHelper.loadSettingSet(context, SETTING_SET_NAME);
         assertEquals("value", defaults.getString("pref_key", null));
     }
+
+    @Test
+    public void settingSetsPreserveTheLegacyOrientationPreferenceKey() {
+        SharedPreferences defaults = PreferenceManager.getDefaultSharedPreferences(context);
+        String originalOrientation = defaults.getString("orientation", null);
+        defaults.edit().putString("orientation", "portrait").commit();
+
+        try {
+            SettingSetHelper.saveCurrentSettingSet(context, SETTING_SET_NAME);
+            assertEquals("portrait", SettingSetHelper.getSettingsSet(context, SETTING_SET_NAME).get("orientation"));
+
+            defaults.edit().putString("orientation", "landscape").commit();
+            SettingSetHelper.loadSettingSet(context, SETTING_SET_NAME);
+            assertEquals("portrait", defaults.getString("orientation", null));
+        } finally {
+            SettingSetHelper.delete(context, SETTING_SET_NAME);
+            if (originalOrientation == null) {
+                defaults.edit().remove("orientation").commit();
+            } else {
+                defaults.edit().putString("orientation", originalOrientation).commit();
+            }
+            PreferenceHelper.resetCache();
+        }
+    }
 }

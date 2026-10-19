@@ -78,7 +78,7 @@ fun SettingsScreen(
 
     LaunchedEffect(scrollToConfigurations) {
         if (scrollToConfigurations) {
-            val configIndex = controller.rows.indexOfFirst {
+            val configIndex = controller.visibleRows.indexOfFirst {
                 it is SettingsRow.Category && it.titleRes == R.string.pref_cat_config
             }
             if (configIndex >= 0) {
@@ -109,7 +109,7 @@ fun SettingsScreen(
                 .fillMaxSize()
                 .padding(innerPadding),
         ) {
-            items(controller.rows, key = { it.stableKey }) { row ->
+            items(controller.visibleRows, key = { it.stableKey }) { row ->
                 when (row) {
                     is SettingsRow.Category -> CategoryHeader(row.titleRes)
 

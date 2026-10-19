@@ -101,9 +101,11 @@ private val LayoutPadding = 3.dp
  * change the score.
  *
  * Portrait shows one player per row in a scrolling column; landscape keeps the two-column grid the
- * legacy `layout-land` screen used. A long-press on a plus or minus button opens the additional
- * deltas dialog, and a long-press on the history or the score opens the history dialog; both come
- * from [DialogHelper], so the gestures are the ones the legacy screen had.
+ * legacy `layout-land` screen used, up to eight players. Larger games always use the scrollable
+ * column so their cards remain usable, even when the device is in landscape. A long-press on a plus
+ * or minus button opens the additional deltas dialog, and a long-press on the history or the score
+ * opens the history dialog; both come from [DialogHelper], so the gestures are the ones the legacy
+ * screen had.
  */
 @Composable
 fun ScoringScreen(state: ScoringScreenState, modifier: Modifier = Modifier) {
@@ -133,8 +135,8 @@ fun ScoringScreen(state: ScoringScreenState, modifier: Modifier = Modifier) {
         negative = colorResource(colorScheme.negativeColorResId),
     )
 
-    val orientation = scoringOrientationFor(LocalConfiguration.current.orientation)
     val numPlayers = state.players.size
+    val orientation = scoringOrientationFor(LocalConfiguration.current.orientation, numPlayers)
     val rows = playerRows(numPlayers, orientation)
     val highlightedPlayerIndex = if (highlightDisabled) -1 else state.highlightedPlayerIndex()
     val showOnscreenDeltaButtons = orientation == ScoringOrientation.LANDSCAPE &&
@@ -222,10 +224,7 @@ private fun PortraitColumn(
     }
 }
 
-/**
- * The two-column grid of the landscape screen. A landscape game never has more than eight players,
- * so this is at most the four rows and two columns of the legacy layout.
- */
+/** The two-column grid for landscape games of at most eight players. */
 @Composable
 private fun LandscapeGrid(
     state: ScoringScreenState,

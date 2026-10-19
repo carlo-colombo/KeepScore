@@ -15,14 +15,39 @@ class ScoringLayoutTest {
     fun aLandscapeConfigurationGetsTheGrid() {
         assertEquals(
             ScoringOrientation.LANDSCAPE,
-            scoringOrientationFor(Configuration.ORIENTATION_LANDSCAPE),
+            scoringOrientationFor(Configuration.ORIENTATION_LANDSCAPE, numPlayers = 8),
         )
     }
 
     @Test
     fun aPortraitOrUndefinedConfigurationStacksThePlayers() {
-        assertEquals(ScoringOrientation.PORTRAIT, scoringOrientationFor(Configuration.ORIENTATION_PORTRAIT))
-        assertEquals(ScoringOrientation.PORTRAIT, scoringOrientationFor(Configuration.ORIENTATION_UNDEFINED))
+        assertEquals(
+            ScoringOrientation.PORTRAIT,
+            scoringOrientationFor(Configuration.ORIENTATION_PORTRAIT, numPlayers = 2),
+        )
+        assertEquals(
+            ScoringOrientation.PORTRAIT,
+            scoringOrientationFor(Configuration.ORIENTATION_UNDEFINED, numPlayers = 2),
+        )
+    }
+
+    @Test
+    fun landscapeKeepsEightPlayersInTheGridButStacksNineAndThirty() {
+        assertEquals(ScoringOrientation.LANDSCAPE, scoringOrientationFor(Configuration.ORIENTATION_LANDSCAPE, 8))
+        assertEquals(
+            listOf(listOf(0, 1), listOf(2, 3), listOf(4, 5), listOf(6, 7)),
+            playerRows(8, scoringOrientationFor(Configuration.ORIENTATION_LANDSCAPE, 8)),
+        )
+
+        val ninePlayerOrientation = scoringOrientationFor(Configuration.ORIENTATION_LANDSCAPE, 9)
+        assertEquals(ScoringOrientation.PORTRAIT, ninePlayerOrientation)
+        assertEquals(9, playerRows(9, ninePlayerOrientation).size)
+        assertEquals((0 until 9).toList(), playerRows(9, ninePlayerOrientation).flatten().filterNotNull())
+
+        val thirtyPlayerOrientation = scoringOrientationFor(Configuration.ORIENTATION_LANDSCAPE, 30)
+        assertEquals(ScoringOrientation.PORTRAIT, thirtyPlayerOrientation)
+        assertEquals(30, playerRows(30, thirtyPlayerOrientation).size)
+        assertEquals((0 until 30).toList(), playerRows(30, thirtyPlayerOrientation).flatten().filterNotNull())
     }
 
     @Test

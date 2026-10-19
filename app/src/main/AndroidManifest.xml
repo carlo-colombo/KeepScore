@@ -55,13 +55,11 @@
         <activity
             android:name=".PortraitGameActivity"
             android:exported="false"
-            android:configChanges="orientation|keyboardHidden|keyboard"
-            android:screenOrientation="portrait" />
+            android:configChanges="orientation|keyboardHidden|keyboard" />
         <activity
             android:name=".LandscapeGameActivity"
             android:exported="false"
-            android:configChanges="orientation|keyboardHidden|keyboard"
-            android:screenOrientation="landscape" />
+            android:configChanges="orientation|keyboardHidden|keyboard" />
         <activity
             android:name=".SettingsActivity"
             android:exported="false"

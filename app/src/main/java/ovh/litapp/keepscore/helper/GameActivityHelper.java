@@ -14,14 +14,14 @@ import ovh.litapp.keepscore.db.GameSummary;
 public class GameActivityHelper {
 
     public static void openGame(Context context, GameSummary game) {
-        Intent intent = new Intent(context, getGameActivityClass(context, game.getPlayerNames().size()));
+        Intent intent = new Intent(context, getGameActivityClass(game.getPlayerNames().size()));
         intent.putExtra(GameActivity.EXTRA_GAME_ID, game.getId());
 
         context.startActivity(intent);
     }
     
     public static void newGame(Context context, String[] playerNames, String[] playerColors) {
-        Intent intent = new Intent(context, getGameActivityClass(context, playerNames.length));
+        Intent intent = new Intent(context, getGameActivityClass(playerNames.length));
 
         intent.putExtra(GameActivity.EXTRA_PLAYER_NAMES, playerNames);
         intent.putExtra(GameActivity.EXTRA_PLAYER_COLORS, playerColors);
@@ -30,7 +30,7 @@ public class GameActivityHelper {
     }
     
     public static void openGameWithClearTop(Activity context, Game game) {
-        Intent intent = new Intent(context, getGameActivityClass(context, game.getPlayerScores().size()));
+        Intent intent = new Intent(context, getGameActivityClass(game.getPlayerScores().size()));
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra(GameActivity.EXTRA_GAME, game);
 
@@ -40,13 +40,10 @@ public class GameActivityHelper {
                 android.R.anim.fade_out);
     }
     
-    private static Class<?> getGameActivityClass(Context context, int numPlayers) {
-        
-        if (numPlayers > NewGameActivity.TYPICAL_MAX_NUMBER_OF_PLAYERS // landscape mode can't handle >8 players 
-                || PreferenceHelper.getOrientation(context) == Orientation.Portrait) {
-            return PortraitGameActivity.class;
-        }
-        return LandscapeGameActivity.class;
+    static Class<?> getGameActivityClass(int numPlayers) {
+        return numPlayers > NewGameActivity.TYPICAL_MAX_NUMBER_OF_PLAYERS
+                ? PortraitGameActivity.class
+                : LandscapeGameActivity.class;
     }
     
 }
