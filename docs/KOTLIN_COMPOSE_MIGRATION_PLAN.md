@@ -13,6 +13,8 @@ Move all first-party production code to Kotlin and all interactive app UI to Jet
 - Preserve Room v1→v5 migrations and existing installed database contents. Do not change SQL column names or CSV encoding of score history/timestamps without a tested migration.
 - Preserve compatibility with every released XML/GZIP game backup (versions 1–5), FileProvider/SAF import/export, WorkManager auto-backup, and setting-set data.
 - Keep the calculator dark theme, responsive scoring layout (portrait column; landscape two-column grid up to 8, usable portrait column above 8), undo/redo, score/history batching, round totals, highlight, autosave, deep links, and accessibility semantics.
+- **Game-state restoration is a release gate.** Rotation/configuration changes must not reset scores, history, player order, highlight, or the live undo/redo stack. Recreated activities must restore the current game and dirty state without inserting a duplicate. Before collapsing game hosts or changing lifecycle behavior, test recreation for both new and existing games. Undo/redo need not persist across process death (legacy behavior), but saved score/history must.
+- **Orientation preference compatibility.** Keep the legacy `orientation` key/values in SharedPreferences and setting-set exports, but do not display or use them as an orientation lock; Compose scoring derives layout from current device configuration.
 - Compose is the only UI implementation: no feature flags and no parallel legacy screen retained after cutover.
 - Every integrated wave is a commit on `main`; every push runs CI and publishes a signed release. Keep the activity/package IDs stable so updates remain installable.
 
@@ -38,7 +40,7 @@ After Wave 1 integration, move shared `DialogHelper` interactions (delta calcula
 Once screen boundaries are stable, convert remaining Java packages in disjoint lanes:
 
 - Room/database facade, entities, DAO, `Game`/`PlayerScore`/`Delta`/`GameSummary` (retain Room schema/migration behavior and Java-facing activity contracts until call sites move).
-- XML/GZIP backup serialization and backup worker/scheduler (retain released backup compatibility).
+- XML/GZIP backup serialization and backup worker/scheduler (retain released backup compatibility). Preserve exactly one unique daily WorkManager request (`BackupWorker.UNIQUE_NAME`, `ExistingPeriodicWorkPolicy.KEEP`, battery-not-low constraint) and test repeated startup does not enqueue duplicates.
 - Pure utilities and data models/adapters that remain referenced.
 - Helpers/preferences/storage/network-independent Android services and application class.
 - Activity hosts and remaining `PortraitGameActivity`/`LandscapeGameActivity` can be collapsed into a single Kotlin adaptive activity after call sites/manifest are updated and process-death/rotation state tests pass.
@@ -55,9 +57,12 @@ After all screens and dialogs have Compose replacements:
 
 ### Wave 5 — final hardening and delivery
 
+- Localization acceptance: every new user-facing Compose string uses localized
+  resources; preserve locale-specific date formatting, plural selection, and
+  translated labels across all supported locales.
 - Independent read-only review after each integrated wave; fix P1s before release.
 - Run `:app:assembleDebug`, `:app:testDebugUnitTest`, `:app:lintDebug`, `:app:assembleRelease`, `:app:lintRelease` on the exact integration head.
-- API 36 emulator smoke/regression: clean install, upgrade install from last signed release, portrait↔landscape rotation with in-progress score/undo state, 2/8/9/30 players, all settings/backup/history flows, accessibility scan, no app fatal logs.
+- API 36 emulator smoke/regression: clean install, upgrade install from last signed release, portrait↔landscape rotation and recreation of new/existing games with score/history restored, no duplicate game insertion, in-process undo/redo preserved across rotation, 2/8/9/30 players, all settings/backup/history flows, accessibility scan, no app fatal logs.
 - Burn down `app/lint-baseline.xml`; never use the baseline to silence new findings.
 - Update README/AGENTS, issue #1, screenshots and release notes. Publish a real-key-signed release per integrated wave.
 
