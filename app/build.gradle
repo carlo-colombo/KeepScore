@@ -73,7 +73,6 @@ dependencies {
     implementation libs.reorderable
     debugImplementation libs.androidx.compose.ui.tooling
     implementation libs.google.material
-    implementation libs.ambilwarna
     implementation files('libs/exp4j-0.3.11.jar')
 
     annotationProcessor libs.androidx.room.compiler

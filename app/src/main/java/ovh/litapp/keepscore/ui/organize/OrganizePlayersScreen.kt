@@ -1,6 +1,6 @@
 package ovh.litapp.keepscore.ui.organize
 
-import android.content.Context
+import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -45,10 +45,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ovh.litapp.keepscore.R
 import ovh.litapp.keepscore.db.PlayerScore
-import ovh.litapp.keepscore.helper.DialogHelper
-import ovh.litapp.keepscore.helper.PlayerColor
 import ovh.litapp.keepscore.helper.PreferenceHelper
-import ovh.litapp.keepscore.util.Callback
+import ovh.litapp.keepscore.ui.dialogs.ColorChooserDialog
+import ovh.litapp.keepscore.ui.dialogs.PlayerNameDialog
 import sh.calvin.reorderable.ReorderableCollectionItemScope
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
@@ -61,8 +60,8 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
  * receives the players in their final order, which the host puts into the activity result;
  * [onCancel] is the cancel/back path and returns nothing.
  *
- * The name and colour dialogs stay with [DialogHelper] so the player-name suggestions and the
- * 16-colour grid with its custom-colour picker behave exactly as they did before the migration.
+ * The name and colour dialogs are the shared Compose dialogs, so the player-name suggestions and
+ * the 16-colour grid with its custom-colour picker behave exactly as they did before the migration.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -87,6 +86,8 @@ fun OrganizePlayersScreen(
         model.movePlayer(from.index, to.index)
     }
     var deletedNamesToWarnAbout by remember { mutableStateOf<List<String>?>(null) }
+    var nameDialog by remember { mutableStateOf<PlayerNameRequest?>(null) }
+    var colorDialogPlayer by remember { mutableStateOf<OrganizePlayer?>(null) }
 
     val confirm = {
         val deletedNames = model.deletedPlayersWithHistory.map { it.toDisplayName(context).toString() }
@@ -112,7 +113,16 @@ fun OrganizePlayersScreen(
                 },
                 actions = {
                     if (model.canAddPlayer) {
-                        IconButton(onClick = { showAddPlayerDialog(context, model, initialScore) }) {
+                        IconButton(
+                            onClick = {
+                                nameDialog = PlayerNameRequest(
+                                    titleResId = R.string.title_add_player,
+                                    startingValue = "",
+                                    playerNumber = model.players.size,
+                                    onConfirm = { name -> model.addPlayer(name.trim(), initialScore) },
+                                )
+                            },
+                        ) {
                             Image(
                                 painter = painterResource(R.drawable.ic_action_user_add),
                                 contentDescription = stringResource(R.string.menu_add_player),
@@ -160,8 +170,15 @@ fun OrganizePlayersScreen(
                         showColor = showColors,
                         canDelete = model.canDeletePlayer,
                         isDragging = isDragging,
-                        onRename = { showRenamePlayerDialog(context, player) },
-                        onChooseColor = { showPlayerColorChooser(context, player) },
+                        onRename = {
+                            nameDialog = PlayerNameRequest(
+                                titleResId = R.string.title_change_name,
+                                startingValue = player.name,
+                                playerNumber = player.playerNumber,
+                                onConfirm = player::rename,
+                            )
+                        },
+                        onChooseColor = { colorDialogPlayer = player },
                         onDelete = { model.deletePlayer(player) },
                     )
                 }
@@ -174,6 +191,29 @@ fun OrganizePlayersScreen(
             deletedNames = deletedNames,
             onConfirm = { onConfirm(model.toResultList()) },
             onDismiss = { deletedNamesToWarnAbout = null },
+        )
+    }
+
+    nameDialog?.let { request ->
+        PlayerNameDialog(
+            titleResId = request.titleResId,
+            startingValue = request.startingValue,
+            newPlayerNumber = request.playerNumber,
+            onDismissRequest = { nameDialog = null },
+            onConfirm = { name ->
+                request.onConfirm(name)
+                nameDialog = null
+            },
+        )
+    }
+    colorDialogPlayer?.let { player ->
+        ColorChooserDialog(
+            selectedColor = player.playerColor,
+            onDismissRequest = { colorDialogPlayer = null },
+            onColorSelected = { color ->
+                player.recolor(color)
+                colorDialogPlayer = null
+            },
         )
     }
 }
@@ -291,37 +331,13 @@ private fun DeletePlayersDialog(
     )
 }
 
-private fun showAddPlayerDialog(
-    context: Context,
-    model: OrganizePlayersModel,
-    initialScore: Long,
-) {
-    DialogHelper.showPlayerNameDialog(
-        context,
-        R.string.title_add_player,
-        "",
-        model.players.size,
-        Callback { input -> model.addPlayer(input.trim(), initialScore) },
-    )
-}
-
-private fun showRenamePlayerDialog(context: Context, player: OrganizePlayer) {
-    DialogHelper.showPlayerNameDialog(
-        context,
-        R.string.title_change_name,
-        player.name,
-        player.playerNumber,
-        Callback { input -> player.rename(input) },
-    )
-}
-
-private fun showPlayerColorChooser(context: Context, player: OrganizePlayer) {
-    // The chooser reports the colour being browsed and then, on OK, the colour that was picked.
-    var chosenColor: PlayerColor? = null
-    DialogHelper.showColorChooserDialog(
-        context,
-        player.playerColor,
-        Callback { chosenColor = it },
-        Runnable { chosenColor?.let { player.recolor(it) } },
-    )
-}
+/**
+ * The name dialog an add or rename action opened, so the screen renders it from its own state
+ * rather than building an `AlertDialog` on the spot; [onConfirm] applies the name to the player.
+ */
+private class PlayerNameRequest(
+    @StringRes val titleResId: Int,
+    val startingValue: String,
+    val playerNumber: Int,
+    val onConfirm: (String) -> Unit,
+)

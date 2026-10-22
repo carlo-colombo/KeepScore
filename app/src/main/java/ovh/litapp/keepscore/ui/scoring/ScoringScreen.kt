@@ -1,6 +1,5 @@
 package ovh.litapp.keepscore.ui.scoring
 
-import android.content.Context
 import androidx.annotation.DimenRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
@@ -33,7 +32,10 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -59,11 +61,12 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import ovh.litapp.keepscore.R
-import ovh.litapp.keepscore.helper.DialogHelper
-import ovh.litapp.keepscore.helper.DialogHelper.HistoryAction
 import ovh.litapp.keepscore.helper.PlayerColor
 import ovh.litapp.keepscore.helper.PlayerTextFormat
 import ovh.litapp.keepscore.helper.PreferenceHelper
+import ovh.litapp.keepscore.ui.dialogs.AdditionalDeltasDialog
+import ovh.litapp.keepscore.ui.dialogs.HistoryAction
+import ovh.litapp.keepscore.ui.dialogs.HistoryContextDialog
 
 /** How long the badge takes to fade out, matching the legacy PlayerView's animation. */
 private const val BADGE_FADE_OUT_MILLIS = 1000
@@ -104,8 +107,8 @@ private val LayoutPadding = 3.dp
  * legacy `layout-land` screen used, up to eight players. Larger games always use the scrollable
  * column so their cards remain usable, even when the device is in landscape. A long-press on a plus
  * or minus button opens the additional deltas dialog, and a long-press on the history or the score
- * opens the history dialog; both come from [DialogHelper], so the gestures are the ones the legacy
- * screen had.
+ * opens the history dialog; both are rendered by the player card from its own dialog state, so the
+ * gestures are the ones the legacy screen had.
  */
 @Composable
 fun ScoringScreen(state: ScoringScreenState, modifier: Modifier = Modifier) {
@@ -281,6 +284,10 @@ private fun PlayerCard(
     val now = remember(clockVersion) { System.currentTimeMillis() }
     val modifiable = player.lastIncremented > 0 && now < player.lastIncremented + state.updateDelayMs
 
+    // the long-press dialogs of this player: the value null means the dialog is closed
+    var deltaDialogPositive by remember { mutableStateOf<Boolean?>(null) }
+    var historyDialog by remember { mutableStateOf<HistoryDialogRequest?>(null) }
+
     LaunchedEffect(player.lastIncremented, player.history.size, state.updateDelayMs) {
         val remainingMs = player.lastIncremented + state.updateDelayMs - System.currentTimeMillis()
         if (player.lastIncremented > 0 && remainingMs > 0) {
@@ -314,9 +321,11 @@ private fun PlayerCard(
                     plusValue = PreferenceHelper.getPlusButtonValue(context),
                     onDelta = { delta -> state.increment(playerIndex, delta) },
                     onConfirm = { state.confirm(playerIndex) },
-                    onAddZero = { state.addZero(playerIndex) },
-                    onDeleteLast = { state.deleteLast(playerIndex) },
-                    hasHistory = player.history.isNotEmpty(),
+                    onOpenDeltaDialog = { positive -> deltaDialogPositive = positive },
+                    onOpenHistoryDialog = {
+                        // the legacy dialog captured these when it opened
+                        historyDialog = HistoryDialogRequest(modifiable, player.history.isNotEmpty())
+                    },
                     modifier = Modifier.weight(1f),
                 )
             }
@@ -325,10 +334,9 @@ private fun PlayerCard(
                 history = player.history,
                 modifiable = modifiable,
                 colors = colors,
-                onAddZero = { state.addZero(playerIndex) },
-                onDeleteLast = { state.deleteLast(playerIndex) },
-                showConfirm = modifiable,
-                onConfirm = { state.confirm(playerIndex) },
+                onOpenHistoryDialog = {
+                    historyDialog = HistoryDialogRequest(modifiable, player.history.isNotEmpty())
+                },
                 modifier = Modifier
                     .width(dimensionResource(R.dimen.history_width))
                     .fillMaxHeight(),
@@ -342,7 +350,42 @@ private fun PlayerCard(
             )
         }
     }
+
+    deltaDialogPositive?.let { positive ->
+        AdditionalDeltasDialog(
+            positive = positive,
+            onDismissRequest = { deltaDialogPositive = null },
+            onConfirm = { delta ->
+                // the minus dialog reports the value the user entered, which the legacy screen negated
+                when {
+                    delta == 0 -> state.addZero(playerIndex)
+                    positive -> state.increment(playerIndex, delta)
+                    else -> state.increment(playerIndex, -delta)
+                }
+            },
+        )
+    }
+    historyDialog?.let { request ->
+        HistoryContextDialog(
+            showConfirm = request.showConfirm,
+            hasHistory = request.hasHistory,
+            onDismissRequest = { historyDialog = null },
+            onResult = { action ->
+                when (action) {
+                    HistoryAction.CONFIRM -> state.confirm(playerIndex)
+                    HistoryAction.DELETE_LAST -> state.deleteLast(playerIndex)
+                    HistoryAction.ADD_ZERO -> state.addZero(playerIndex)
+                }
+            },
+        )
+    }
 }
+
+/**
+ * The state the history dialog opened with: whether the open entry can be confirmed and whether
+ * there is an entry to delete, captured when the long-press happened like the legacy dialog did.
+ */
+private class HistoryDialogRequest(val showConfirm: Boolean, val hasHistory: Boolean)
 
 /** The colour swatch, the player's name and the tag that marks the player who changed last. */
 @Composable
@@ -405,15 +448,12 @@ private fun ScoreRow(
     plusValue: Int,
     onDelta: (Int) -> Unit,
     onConfirm: () -> Unit,
-    onAddZero: () -> Unit,
-    onDeleteLast: () -> Unit,
-    hasHistory: Boolean,
+    onOpenDeltaDialog: (positive: Boolean) -> Unit,
+    onOpenHistoryDialog: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val context = LocalContext.current
     val buttonTextSize = fontResource(textFormat.plusMinusTextSize)
     val buttonWidth = dimensionResource(R.dimen.delta_button_width)
-    val showConfirm = modifiable
 
     Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         ScoreButton(
@@ -421,9 +461,7 @@ private fun ScoreRow(
             textSize = buttonTextSize,
             colors = colors,
             onClick = { onDelta(-minusValue) },
-            onLongClick = {
-                showAdditionalDeltasDialog(context, positive = false, onDelta = onDelta, onAddZero = onAddZero)
-            },
+            onLongClick = { onOpenDeltaDialog(false) },
             modifier = Modifier.width(buttonWidth).fillMaxHeight().padding(end = LayoutPadding),
         )
         AutoSizedText(
@@ -436,9 +474,7 @@ private fun ScoreRow(
                 .fillMaxHeight()
                 .combinedClickable(
                     onClick = {},
-                    onLongClick = {
-                        showHistoryDialog(context, showConfirm, hasHistory, onConfirm, onDeleteLast, onAddZero)
-                    },
+                    onLongClick = onOpenHistoryDialog,
                 ),
         ) {
             if (badgeValue != null) {
@@ -462,9 +498,7 @@ private fun ScoreRow(
             textSize = buttonTextSize,
             colors = colors,
             onClick = { onDelta(plusValue) },
-            onLongClick = {
-                showAdditionalDeltasDialog(context, positive = true, onDelta = onDelta, onAddZero = onAddZero)
-            },
+            onLongClick = { onOpenDeltaDialog(true) },
             modifier = Modifier.width(buttonWidth).fillMaxHeight().padding(start = LayoutPadding),
         )
     }
@@ -479,13 +513,9 @@ private fun HistoryColumn(
     history: List<Int>,
     modifiable: Boolean,
     colors: ScoringColors,
-    onAddZero: () -> Unit,
-    onDeleteLast: () -> Unit,
-    showConfirm: Boolean,
-    onConfirm: () -> Unit,
+    onOpenHistoryDialog: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val context = LocalContext.current
     val fontSize = fontResource(R.dimen.player_score_history)
     val measurer = rememberTextMeasurer()
     val lineHeightPx = remember(fontSize) {
@@ -504,16 +534,7 @@ private fun HistoryColumn(
                 .padding(horizontal = HistoryPaddingHorizontal, vertical = HistoryPaddingVertical)
                 .combinedClickable(
                     onClick = {},
-                    onLongClick = {
-                        showHistoryDialog(
-                            context,
-                            showConfirm,
-                            history.isNotEmpty(),
-                            onConfirm,
-                            onDeleteLast,
-                            onAddZero,
-                        )
-                    },
+                    onLongClick = onOpenHistoryDialog,
                 ),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -681,45 +702,6 @@ private fun AutoSizedText(
             fontSize = with(density) { textSizePx.toSp() },
         )
         overlay()
-    }
-}
-
-/** The additional deltas dialog of a long-pressed + or - button. */
-private fun showAdditionalDeltasDialog(
-    context: Context,
-    positive: Boolean,
-    onDelta: (Int) -> Unit,
-    onAddZero: () -> Unit,
-) {
-    DialogHelper.showAdditionalDeltasDialog(
-        positive,
-        DialogHelper.ResultListener { delta ->
-            if (delta != 0) {
-                onDelta(if (positive) delta else -delta)
-            } else {
-                onAddZero()
-            }
-        },
-        context,
-    )
-}
-
-/** The dialog of a long-pressed history or score: confirm, delete the last entry, or add a zero. */
-private fun showHistoryDialog(
-    context: Context,
-    showConfirm: Boolean,
-    hasHistory: Boolean,
-    onConfirm: () -> Unit,
-    onDeleteLast: () -> Unit,
-    onAddZero: () -> Unit,
-) {
-    DialogHelper.showHistoryContextDialog(context, showConfirm, hasHistory) { action ->
-        when (action) {
-            HistoryAction.CONFIRM -> onConfirm()
-            HistoryAction.DELETE_LAST -> onDeleteLast()
-            HistoryAction.ADD_ZERO -> onAddZero()
-            else -> Unit
-        }
     }
 }
 
