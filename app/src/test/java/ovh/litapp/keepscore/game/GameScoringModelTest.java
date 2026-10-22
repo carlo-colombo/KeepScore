@@ -199,7 +199,7 @@ public class GameScoringModelTest {
         PlayerScore bob = newPlayerScore(1);
         bob.setLastUpdate(500L);
 
-        assertEquals(1, new GameScoringModel(Arrays.asList(alice, bob)).getHighlightedPlayerIndex());
+        assertEquals(1, new GameScoringModel(Arrays.asList(alice, bob)).highlightedPlayerIndex());
     }
 
     @Test
@@ -209,13 +209,13 @@ public class GameScoringModelTest {
         alice.setLastUpdate(500L);
         bob.setLastUpdate(500L);
 
-        assertEquals(0, new GameScoringModel(Arrays.asList(alice, bob)).getHighlightedPlayerIndex());
+        assertEquals(0, new GameScoringModel(Arrays.asList(alice, bob)).highlightedPlayerIndex());
     }
 
     @Test
     public void highlightedPlayerIsNoneWhenNoPlayerWasUpdated() {
         assertEquals(-1, new GameScoringModel(
-                Arrays.asList(newPlayerScore(0), newPlayerScore(1))).getHighlightedPlayerIndex());
+                Arrays.asList(newPlayerScore(0), newPlayerScore(1))).highlightedPlayerIndex());
     }
 
     @Test

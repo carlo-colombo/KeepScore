@@ -263,7 +263,8 @@ object GamesBackupSerializer {
             Tag.gameName -> game!!.name = getTextOrNullOrEmpty(attributes, text)
             Tag.playerName -> playerScore!!.name = getTextOrNullOrEmpty(attributes, text)
             Tag.playerNumber -> playerScore!!.playerNumber = text.toInt()
-            Tag.history -> playerScore!!.history = Delta.fromJoinedScores(getTextOrNullOrEmpty(attributes, text))
+            Tag.history -> playerScore!!.history =
+                    Delta.fromJoinedScores(getTextOrNullOrEmpty(attributes, text).orEmpty())
             Tag.historyTimestamps -> {
                 // update the existing list; assume this tag always comes after the "history" tag
                 val timestamps = CollectionUtil.stringsToLongs(

@@ -37,13 +37,7 @@ class GamesBackupSerializerTest {
     class TestKeepScoreApplication : KeepScoreApplication() {
 
         override fun onCreate() {
-            try {
-                val instance: Field = KeepScoreApplication::class.java.getDeclaredField("instance")
-                instance.isAccessible = true
-                instance.set(null, this)
-            } catch (e: ReflectiveOperationException) {
-                throw AssertionError(e)
-            }
+            registerInstance(this)
         }
     }
 
@@ -99,8 +93,7 @@ class GamesBackupSerializerTest {
         val context: Context = ApplicationProvider.getApplicationContext()
         val xml = GamesBackupSerializer.serialize(createGamesBackup())
         val filename = "serializer-round-trip-" + UUID.randomUUID() + ".xml.gz"
-        val file = SdcardHelper.getFile(filename, SdcardHelper.Location.Backups)
-        assertNotNull(file)
+        val file = requireNotNull(SdcardHelper.getFile(filename, SdcardHelper.Location.Backups))
 
         try {
             assertTrue(
@@ -181,7 +174,7 @@ class GamesBackupSerializerTest {
 
         // fully populated game with built-in colors and score histories
         var game = createGame("Friday night", 1332617000000L, 1332617241000L)
-        game.playerScores = listOf(
+        game.playerScores = mutableListOf(
             createPlayerScore(
                 "Alice", 0, 12L, PlayerColor.BUILT_INS[0],
                 Delta(1332617000001L, 5), Delta(1332617000002L, 7),
@@ -197,7 +190,7 @@ class GamesBackupSerializerTest {
         game = createGame(null, 1332617100000L, 1332617242000L)
         val emptyHistoryPlayer = createPlayerScore(null, 0, 0L, PlayerColor.BUILT_INS[15])
         emptyHistoryPlayer.lastUpdate = 0L
-        game.playerScores = listOf(
+        game.playerScores = mutableListOf(
             emptyHistoryPlayer,
             createPlayerScore("", 1, 3L, PlayerColor.BUILT_INS[1], Delta(1332617100001L, 3)),
         )
@@ -205,7 +198,7 @@ class GamesBackupSerializerTest {
 
         // empty game name and custom player colors, including a translucent one
         game = createGame("", 1332617200000L, 1332617243000L)
-        game.playerScores = listOf(
+        game.playerScores = mutableListOf(
             createPlayerScore(
                 "Carol", 0, 1L, CustomPlayerColor(Color.parseColor("#FF00FF00")),
                 Delta(1332617200001L, 1),

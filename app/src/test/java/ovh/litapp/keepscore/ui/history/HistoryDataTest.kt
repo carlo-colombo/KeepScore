@@ -83,7 +83,7 @@ class HistoryDataTest {
 
     private fun game(vararg players: PlayerScore) = Game().apply {
         dateStarted = 100_000
-        playerScores = players.toList()
+        playerScores = players.toMutableList()
     }
 
     private fun player(
@@ -96,7 +96,7 @@ class HistoryDataTest {
         this.name = name
         playerNumber = number
         playerColor = color
-        history = deltas.toList()
+        history = deltas.toMutableList()
         score = startingScore + deltas.sumOf { it.value.toLong() }
     }
 }

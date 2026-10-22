@@ -329,7 +329,7 @@ private fun PlayerColorDialog(
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
                     verticalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
-                    items(colors, key = { color -> color.getOrdinal() }) { color ->
+                    items(colors, key = { color -> color.ordinal }) { color ->
                         val colorSerialization = PlayerColor.serialize(color)
                         val isSelected = pendingColorSerialization == colorSerialization
                         IconButton(
@@ -337,7 +337,7 @@ private fun PlayerColorDialog(
                             modifier = Modifier
                                 .size(48.dp)
                                 .semantics {
-                                    contentDescription = "Color ${color.getOrdinal() + 1}"
+                                    contentDescription = "Color ${color.ordinal + 1}"
                                     selected = isSelected
                                 },
                         ) {
@@ -421,7 +421,7 @@ private fun CustomPlayerColorDialog(
                             .padding(top = 12.dp)
                             .size(36.dp)
                             .clip(CircleShape)
-                            .background(Color(customColor.getColor()))
+                            .background(Color(customColor.color))
                             .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape),
                     )
                 }

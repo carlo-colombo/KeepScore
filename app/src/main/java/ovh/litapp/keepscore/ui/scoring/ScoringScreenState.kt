@@ -64,7 +64,7 @@ class ScoringPlayer internal constructor(
     }
 
     internal fun reset(initialScore: Long) {
-        scoreModel.reset(initialScore.toInt())
+        scoreModel.reset(initialScore)
         refresh()
     }
 
@@ -241,7 +241,7 @@ class ScoringScreenState(
     fun highlightedPlayerIndex(): Int {
         // read the observable update time of every player, then let the model pick the latest
         players.forEach { it.lastUpdate }
-        return scoringModel.getHighlightedPlayerIndex()
+        return scoringModel.highlightedPlayerIndex()
     }
 
     private fun markDirty() {

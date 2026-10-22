@@ -278,7 +278,7 @@ class MainActivity : AppCompatActivity() {
                 val helper = GameDBHelper(this)
                 try {
                     gameIds.forEach { id ->
-                        savedGames.add(helper.findGameById(id))
+                        helper.findGameById(id)?.let { savedGames.add(it) }
                         reportProgress(savedGames.size)
                     }
                 } finally {
@@ -331,7 +331,7 @@ class MainActivity : AppCompatActivity() {
                 val helper = GameDBHelper(this)
                 try {
                     gameIds.forEach { id ->
-                        savedGames.add(helper.findGameById(id))
+                        helper.findGameById(id)?.let { savedGames.add(it) }
                         reportProgress(savedGames.size)
                     }
                 } finally {
@@ -348,7 +348,9 @@ class MainActivity : AppCompatActivity() {
                 val subject = resources.getQuantityString(
                     R.plurals.text_share_spreadsheet_subject, gameIds.size, gameIds.size,
                 )
-                val uri = sharedUri(SdcardHelper.getFile(filename, Location.Spreadsheets))
+                val file = SdcardHelper.getFile(filename, Location.Spreadsheets)
+                    ?: error("spreadsheet ${filename} was not written")
+                val uri = sharedUri(file)
                 MailHelper.sendAsAttachment(this, uri, "text/csv", subject, getString(R.string.text_share_spreadsheet_body))
             },
             onError = {
@@ -503,7 +505,7 @@ class MainActivity : AppCompatActivity() {
             work = {
                 val helper = GameDBHelper(this)
                 try {
-                    helper.findGameById(summary.id)
+                    helper.findGameById(summary.id) ?: error("game ${summary.id} disappeared")
                 } finally {
                     helper.close()
                 }
