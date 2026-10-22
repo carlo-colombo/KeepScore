@@ -87,6 +87,7 @@
     </plurals>
     <string name="text_confirm_rematch">התחל משחק חוזר עם אותם השחקנים?</string>
     <string name="text_copy">העתק</string>
+    <string name="text_more_options">אפשרויות נוספות</string>
     <string name="text_delete">מחק</string>
     <string name="text_delete_saved_settings">הגיבוי \&quot;%s\&quot; יימחק.</string>
     <string name="text_donate_message">תודה רבה על תרומתך! אתה מעולה!</string>

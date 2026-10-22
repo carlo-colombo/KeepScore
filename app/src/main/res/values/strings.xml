@@ -160,6 +160,7 @@
     </plurals>
     <string name="text_confirm_rematch">Start a rematch with the same players?</string>
     <string name="text_copy">Copy</string>
+    <string name="text_more_options">More options</string>
     <string name="text_delete">Delete</string>
     <string name="text_delete_saved_settings">The backup \&quot;%s\&quot; will be deleted.</string>
     <string name="text_donate_message">Thank you so much for donating! You are awesome!</string>

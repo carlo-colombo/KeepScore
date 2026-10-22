@@ -75,6 +75,7 @@
     </plurals>
     <string name="text_confirm_rematch">Ein neues Spiel mit denselben Spielern starten?</string>
     <string name="text_copy">Kopieren</string>
+    <string name="text_more_options">Weitere Optionen</string>
     <string name="text_delete">Entfernen</string>
     <string name="text_delete_saved_settings">Backup \&quot;%s\&quot; wird gelöscht.</string>
     <string name="text_donate_message">Vielen Dank für deine Spende! Du bist spitze!</string>

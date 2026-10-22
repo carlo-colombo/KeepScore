@@ -11,4 +11,5 @@ LibreOffice, or Google Docs.</string>
 \n\nIf that doesn\'t work, save the file to /sdcard/keepscore/backups and choose \"Restore\" from the KeepScore main  menu.
 \n\nTo get KeepScore, visit https://play.google.com/store/apps/details?id=ovh.litapp.keepscore .</string>
     <string name="title_choose_color">Choose a Color</string>
+    <string name="text_more_options">More options</string>
 </resources>

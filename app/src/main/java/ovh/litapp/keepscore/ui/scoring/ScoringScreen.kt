@@ -111,7 +111,11 @@ private val LayoutPadding = 3.dp
  * gestures are the ones the legacy screen had.
  */
 @Composable
-fun ScoringScreen(state: ScoringScreenState, modifier: Modifier = Modifier) {
+fun ScoringScreen(
+    state: ScoringScreenState,
+    menuActions: ScoringMenuActions,
+    modifier: Modifier = Modifier,
+) {
     val context = LocalContext.current
 
     // the legacy PlayerView re-read these on every resume; refreshPreferences() bumps the version
@@ -152,10 +156,12 @@ fun ScoringScreen(state: ScoringScreenState, modifier: Modifier = Modifier) {
         colorScheme = darkColorScheme(background = colors.background, onBackground = colors.foreground),
     ) {
         Column(modifier = modifier.fillMaxSize().background(colors.background)) {
-            if (showRoundTotals) {
-                RoundTotalStrip(state = state, color = colors.foreground)
-            }
-            Spacer(modifier = Modifier.height(rootPadding))
+            ScoreboardTopBar(
+                state = state,
+                menuActions = menuActions,
+                color = colors.foreground,
+                showRoundTotals = showRoundTotals,
+            )
             Box(modifier = Modifier.fillMaxWidth().weight(1f)) {
                 when (orientation) {
                     ScoringOrientation.PORTRAIT -> PortraitColumn(
@@ -178,6 +184,31 @@ fun ScoringScreen(state: ScoringScreenState, modifier: Modifier = Modifier) {
             }
             Spacer(modifier = Modifier.height(rootPadding))
         }
+    }
+}
+
+/**
+ * The strip above the scoreboard: the round totals when the user asked for them, and the overflow
+ * menu at the end. The menu lives here rather than over the cards so it can never cover a score.
+ */
+@Composable
+private fun ScoreboardTopBar(
+    state: ScoringScreenState,
+    menuActions: ScoringMenuActions,
+    color: Color,
+    showRoundTotals: Boolean,
+) {
+    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        if (showRoundTotals) {
+            RoundTotalStrip(
+                state = state,
+                color = color,
+                modifier = Modifier.weight(1f),
+            )
+        } else {
+            Spacer(modifier = Modifier.weight(1f))
+        }
+        ScoreboardMenu(state = state, actions = menuActions, color = color)
     }
 }
 

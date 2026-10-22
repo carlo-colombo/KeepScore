@@ -1,6 +1,7 @@
 package ovh.litapp.keepscore;
 
 import ovh.litapp.keepscore.android.EdgeToEdge;
+import ovh.litapp.keepscore.ui.scoring.ScoringMenuActions;
 import ovh.litapp.keepscore.ui.scoring.ScoringPreferences;
 import ovh.litapp.keepscore.ui.scoring.ScoringScreenHostKt;
 import ovh.litapp.keepscore.ui.scoring.ScoringScreenState;
@@ -17,9 +18,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.Toast;
 
@@ -201,51 +199,40 @@ public abstract class GameActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.game_menu, menu);
+    private final ScoringMenuActions menuActions = new ScoringMenuActions() {
 
-        return true;
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        // show/hide undo/redo menu items
-        MenuItem undoMenuItem = menu.findItem(R.id.menu_undo);
-        MenuItem redoMenuItem = menu.findItem(R.id.menu_redo);
-
-        boolean showUndo = scoringScreenState.canUndo();
-        boolean showRedo = scoringScreenState.canRedo();
-
-        undoMenuItem.setEnabled(showUndo);
-        redoMenuItem.setEnabled(showRedo);
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        int itemId = item.getItemId();
-        if (itemId == R.id.menu_history) {
-            Intent historyIntent = new Intent(this, HistoryActivity.class);
+        @Override
+        public void showHistory() {
+            Intent historyIntent = new Intent(GameActivity.this, HistoryActivity.class);
             historyIntent.putExtra(HistoryActivity.EXTRA_GAME, game);
             startActivity(historyIntent);
-        } else if (itemId == R.id.menu_settings) {
-            Intent settingsIntent = new Intent(GameActivity.this, SettingsActivity.class);
-            startActivity(settingsIntent);
-        } else if (itemId == R.id.menu_add_edit_players) {
+        }
+
+        @Override
+        public void editPlayers() {
             startOrganizePlayersActivity();
-        } else if (itemId == R.id.menu_rematch) {
+        }
+
+        @Override
+        public void rematch() {
             showRematchDialogue();
-        } else if (itemId == R.id.menu_undo) {
+        }
+
+        @Override
+        public void undo() {
             scoringScreenState.undoOrRedo(true);
-        } else if (itemId == R.id.menu_redo) {
+        }
+
+        @Override
+        public void redo() {
             scoringScreenState.undoOrRedo(false);
         }
-        return false;
-    }
+
+        @Override
+        public void openSettings() {
+            startActivity(new Intent(GameActivity.this, SettingsActivity.class));
+        }
+    };
 
     private void startOrganizePlayersActivity() {
 
@@ -362,7 +349,7 @@ public abstract class GameActivity extends AppCompatActivity {
         // worth saving. This only applies for newly created games.
         scoringScreenState.markDirtyForUnsavedNewGame(game.getId());
 
-        ScoringScreenHostKt.setScoringScreenContent(this, scoringScreenState);
+        ScoringScreenHostKt.setScoringScreenContent(this, scoringScreenState, menuActions);
     }
 
     private synchronized void saveGame(final Game gameToSave, boolean inBackground, final Runnable onFinished) {

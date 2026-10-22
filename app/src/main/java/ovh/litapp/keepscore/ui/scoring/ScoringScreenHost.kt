@@ -8,10 +8,13 @@ import ovh.litapp.keepscore.GameActivity
  *
  * A composable can only be called from Kotlin, so this is the one thing [GameActivity] needs from
  * this package. The activity keeps [ScoringScreenState] for the life of the game and calls this
- * once, from `onCreate`.
+ * once, from `onCreate`; [menuActions] carries the commands the scoreboard menu offers back to it.
  */
-fun GameActivity.setScoringScreenContent(state: ScoringScreenState) {
+fun GameActivity.setScoringScreenContent(
+    state: ScoringScreenState,
+    menuActions: ScoringMenuActions,
+) {
     setContent {
-        ScoringScreen(state)
+        ScoringScreen(state, menuActions)
     }
 }

@@ -73,6 +73,7 @@
     </plurals>
     <string name="text_confirm_rematch">同じ選手で再戦しますか？</string>
     <string name="text_copy">複写</string>
+    <string name="text_more_options">その他のオプション</string>
     <string name="text_delete">削除</string>
     <string name="text_delete_saved_settings">「%s」のバックアップは削除されます.</string>
     <string name="text_donate_message">寄進はありがとうございます！あなたは最高です！</string>

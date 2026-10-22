@@ -106,6 +106,7 @@ fun MainScreen(
     onBackupChosen: (BackupEntry) -> Unit,
 ) {
     var overflowExpanded by remember { mutableStateOf(false) }
+    val moreOptionsDescription = stringResource(R.string.text_more_options)
     val selectedMode = selectedIds.isNotEmpty()
 
     Scaffold(
@@ -115,7 +116,9 @@ fun MainScreen(
                 actions = {
                     androidx.compose.material3.TextButton(
                         onClick = { overflowExpanded = true },
-                        modifier = Modifier.semantics { contentDescription = "More options" },
+                        modifier = Modifier.semantics {
+                            contentDescription = moreOptionsDescription
+                        },
                     ) {
                         Text("⋮", fontSize = 24.sp)
                     }

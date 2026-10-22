@@ -73,6 +73,7 @@
     </plurals>
     <string name="text_confirm_rematch">Gioca di nuovo con gli stessi giocatori?</string>
     <string name="text_copy">Copia</string>
+    <string name="text_more_options">Altre opzioni</string>
     <string name="text_delete">Elimina</string>
     <string name="text_delete_saved_settings">Il backup \&quot;%s\&quot; sarà eliminato.</string>
     <string name="text_donate_message">Grazie per la donazione! Mitico!</string>
