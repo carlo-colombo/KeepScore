@@ -42,9 +42,11 @@ code and the WTFPL license are unchanged; the fork modernizes the app for
 current Android:
 
 - `minSdk 34`, `compileSdk`/`targetSdk` 36 (Android 16)
-- AndroidX views plus Compose New Game, Settings, Organize Players and the
-  responsive scoring screen (portrait column; landscape two-column grid for up
-  to eight players, larger games remain a usable scrolling column)
+- a full Kotlin rewrite: every screen is Jetpack Compose (no Java, no XML
+  layouts or option menus), with a dark calculator theme
+- a responsive scoreboard (portrait column; landscape two-column grid for up to
+  eight players, larger games remain a usable scrolling column) that keeps its
+  undo/redo history across rotation
 - WorkManager for the daily automatic backup, app-specific storage plus a
   FileProvider for sharing backups and spreadsheets
 - a CI/release pipeline that publishes a tagged APK for every push to `main`
@@ -63,8 +65,8 @@ Build it yourself
 KeepScore builds with the committed Gradle wrapper (Gradle 9.8.1, AGP 9.4.1,
 Kotlin 2.4.21); dependency versions come from the version catalog in
 `gradle/libs.versions.toml`. The app is a single `:app` module that compiles
-against Android 16 (API 36) with `minSdk 34`, using AndroidX AppCompat Views and
-Jetpack Compose.
+against Android 16 (API 36) with `minSdk 34`, written in Kotlin with Jetpack
+Compose, Room (via KSP) and WorkManager.
 
 Requirements: JDK 21 and an Android SDK with platform 36 (and matching
 build-tools) installed. Create `local.properties` (gitignored) pointing at your

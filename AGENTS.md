@@ -21,11 +21,14 @@ module). It is a fork of Nolan Lawson's original app, maintained at
 
 ## Architecture
 
-- **Views + Compose.** The app is a hybrid: Main, Name Players, History and About
-  retain legacy Views, while New Game, Settings, Organize Players and the scoring
-  screen use Jetpack Compose. Compose screens live in `ui/<screen>/`; activity
-  hosts provide Android lifecycle, intents and results. `ui/theme/KeepScoreTheme.kt`
-  is the shared dark calculator theme. The scoring UI uses `GameScoringModel` and
+- **Kotlin + Compose only.** There is no first-party Java and no XML layout or
+  option-menu UI: `find app/src/main -name '*.java'` and any `res/layout*/` or
+  `res/menu/` XML must stay empty (`NoLegacyLayoutUiTest` enforces the resource
+  side). Screens live in `ui/<screen>/` as composables; the activities are thin
+  hosts that own lifecycle, intents and activity results. `ui/theme/KeepScoreTheme.kt`
+  is the shared dark calculator theme, `ui/dialogs/` holds the shared Compose
+  dialogs (additional deltas with the exp4j calculator, history context, player
+  name, palette/custom color). The scoring UI uses `GameScoringModel` and
   `PlayerScoreModel`; keep UI state separate from score/history mutations.
 - **Responsive scoring.** The score screen follows the current device configuration:
   portrait is a vertically scrolling player column; landscape uses the legacy
@@ -37,13 +40,21 @@ module). It is a fork of Nolan Lawson's original app, maintained at
 - **Screens.** `MainActivity` (game list, menus, import/export/share),
   `GameActivity` as the shared base for `PortraitGameActivity` /
   `LandscapeGameActivity`, `NamePlayersActivity`, `HistoryActivity`
-  (charts/tables in `fragment/`, custom views in `widget/`),
-  `SettingsActivity`, `OrganizePlayersActivity`, `AboutActivity`. The three
-  migrated Compose activities are thin hosts for their `ui/` screens.
+  (charts/tables in `ui/history/`), `SettingsActivity`,
+  `OrganizePlayersActivity`, `AboutActivity` — every one a thin host for its
+  `ui/` screen, with the scoreboard menu drawn in Compose by `ui/scoring`.
+- **Game state across recreation.** The game activities declare
+  `configChanges` for orientation/screen size, so rotating keeps the activity
+  (and its in-memory undo/redo stack) alive. `GameActivity.onSaveInstanceState`
+  records the resolved game id and `createGame(savedInstanceState)` reloads that
+  row, so a recreation that Android does perform can never autosave a second row
+  for the same game.
 - **Persistence.** Room: `db/AppDatabase` (version 5, `exportSchema`, migrations
   1→5) with `db/GameEntity`/`db/PlayerScoreEntity`, reached through the
   `db/GameDBHelper` facade so call sites stay unchanged; the on-disk schema is
-  covered by `GameDBHelperMigrationTest`. The backup/export format is
+  covered by `GameDBHelperMigrationTest`. Room's compiler runs through **KSP**
+  (`ksp` plugin, `room.schemaLocation` in the `ksp { arg(...) }` block) because
+  the entities are Kotlin; the exported `app/schemas` JSON is the schema contract. The backup/export format is
   `serialization/GamesBackup` + `GamesBackupSerializer` (XML, GZIP-compressed);
   it must stay readable by released versions, so treat it as a stable contract.
 - **Background work.** `data/work/BackupScheduler` enqueues one unique daily
@@ -77,9 +88,11 @@ module). It is a fork of Nolan Lawson's original app, maintained at
 - `versionCode`/`versionName` default to `28` / `1.5.1` and are overridden in CI
   via `-Pandroid.versionCode` / `-Pandroid.versionName` (read with
   `findProperty`). Never hard-code a release bump in the build file.
-- Lint: `abortOnError = true`, `warningsAsErrors = false`, baseline
-  `app/lint-baseline.xml` recording legacy debt. New code must not add baseline
-  entries — fix the finding instead of suppressing it.
+- Lint: `abortOnError = true`, `warningsAsErrors = false`. There is **no
+  baseline** any more: the Kotlin/Compose migration fixed every recorded finding,
+  so lint must stay at zero errors. `CONSTANT_*` string resources are
+  `translatable="false"` on purpose — they are preference keys and default
+  values, not user-facing text.
 
 ## Common commands
 
@@ -142,9 +155,9 @@ away without a decision from the maintainer.
 
 ## Testing
 
-- JVM unit tests: JUnit4 + Robolectric, in `app/src/test/java/…`, annotated
-  `@RunWith(RobolectricTestRunner.class)` and `@Config(sdk = 34)`, using
-  `ApplicationProvider.getApplicationContext()`. They must be hermetic — no
+- JVM unit tests: JUnit4 + Robolectric, **Kotlin**, in `app/src/test/java/…`,
+  annotated `@RunWith(RobolectricTestRunner::class)` and `@Config(sdk = [34])`,
+  using `ApplicationProvider.getApplicationContext()`. They must be hermetic — no
   device, no emulator, no network — because CI runs only these.
 - AndroidX test + Espresso are on `androidTestImplementation` for
   `app/src/androidTest`, but nothing in CI executes them; put anything that must
@@ -158,14 +171,19 @@ away without a decision from the maintainer.
 
 ## Modernization roadmap
 
-1. **Compose remaining legacy screens** (`MainActivity`, `NamePlayersActivity`,
-   `HistoryActivity` and `AboutActivity`) as incremental screen work; keep the
-   scoring model independent of UI and preserve the XML/GZIP backup contract.
+The Kotlin/Compose migration is complete: no Java, no XML layout/menu UI, no lint
+baseline. What is left is polish, in rough priority order:
+
+1. **Remaining warnings.** `GradleDependency`/`AndroidGradlePluginVersion`
+   advisories, `IconLocation`/`IconDensities` for the leftover legacy PNGs,
+   `UseKtx` suggestions, `PluralsCandidate` for four strings, and the two
+   deprecated `AsyncTask` uses in `GameActivity` (`StaticFieldLeak`) which want
+   to become an executor call.
 2. **Quality follow-up.** Keep filling the real test gaps around Room update
    paths, old backup versions, parcel history/timestamps, and the screen/activity
    rotation path. Do not replace these with mocks of the behavior under test.
-3. **Burn down debt.** Retire entries from `app/lint-baseline.xml` as safe issues
-   are fixed, and keep this file and `README.md` in step with the source/build.
+3. **Keep the docs honest.** Update this file and `README.md` in the same change
+   that alters the build, the architecture or the credits.
 
 ## Documentation ownership
 

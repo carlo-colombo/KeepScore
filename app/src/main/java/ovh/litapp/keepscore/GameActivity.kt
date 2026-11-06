@@ -93,7 +93,7 @@ abstract class GameActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        createGame()
+        createGame(savedInstanceState)
 
         setUpScoringScreen()
         // This activity hides the action bar in onResume(), after edge-to-edge insets are applied.
@@ -115,6 +115,12 @@ abstract class GameActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        // -1 means "not saved yet", which is exactly what a fresh instance must rebuild from intent
+        outState.putInt(STATE_GAME_ID, game?.id ?: -1)
     }
 
     override fun onDestroy() {
@@ -232,12 +238,26 @@ abstract class GameActivity : AppCompatActivity() {
         // only autosave if the user has changed SOMETHING, i.e. the scores aren't all just zero
         scoringScreenState.shouldAutosave()
 
-    private fun createGame() {
+    /**
+     * Builds the game this activity shows.
+     *
+     * A recreation (a configuration change the activity does not handle itself, or process death)
+     * must continue the same saved row: rebuilding a new game from [EXTRA_PLAYER_NAMES] would let
+     * the autosave insert a second row for one game, so the id of the game already attached to this
+     * screen wins over the launch intent.
+     */
+    private fun createGame(savedInstanceState: Bundle?) {
+        val restoredGameId = savedInstanceState?.getInt(STATE_GAME_ID, -1) ?: -1
+        if (restoredGameId != -1) {
+            createExistingGameFromId(restoredGameId)
+            return
+        }
+
         if (intent.hasExtra(EXTRA_PLAYER_NAMES)) {
             // starting a new game
             createNewGame()
         } else if (intent.hasExtra(EXTRA_GAME_ID)) {
-            createExistingGameFromId()
+            createExistingGameFromId(intent.getIntExtra(EXTRA_GAME_ID, 0))
         } else {
             val extraGame = intent.getParcelableExtra<Game>(EXTRA_GAME)
             requireNotNull(extraGame) { "no game to play" }
@@ -246,9 +266,7 @@ abstract class GameActivity : AppCompatActivity() {
         }
     }
 
-    private fun createExistingGameFromId() {
-        val gameId = intent.getIntExtra(EXTRA_GAME_ID, 0)
-
+    private fun createExistingGameFromId(gameId: Int) {
         val existingGame = requireNotNull(getDbHelper().findGameById(gameId)) {
             "no saved game with id $gameId"
         }
@@ -379,6 +397,8 @@ abstract class GameActivity : AppCompatActivity() {
         const val EXTRA_PLAYER_COLORS = "playerColors"
         const val EXTRA_GAME_ID = "gameId"
         const val EXTRA_GAME = "game"
+
+        private const val STATE_GAME_ID = "stateGameId"
 
         private val PERIODIC_SAVE_PERIOD = TimeUnit.SECONDS.toMillis(30)
 

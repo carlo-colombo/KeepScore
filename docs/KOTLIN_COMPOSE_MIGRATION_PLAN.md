@@ -63,7 +63,7 @@ After all screens and dialogs have Compose replacements:
 - Independent read-only review after each integrated wave; fix P1s before release.
 - Run `:app:assembleDebug`, `:app:testDebugUnitTest`, `:app:lintDebug`, `:app:assembleRelease`, `:app:lintRelease` on the exact integration head.
 - API 36 emulator smoke/regression: clean install, upgrade install from last signed release, portrait↔landscape rotation and recreation of new/existing games with score/history restored, no duplicate game insertion, in-process undo/redo preserved across rotation, 2/8/9/30 players, all settings/backup/history flows, accessibility scan, no app fatal logs.
-- Burn down `app/lint-baseline.xml`; never use the baseline to silence new findings.
+- Retire `app/lint-baseline.xml`: it is deleted once every recorded finding is fixed or gone, and new findings must be fixed rather than baselined.
 - Update README/AGENTS, issue #1, screenshots and release notes. Publish a real-key-signed release per integrated wave.
 
 ## Definition of done
