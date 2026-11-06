@@ -491,7 +491,9 @@ private fun ScoreRow(
             label = MINUS_LABEL,
             textSize = buttonTextSize,
             colors = colors,
-            onClick = { onDelta(-minusValue) },
+            // the preference stores the signed value (its default is -1) and the legacy screen
+            // applied it unchanged; negating it here made the minus button add points
+            onClick = { onDelta(minusValue) },
             onLongClick = { onOpenDeltaDialog(false) },
             modifier = Modifier.width(buttonWidth).fillMaxHeight().padding(end = LayoutPadding),
         )
