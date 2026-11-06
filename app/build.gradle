@@ -43,11 +43,10 @@ android {
     }
 
     lint {
-        // Full lint must fail the build on errors. The baseline records the pre-existing debt from
-        // the legacy codebase; burn it down in later waves. Warnings stay visible.
+        // Full lint must fail the build on errors. There is no baseline any more: the migration to
+        // Kotlin and Compose removed every recorded finding, so new code must keep lint clean.
         abortOnError = true
         warningsAsErrors = false
-        baseline = file("lint-baseline.xml")
     }
 }
 

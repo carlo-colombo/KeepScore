@@ -71,6 +71,7 @@
     <plurals name="text_confirm_delete_player">
         <item quantity="one">Le joueur suivant sera supprimé: %s.</item>
         <item quantity="other">Les joueurs suivants seront supprimés: %s.</item>
+        <item quantity="many">Les joueurs suivants seront supprimés: %s.</item>
     </plurals>
     <string name="text_confirm_rematch">Faire une nouvelle partie avec les mêmes joueurs?</string>
     <string name="text_copy">Copier</string>
@@ -101,20 +102,24 @@ Doublets: %4$d</string>
     <plurals name="text_save_backup">
         <item quantity="one">Exporter %d jeu à la carte SD?</item>
         <item quantity="other">Exporter %d jeux à la carte SD?</item>
+        <item quantity="many">Exporter %d jeux à la carte SD?</item>
     </plurals>
     <plurals name="text_save_backup_succeeded">
         <item quantity="one">%1$d jeu sauvegardé à \'%2$s\'.</item>
         <item quantity="other">%1$d jeux sauvegardés à \'%2$s\'.</item>
+        <item quantity="many">%1$d jeux sauvegardés à \'%2$s\'.</item>
     </plurals>
     <string name="text_saved_games">Parties sauvegardées</string>
     <string name="text_saving">Exportation&#8230;</string>
     <plurals name="text_share_spreadsheet_confirm">
-        <item quantity="one">Voulez-vous exporter cette partie comme un tableau?</item>
+        <item quantity="one">Voulez-vous exporter %d partie comme un tableau?</item>
         <item quantity="other">Voulez-vous exporter ces %d parties comme un tableau?</item>
+        <item quantity="many">Voulez-vous exporter ces %d parties comme un tableau?</item>
     </plurals>
     <plurals name="text_share_spreadsheet_subject">
-        <item quantity="one">Un tableau avec une partie KeepScore</item>
+        <item quantity="one">Un tableau avec %d partie KeepScore</item>
         <item quantity="other">Un tableau avec %d parties KeepScore</item>
+        <item quantity="many">Un tableau avec %d parties KeepScore</item>
     </plurals>
     <string name="text_share_spreadsheet_body">Veuillez trouver joint un tableau KeepScore en format CSV.\
 \n\nVous pouvez ouvrir ce fichier avec n\'importe quel logiciel de tableau, par exemple Excel, \
@@ -128,12 +133,14 @@ LibreOffice, ou Google Docs.</string>
     <string name="text_share_spreadsheet_player_with_max">Joueur(s) avec le plus de points</string>
     <string name="text_share_spreadsheet_player_with_min">Joueur(s) avec le moins de points)</string>
     <plurals name="text_share_with_friend">
-        <item quantity="one">Voulez-vous partagez cette partie avec un(e) ami(e)?</item>
+        <item quantity="one">Voulez-vous partagez %d partie avec un(e) ami(e)?</item>
         <item quantity="other">Voulez-vous partagez %d parties avec un(e) ami(e)?</item>
+        <item quantity="many">Voulez-vous partagez %d parties avec un(e) ami(e)?</item>
     </plurals>
     <plurals name="text_share_mail_subject">
-        <item quantity="one">Une partie KeepScore pour vous!</item>
+        <item quantity="one">%d partie KeepScore pour vous!</item>
         <item quantity="other">%d parties KeepScore pour vous!</item>
+        <item quantity="many">%d parties KeepScore pour vous!</item>
     </plurals>
     <string name="text_share_mail_body">Veuillez trouver joint un fichier backup de KeepScore.\
 \n\nPour importer dans KeepScore, il faut simplement ouvrir la pièce joint avec votre appli email préférée.\

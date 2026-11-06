@@ -3,73 +3,73 @@
     
     <!-- non-translateable strings-->
     
-    <string name="CONSTANT_app_name">KeepScore</string>
+    <string name="CONSTANT_app_name" translatable="false">KeepScore</string>
     
-    <string name="CONSTANT_button_2_players">2</string>
-    <string name="CONSTANT_button_3_players">3</string>
-    <string name="CONSTANT_button_4_players">4</string>
-    <string name="CONSTANT_button_5_players">5</string>
-    <string name="CONSTANT_button_6_players">6</string>
-    <string name="CONSTANT_button_7_players">7</string>
-    <string name="CONSTANT_button_8_players">8</string>
+    <string name="CONSTANT_button_2_players" translatable="false">2</string>
+    <string name="CONSTANT_button_3_players" translatable="false">3</string>
+    <string name="CONSTANT_button_4_players" translatable="false">4</string>
+    <string name="CONSTANT_button_5_players" translatable="false">5</string>
+    <string name="CONSTANT_button_6_players" translatable="false">6</string>
+    <string name="CONSTANT_button_7_players" translatable="false">7</string>
+    <string name="CONSTANT_button_8_players" translatable="false">8</string>
     
-    <string name="CONSTANT_link_donate">market://details?id=ovh.litapp.keepscore.donate</string>
-    <string name="CONSTANT_link_translate">https://github.com/nolanlawson/KeepScore#add-a-translation</string>
+    <string name="CONSTANT_link_donate" translatable="false">market://details?id=ovh.litapp.keepscore.donate</string>
+    <string name="CONSTANT_link_translate" translatable="false">https://github.com/nolanlawson/KeepScore#add-a-translation</string>
     
-    <string name="CONSTANT_pref_plus_button">plus_button</string>
-    <string name="CONSTANT_pref_plus_button_default">1</string>
-    <string name="CONSTANT_pref_minus_button">minus_button</string>
-    <string name="CONSTANT_pref_minus_button_default">-1</string>
-    <string name="CONSTANT_pref_2p_button_1">2p_button1</string>
-    <string name="CONSTANT_pref_2p_button_1_default">-10</string>
-    <string name="CONSTANT_pref_2p_button_2">2p_button2</string>
-    <string name="CONSTANT_pref_2p_button_2_default">-5</string>
-    <string name="CONSTANT_pref_2p_button_3">2p_button3</string>
-    <string name="CONSTANT_pref_2p_button_3_default">5</string>
-    <string name="CONSTANT_pref_2p_button_4">2p_button4</string>
-    <string name="CONSTANT_pref_2p_button_4_default">10</string>
-    <string name="CONSTANT_pref_about">about</string>
-    <string name="CONSTANT_pref_button_1">button1</string>
-    <string name="CONSTANT_pref_button_1_default">-1</string>
-    <string name="CONSTANT_pref_button_2">button2</string>
-    <string name="CONSTANT_pref_button_2_default">1</string>
-    <string name="CONSTANT_pref_button_3">button3</string>
-    <string name="CONSTANT_pref_button_3_default">5</string>
-    <string name="CONSTANT_pref_button_4">button4</string>
-    <string name="CONSTANT_pref_button_4_default">10</string>
-    <string name="CONSTANT_pref_color_scheme">color_scheme</string>
-    <string name="CONSTANT_pref_color_scheme_choice_android">android</string>
-    <string name="CONSTANT_pref_color_scheme_choice_dark">dark</string>
-    <string name="CONSTANT_pref_color_scheme_choice_light">light</string>
-    <string name="CONSTANT_pref_color_scheme_choice_classic_light">classic_light</string>
-    <string name="CONSTANT_pref_color_scheme_default">@string/CONSTANT_pref_color_scheme_choice_light</string>
-    <string name="CONSTANT_pref_disable_highlight_tag">disable_highlight_tag</string>
-    <string name="CONSTANT_pref_disable_highlight_tag_default">false</string>
-    <string name="CONSTANT_pref_green_text">green_text</string>
-    <string name="CONSTANT_pref_green_text_default">false</string>
-    <string name="CONSTANT_pref_initial_message">initial_message</string>
-    <string name="CONSTANT_pref_initial_message_default">true</string>
-    <string name="CONSTANT_pref_initial_score">initial_score</string>
-    <string name="CONSTANT_pref_initial_score_default">0</string>
-    <string name="CONSTANT_pref_load_settings">load_settings</string>
-    <string name="CONSTANT_pref_orientation">orientation</string>
-    <string name="CONSTANT_pref_orientation_default">@string/CONSTANT_pref_orientation_choice_landscape</string>
-    <string name="CONSTANT_pref_orientation_choice_landscape">landscape</string>
-    <string name="CONSTANT_pref_orientation_choice_portrait">portrait</string>
-    <string name="CONSTANT_pref_reset">reset</string>
-    <string name="CONSTANT_pref_save_settings">save_settings</string>
-    <string name="CONSTANT_pref_show_colors">show_colors</string>
-    <string name="CONSTANT_pref_show_colors_default">true</string>
-    <string name="CONSTANT_pref_show_round_totals">show_round_totals</string>
-    <string name="CONSTANT_pref_show_round_totals_default">false</string>
-    <string name="CONSTANT_pref_update_delay">update_delay</string>
-    <string name="CONSTANT_pref_update_delay_default">10</string>
-    <string name="CONSTANT_pref_use_wake_lock">use_wake_lock</string>
-    <string name="CONSTANT_pref_use_wake_lock_default">true</string>
+    <string name="CONSTANT_pref_plus_button" translatable="false">plus_button</string>
+    <string name="CONSTANT_pref_plus_button_default" translatable="false">1</string>
+    <string name="CONSTANT_pref_minus_button" translatable="false">minus_button</string>
+    <string name="CONSTANT_pref_minus_button_default" translatable="false">-1</string>
+    <string name="CONSTANT_pref_2p_button_1" translatable="false">2p_button1</string>
+    <string name="CONSTANT_pref_2p_button_1_default" translatable="false">-10</string>
+    <string name="CONSTANT_pref_2p_button_2" translatable="false">2p_button2</string>
+    <string name="CONSTANT_pref_2p_button_2_default" translatable="false">-5</string>
+    <string name="CONSTANT_pref_2p_button_3" translatable="false">2p_button3</string>
+    <string name="CONSTANT_pref_2p_button_3_default" translatable="false">5</string>
+    <string name="CONSTANT_pref_2p_button_4" translatable="false">2p_button4</string>
+    <string name="CONSTANT_pref_2p_button_4_default" translatable="false">10</string>
+    <string name="CONSTANT_pref_about" translatable="false">about</string>
+    <string name="CONSTANT_pref_button_1" translatable="false">button1</string>
+    <string name="CONSTANT_pref_button_1_default" translatable="false">-1</string>
+    <string name="CONSTANT_pref_button_2" translatable="false">button2</string>
+    <string name="CONSTANT_pref_button_2_default" translatable="false">1</string>
+    <string name="CONSTANT_pref_button_3" translatable="false">button3</string>
+    <string name="CONSTANT_pref_button_3_default" translatable="false">5</string>
+    <string name="CONSTANT_pref_button_4" translatable="false">button4</string>
+    <string name="CONSTANT_pref_button_4_default" translatable="false">10</string>
+    <string name="CONSTANT_pref_color_scheme" translatable="false">color_scheme</string>
+    <string name="CONSTANT_pref_color_scheme_choice_android" translatable="false">android</string>
+    <string name="CONSTANT_pref_color_scheme_choice_dark" translatable="false">dark</string>
+    <string name="CONSTANT_pref_color_scheme_choice_light" translatable="false">light</string>
+    <string name="CONSTANT_pref_color_scheme_choice_classic_light" translatable="false">classic_light</string>
+    <string name="CONSTANT_pref_color_scheme_default" translatable="false">@string/CONSTANT_pref_color_scheme_choice_light</string>
+    <string name="CONSTANT_pref_disable_highlight_tag" translatable="false">disable_highlight_tag</string>
+    <string name="CONSTANT_pref_disable_highlight_tag_default" translatable="false">false</string>
+    <string name="CONSTANT_pref_green_text" translatable="false">green_text</string>
+    <string name="CONSTANT_pref_green_text_default" translatable="false">false</string>
+    <string name="CONSTANT_pref_initial_message" translatable="false">initial_message</string>
+    <string name="CONSTANT_pref_initial_message_default" translatable="false">true</string>
+    <string name="CONSTANT_pref_initial_score" translatable="false">initial_score</string>
+    <string name="CONSTANT_pref_initial_score_default" translatable="false">0</string>
+    <string name="CONSTANT_pref_load_settings" translatable="false">load_settings</string>
+    <string name="CONSTANT_pref_orientation" translatable="false">orientation</string>
+    <string name="CONSTANT_pref_orientation_default" translatable="false">@string/CONSTANT_pref_orientation_choice_landscape</string>
+    <string name="CONSTANT_pref_orientation_choice_landscape" translatable="false">landscape</string>
+    <string name="CONSTANT_pref_orientation_choice_portrait" translatable="false">portrait</string>
+    <string name="CONSTANT_pref_reset" translatable="false">reset</string>
+    <string name="CONSTANT_pref_save_settings" translatable="false">save_settings</string>
+    <string name="CONSTANT_pref_show_colors" translatable="false">show_colors</string>
+    <string name="CONSTANT_pref_show_colors_default" translatable="false">true</string>
+    <string name="CONSTANT_pref_show_round_totals" translatable="false">show_round_totals</string>
+    <string name="CONSTANT_pref_show_round_totals_default" translatable="false">false</string>
+    <string name="CONSTANT_pref_update_delay" translatable="false">update_delay</string>
+    <string name="CONSTANT_pref_update_delay_default" translatable="false">10</string>
+    <string name="CONSTANT_pref_use_wake_lock" translatable="false">use_wake_lock</string>
+    <string name="CONSTANT_pref_use_wake_lock_default" translatable="false">true</string>
     
     
-    <string name="CONSTANT_text_donate_suffix">(Donate)</string>
-    <string name="CONSTANT_text_epsilon">Σ</string>
+    <string name="CONSTANT_text_donate_suffix" translatable="false">(Donate)</string>
+    <string name="CONSTANT_text_epsilon" translatable="false">Σ</string>
     
     <!-- translateable strings-->
     
@@ -124,7 +124,7 @@
     <string name="pref_color_scheme_choice_dark_name">Dark</string>
     <string name="pref_color_scheme_choice_light_name">Light</string>
     <string name="pref_color_scheme_choice_classic_light_name">Classic Light</string>
-    <string name="pref_color_scheme_name">Colour Scheme</string>
+    <string name="pref_color_scheme_name">Color Scheme</string>
     <string name="pref_disable_highlight_tag_name">Disable bullet</string>
     <string name="pref_disable_highlight_tag_summary">Disable the bullet icon showing which player was scored last.</string>
     <string name="pref_green_text_name">Green Text</string>
@@ -142,7 +142,7 @@
     <string name="pref_save_settings_name">Save Backup</string>
     <string name="pref_save_settings_summary">Save a backup of the current settings.</string>
     <string name="pref_show_round_totals_name">Show round totals</string>
-    <string name="pref_show_colors_name">Show player colours</string>
+    <string name="pref_show_colors_name">Show player colors</string>
     <string name="pref_update_delay_name">Update Delay</string>
     <string name="pref_update_delay_summary">Seconds to wait before adding a new history value (default: 10)</string>
     <string name="pref_use_wake_lock_name">Keep Screen Awake</string>
@@ -203,7 +203,7 @@ Duplicates: %4$d</string>
         <item quantity="other">Spreadsheet with %d KeepScore games</item>
     </plurals>
     <string name="text_share_spreadsheet_body">Attached is a KeepScore spreadsheet in CSV format.\
-\n\nThis file can be opened using your favourite spreadsheet program, such as Excel, \
+\n\nThis file can be opened using your favorite spreadsheet program, such as Excel, \
 LibreOffice, or Google Docs.</string>
     <string name="text_share_spreadsheet_date_started">Start time</string>
     <string name="text_share_spreadsheet_date_modified">Last modified</string>
@@ -223,7 +223,7 @@ LibreOffice, or Google Docs.</string>
         <item quantity="other">%d KeepScore games just for you!</item>
     </plurals>
     <string name="text_share_mail_body">Attached is a KeepScore backup file.\
-\n\nTo import it into KeepScore, simply open the attachment using your favourite email app.\
+\n\nTo import it into KeepScore, simply open the attachment using your favorite email app.\
 \n\nIf that doesn\'t work, save the file to /sdcard/keepscore/backups and choose \"Restore\" from the KeepScore main  menu.
 \n\nTo get KeepScore, visit https://play.google.com/store/apps/details?id=ovh.litapp.keepscore .</string>
     
@@ -241,7 +241,7 @@ LibreOffice, or Google Docs.</string>
     <string name="title_add_player">Enter Player Name</string>
     <string name="title_change_name">Change Name</string>
     <string name="title_choose_backup">Restore Games from File</string>
-    <string name="title_choose_color">Choose a Colour</string>
+    <string name="title_choose_color">Choose a Color</string>
     <string name="title_confirm">Confirm</string>
     <string name="title_confirm_delete">Confirm Delete</string>
     <string name="title_edit_game_name">Edit Game Name</string>

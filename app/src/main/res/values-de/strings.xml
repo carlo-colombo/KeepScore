@@ -203,6 +203,7 @@ LibreOffice oder Google Docs.</string>
     <string name="button_history_round_chart">Rundendiagramm</string>
     <string name="pref_show_colors_name">Zeige Spielerfarbe</string>
     <string name="button_history_round_table">je Runde</string>
+    <string name="toast_calc_error">Ungültige Eingabe im Taschenrechner.</string>
 </resources>
 
 

@@ -70,6 +70,7 @@
     <plurals name="text_confirm_delete_player">
         <item quantity="one">Sarà eliminato il giocatore: %s.</item>
         <item quantity="other">Saranno eliminati i giocatori: %s.</item>
+        <item quantity="many">Saranno eliminati i giocatori: %s.</item>
     </plurals>
     <string name="text_confirm_rematch">Gioca di nuovo con gli stessi giocatori?</string>
     <string name="text_copy">Copia</string>
@@ -100,20 +101,24 @@ Duplicate: %4$d</string>
     <plurals name="text_save_backup">
         <item quantity="one">Esegui backup di %d partita su scheda SD?</item>
         <item quantity="other"> Esegui backup di %d partite su scheda SD?</item>
+        <item quantity="many"> Esegui backup di %d partite su scheda SD?</item>
     </plurals>
     <plurals name="text_save_backup_succeeded">
         <item quantity="one">%1$d partita salvata in \'%2$s\'.</item>
         <item quantity="other">%1$d partite salvate in \'%2$s\'.</item>
+        <item quantity="many">%1$d partite salvate in \'%2$s\'.</item>
     </plurals>
     <string name="text_saved_games">Partite salvate</string>
     <string name="text_saving">Esportazione&#8230;</string>
     <plurals name="text_share_spreadsheet_confirm">
         <item quantity="one">Esporta partita come foglio di calcolo?</item>
         <item quantity="other">Esporta %d partite come foglio di calcolo?</item>
+        <item quantity="many">Esporta %d partite come foglio di calcolo?</item>
     </plurals>
     <plurals name="text_share_spreadsheet_subject">
         <item quantity="one">Foglio di calcolo con 1 partita</item>
         <item quantity="other">Foglio di calcolo con %d partite</item>
+        <item quantity="many">Foglio di calcolo con %d partite</item>
     </plurals>
     <string name="text_share_spreadsheet_body">In allegato un foglio di calcolo in formato CSV creato da KeepScore.\
 \n\nIl file può essere aperto usando il tuo programma per fogli di calcolo preferito, come Excel, \
@@ -130,10 +135,12 @@ LibreOffice, o Google Docs.</string>
     <plurals name="text_share_with_friend">
         <item quantity="one">Condividi partita?</item>
         <item quantity="other">Condividi %d partite?</item>
+        <item quantity="many">Condividi %d partite?</item>
     </plurals>
     <plurals name="text_share_mail_subject">
         <item quantity="one">Una partita solo per te da KeepScore!</item>
         <item quantity="other">%d partite solo per te da KeepScore!</item>
+        <item quantity="many">%d partite solo per te da KeepScore!</item>
     </plurals>
     <string name="text_share_mail_body">In allegato un file di backup di KeepScore.\
 \n\nPer importarlo in KeepScore basta che lo apri con la tua app email preferita.\
@@ -145,7 +152,7 @@ LibreOffice, o Google Docs.</string>
     <string name="text_welcome_message" ><![CDATA[
         KeepScore è un\'app gratuita e open source,
 <b>creata da giocatori per i giocatori</b>.
-<p/>Ti piace KeepScore? Perché non fare una <a href="%2$s">donazione</a>?
+<p/>Ti piace KeepScore? Perché non fare una <a href="%1$s">donazione</a>?
 <p/>E se non puoi&#8230; <a href="%2$s">aiutaci a tradurre</a>!]]></string>
 
     <string name="text_version_number">Versione %s</string>
@@ -191,7 +198,6 @@ LibreOffice, o Google Docs.</string>
     <string name="toast_valid_update_delay_values">Inserisci un numero compreso tra 1 e 600.</string>
     
     <!-- KeepScore version 1.3.0 updates - please translate me from English!!! -->
-    <!-- 
     <string name="pref_orientation_name">Orientamento Preferito</string>
     <string name="pref_plus_button_name">Pulsante +</string>
     <string name="button_history_player_table">Riassunto per giocatore</string>
@@ -205,6 +211,7 @@ LibreOffice, o Google Docs.</string>
     <string name="button_history_round_chart">Tabella dei round</string>
     <string name="pref_show_colors_name">Mostra i colori dei giocatori</string>
     <string name="button_history_round_table">Riassunto per round</string>
-    -->    
+    <string name="menu_sort_players">Ordina per punteggio</string>
+    <string name="toast_calc_error">Inserimento calcolatrice non valido.</string>
 </resources>
 

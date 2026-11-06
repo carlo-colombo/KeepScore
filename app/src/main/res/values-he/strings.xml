@@ -84,6 +84,7 @@
     <plurals name="text_confirm_delete_player">
         <item quantity="one">השחקן הבא יימחק: %s.</item>
         <item quantity="other">השחקנים הבאים יימחקו: %s.</item>
+        <item quantity="two">השחקנים הבאים יימחקו: %s.</item>
     </plurals>
     <string name="text_confirm_rematch">התחל משחק חוזר עם אותם השחקנים?</string>
     <string name="text_copy">העתק</string>
@@ -114,20 +115,24 @@ Duplicates: %4$d</string>
     <plurals name="text_save_backup">
         <item quantity="one">לגבות %d משחק לאחסון USB?</item>
         <item quantity="other">לגבות %d משחקים לאחסון USB?</item>
+        <item quantity="two">לגבות %d משחקים לאחסון USB?</item>
     </plurals>
     <plurals name="text_save_backup_succeeded">
         <item quantity="one">%1$d משחק נשמר ל- \'%2$s\'.</item>
         <item quantity="other">%1$d משחקים נשמרו ל- \'%2$s\'.</item>
+        <item quantity="two">%1$d משחקים נשמרו ל- \'%2$s\'.</item>
     </plurals>
     <string name="text_saved_games">משחקים שמורים</string>
     <string name="text_saving">מייצא&#8230;</string>
     <plurals name="text_share_spreadsheet_confirm">
         <item quantity="one">לייצא משחק זה כגיליון?</item>
         <item quantity="other">לייצא %d משחקים כגיליון?</item>
+        <item quantity="two">לייצא %d משחקים כגיליון?</item>
     </plurals>
     <plurals name="text_share_spreadsheet_subject">
         <item quantity="one">גיליון עם משחק אחד</item>
         <item quantity="other">גיליון עם %d משחקים</item>
+        <item quantity="two">גיליון עם %d משחקים</item>
     </plurals>
     <string name="text_share_spreadsheet_body">מצורף גיליון בתבנית CSV.\
 \n\nקובץ זה יכול להפתח עם תכנת הגיליונות האהובה עליך, כמו אקסל, \
@@ -144,10 +149,12 @@ Duplicates: %4$d</string>
     <plurals name="text_share_with_friend">
         <item quantity="one">שתף משחק זה עם חבר?</item>
         <item quantity="other">שתף %d משחקים עם חבר?</item>
+        <item quantity="two">שתף %d משחקים עם חבר?</item>
     </plurals>
     <plurals name="text_share_mail_subject">
         <item quantity="one">משחק KeepScore במיוחד עבורך!</item>
         <item quantity="other">%d משחקי KeepScore במיוחד עבורך!</item>
+        <item quantity="two">%d משחקי KeepScore במיוחד עבורך!</item>
     </plurals>
     <string name="text_share_mail_body">מצורף קובץ גיבוי ל- KeepScore.\
 \n\nבכדי לייבא אותו ל- KeepScore, פתח את הקובץ המצורף באמצעות תוכנת הדוא"ל האהובה עליך.\
@@ -204,5 +211,6 @@ Duplicates: %4$d</string>
     <string name="toast_settings_reset">איפוס הגדרות.</string>
     <string name="toast_valid_initial_score">אתה חייב להכניס מספר תקני.</string>
     <string name="toast_valid_update_delay_values">אתה חייב להכניס מספר בין 1 ל-600.</string>
+    <string name="toast_calc_error">קלט לא חוקי במחשבון.</string>
 </resources>
 
